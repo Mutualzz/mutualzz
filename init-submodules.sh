@@ -19,7 +19,7 @@ if [ -n "$GITHUB_TOKEN" ]; then
     git config --global --unset-all url."https://${GITHUB_TOKEN}:x-oauth-basic@github.com/".insteadOf
 
     # Try again for public
-    git submodule update --init --recursive
+    git submodule update --init --recursive --remote
 fi
 
 ls -l packages
