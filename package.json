@@ -7,7 +7,10 @@
         "lint": "turbo run lint",
         "format": "prettier --write \"**/*.{ts,tsx,md}\"",
         "check-types": "turbo run check-types",
-        "start:rest": "pm2 start apps/rest/pm2.config.cjs --env production"
+        "prestart": "bun install && turbo run build --filter=@mutualzz/rest --filter=@mutualzz/gateway --filter=@mutualzz/logger",
+        "start": "pm2 start ./pm2.config.cjs --env production",
+        "start:rest": "bun run ./apps/rest/dist/index.js",
+        "start:gateway": "bun run ./apps/gateway/dist/index.js"
     },
     "devDependencies": {
         "prettier": "^3.6.2",
