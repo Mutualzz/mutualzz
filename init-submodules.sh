@@ -4,9 +4,7 @@ set -euxo pipefail
 cd "$(dirname "$0")"
 echo "CWD: $(pwd)"
 
-echo "GITHUB_TOKEN: ${GITHUB_TOKEN:0:4}..."
 git --version
-git config --list
 git submodule status
 
 # Set up GitHub token if present
@@ -16,11 +14,10 @@ if [ -n "$GITHUB_TOKEN" ]; then
 fi
 
 git submodule sync
-git submodule update --init --recursive
+git submodule init
+git submodule update --recursive --remote
 
 ls -l packages
 ls -l apps
-
-cat .gitmodules
 
 git submodule status
