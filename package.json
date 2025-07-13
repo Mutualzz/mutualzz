@@ -15,7 +15,7 @@
         "typescript": "5.8.3"
     },
     "engines": {
-        "node": ">=18"
+        "node": ">=22"
     },
     "packageManager": "bun@1.2.18",
     "workspaces": [
