@@ -8,7 +8,6 @@ git --version
 git submodule status
 
 # Clean up partial submodules
-git submodule deinit -f .
 git submodule sync
 git submodule update --init apps/app packages/ui
 
