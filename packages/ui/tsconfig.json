@@ -10,7 +10,7 @@
         "allowSyntheticDefaultImports": true,
         "verbatimModuleSyntax": true,
         "esModuleInterop": true,
-        // "skipLibCheck": true,
+        "skipLibCheck": true,
         "strict": true,
         "jsx": "react-jsx",
         "jsxImportSource": "@emotion/react",
