@@ -9,13 +9,18 @@ git submodule status
 
 # Set up GitHub token if present
 if [ -n "$GITHUB_TOKEN" ]; then
-  git config --global url."https://${GITHUB_TOKEN}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
-  echo "Configured git to use GITHUB_TOKEN"
-fi
+    # First, set up token for private
+    git config --global url."https://${GITHUB_TOKEN}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
 
-git submodule sync
-git submodule init
-git submodule update --recursive --remote
+    git submodule sync --recursive
+    git submodule update --init --recursive || true
+
+    # Then, unset token for public
+    git config --global --unset-all url."https://${GITHUB_TOKEN}:x-oauth-basic@github.com/".insteadOf
+
+    # Try again for public
+    git submodule update --init --recursive
+fi
 
 ls -l packages
 ls -l apps
