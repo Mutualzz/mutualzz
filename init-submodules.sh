@@ -9,7 +9,7 @@ git submodule status
 
 # Clean up partial submodules
 git submodule sync
-git submodule update --init apps/app packages/ui
+git submodule update --init --recursive apps/app packages/ui
 
 ls -l packages/ui || true
 ls -l apps/app || true
