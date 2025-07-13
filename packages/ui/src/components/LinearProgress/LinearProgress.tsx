@@ -13,6 +13,7 @@ import type { LinearProgressProps } from "./LinearProgress.types";
 
 const ProgressWrapper = styled("div")<{
     width: string | number;
+    height: string | number;
     background: string;
     outlinedColor: string;
     variant: Variant;
