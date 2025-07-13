@@ -7,7 +7,9 @@ echo "CWD: $(pwd)"
 git --version
 git submodule status
 
-# Clean up partial submodules
+ls -l packages/ui || true
+ls -l apps/app || true
+
 git submodule sync
 git submodule update --init --recursive apps/app packages/ui
 
