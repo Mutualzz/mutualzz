@@ -12,7 +12,8 @@ git submodule deinit -f .
 git submodule sync
 git submodule update --init apps/app packages/ui
 
-ls -l packages || true
-ls -l apps || true
+ls -l packages/ui || true
+ls -l apps/app || true
 
 git submodule status
+
