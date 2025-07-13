@@ -16,4 +16,8 @@ git submodule sync
 git submodule update --init --recursive
 
 echo "Submodule folders after init:"
-ls -a 
+
+ls -l packages
+ls -l apps || true
+
+git submodule status
