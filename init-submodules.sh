@@ -1,8 +1,8 @@
 #!/bin/bash
 set -euxo pipefail
 
-cd "$(dirname "$0")"
-echo "CWD: $(pwd)"
+
+cd "${VERCEL_PROJECT_ROOT:-$(git rev-parse --show-toplevel)}"
 
 git --version
 
