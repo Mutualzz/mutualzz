@@ -1,3 +1,3 @@
-# `@mutualzz/eslint-config`
+# Mutualzz Eslint Configs
 
-Collection of internal eslint configurations.
+These configs are used throughout the project
