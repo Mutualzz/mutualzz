@@ -1,5 +1,6 @@
+import type { Properties } from "csstype";
 import type { Responsive } from "./index";
 
-export interface ShadowsProps {
-    boxShadow?: Responsive<string>;
+export interface HTMLShadowsProps {
+    boxShadow?: Responsive<Properties["boxShadow"]>;
 }

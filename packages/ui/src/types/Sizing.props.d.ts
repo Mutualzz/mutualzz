@@ -1,32 +1,14 @@
 import type { Responsive } from "./index";
 
-export type Size =
-    | string
-    | number
-    | "auto"
-    | "fit-content"
-    | "min-content"
-    | "max-content"
-    | "inherit"
-    | "initial"
-    | "unset"
-    | "revert";
+import { Properties } from "csstype";
 
-export type BoxSizing =
-    | "content-box"
-    | "border-box"
-    | "inherit"
-    | "initial"
-    | "unset"
-    | "revert";
+export interface HTMLSizingProps {
+    width?: Responsive<Properties["width"]>;
+    minWidth?: Responsive<Properties["minWidth"]>;
+    maxWidth?: Responsive<Properties["maxWidth"]>;
+    height?: Responsive<Properties["height"]>;
+    minHeight?: Responsive<Properties["minHeight"]>;
+    maxHeight?: Responsive<Properties["maxHeight"]>;
 
-export interface SizingProps {
-    width?: Responsive<Size>;
-    minWidth?: Responsive<Size>;
-    maxWidth?: Responsive<Size>;
-    height?: Responsive<Size>;
-    minHeight?: Responsive<Size>;
-    maxHeight?: Responsive<Size>;
-
-    boxSizing?: Responsive<BoxSizing>;
+    boxSizing?: Responsive<Properties["boxSizing"]>;
 }

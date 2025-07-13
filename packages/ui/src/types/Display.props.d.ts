@@ -1,79 +1,15 @@
 import type { Responsive } from ".";
 
-export type Display =
-    | "block"
-    | "inline"
-    | "inline-block"
-    | "none"
-    | "contents"
-    | "flex"
-    | "inline-flex"
-    | "grid"
-    | "inline-grid"
-    | "flow"
-    | "flow-root"
-    | "table"
-    | "inline-table"
-    | "table-caption"
-    | "table-cell"
-    | "table-column"
-    | "table-column-group"
-    | "table-footer-group"
-    | "table-header-group"
-    | "table-row"
-    | "table-row-group"
-    | "ruby"
-    | "ruby-base"
-    | "ruby-text"
-    | "ruby-base-container"
-    | "ruby-text-container"
-    | "list-item"
-    | "run-in"
-    | "inherit"
-    | "initial"
-    | "unset"
-    | "revert";
+import { Properties } from "csstype";
 
-export type Overflow =
-    | "visible"
-    | "hidden"
-    | "clip"
-    | "scroll"
-    | "auto"
-    | "inherit"
-    | "initial"
-    | "unset"
-    | "revert";
+export interface HTMLDisplayProps {
+    display?: Responsive<Properties["display"]>;
 
-export type Visibility =
-    | "visible"
-    | "hidden"
-    | "collapse"
-    | "inherit"
-    | "initial"
-    | "unset"
-    | "revert";
+    overflow?: Responsive<Properties["overflow"]>;
+    overflowX?: Responsive<Properties["overflowX"]>;
+    overflowY?: Responsive<Properties["overflowY"]>;
 
-export type WhiteSpace =
-    | "normal"
-    | "nowrap"
-    | "pre"
-    | "pre-wrap"
-    | "pre-line"
-    | "break-spaces"
-    | "inherit"
-    | "initial"
-    | "unset"
-    | "revert";
+    visibility?: Responsive<Properties["visibility"]>;
 
-export interface DisplayProps {
-    display?: Responsive<Display>;
-
-    overflow?: Responsive<Overflow>;
-    overflowX?: Responsive<Overflow>;
-    overflowY?: Responsive<Overflow>;
-
-    visibility?: Responsive<Visibility>;
-
-    whiteSpace?: Responsive<WhiteSpace>;
+    whiteSpace?: Responsive<Properties["whiteSpace"]>;
 }

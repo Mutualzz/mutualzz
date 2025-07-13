@@ -1,75 +1,27 @@
 import type { Responsive } from "./index";
 
-export type FlexDirection = "row" | "row-reverse" | "column" | "column-reverse";
-export type FlexWrap = "nowrap" | "wrap" | "wrap-reverse";
-export type JustifyContent =
-    | "flex-start"
-    | "flex-end"
-    | "center"
-    | "space-between"
-    | "space-around"
-    | "space-evenly"
-    | "start"
-    | "end"
-    | "left"
-    | "right";
+import type { Properties } from "csstype";
 
-export type AlignContent =
-    | "stretch"
-    | "flex-start"
-    | "flex-end"
-    | "center"
-    | "space-between"
-    | "space-around"
-    | "space-evenly"
-    | "start"
-    | "end";
+export interface HTMLFlexboxProps {
+    flexDirection?: Responsive<Properties["flexDirection"]>;
+    direction?: Responsive<Properties["flexDirection"]>;
 
-export type Flex = "none" | "auto" | "initial" | "inherit" | string | number;
+    flexWrap?: Responsive<Properties["flexWrap"]>;
+    wrap?: Responsive<Properties["flexWrap"]>;
 
-export type AlignSelf =
-    | "auto"
-    | "stretch"
-    | "flex-start"
-    | "flex-end"
-    | "center"
-    | "baseline"
-    | "start"
-    | "end"
-    | "self-start"
-    | "self-end";
+    justifyContent?: Responsive<Properties["justifyContent"]>;
+    alignItems?: Responsive<Properties["alignItems"]>;
+    alignContent?: Responsive<Properties["alignContent"]>;
 
-export type AlignItems =
-    | "stretch"
-    | "flex-start"
-    | "flex-end"
-    | "center"
-    | "baseline"
-    | "start"
-    | "end"
-    | "self-start"
-    | "self-end";
+    order?: Responsive<Properties["order"]>;
 
-export interface FlexboxProps {
-    flexDirection?: Responsive<FlexDirection>;
-    direction?: Responsive<FlexDirection>;
+    flex?: Responsive<Properties["flex"]>;
 
-    flexWrap?: Responsive<FlexWrap>;
-    wrap?: Responsive<FlexWrap>;
+    flexGrow?: Responsive<Properties["flexGrow"]>;
+    grow?: Responsive<Properties["flexGrow"]>;
 
-    justifyContent?: Responsive<JustifyContent>;
-    alignItems?: Responsive<AlignItems>;
-    alignContent?: Responsive<AlignContent>;
+    flexShrink?: Responsive<Properties["flexShrink"]>;
+    shrink?: Responsive<Properties["flexShrink"]>;
 
-    order?: Responsive<number>;
-
-    flex?: Responsive<Flex>;
-
-    flexGrow?: Responsive<number>;
-    grow?: Responsive<number>;
-
-    flexShrink?: Responsive<number>;
-    shrink?: Responsive<number>;
-
-    alignSelf?: Responsive<AlignSelf>;
+    alignSelf?: Responsive<Properties["alignSelf"]>;
 }

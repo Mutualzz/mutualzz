@@ -1,45 +1,81 @@
 import type { Color, ColorLike, Responsive } from "./index";
 
-export interface BorderProps {
-    border?: Responsive<string>;
+import { Properties } from "csstype";
 
-    borderColor?: Responsive<Color | ColorLike>;
-    borderRadius?: Responsive<string | number>;
-    borderWidth?: Responsive<string | number>;
+export interface HTMLBorderProps {
+    border?: Responsive<Properties["border"]>;
 
-    borderTop?: Responsive<string>;
-    borderTopColor?: Responsive<Color | ColorLike>;
-    borderTopWidth?: Responsive<string | number>;
-    borderTopStyle?: Responsive<string>;
-    borderTopRadius?: Responsive<string | number>;
+    borderColor?: Responsive<Color | ColorLike | Properties["borderColor"]>;
+    borderRadius?: Responsive<Properties["borderRadius"]>;
+    borderWidth?: Responsive<Properties["borderWidth"]>;
 
-    borderRight?: Responsive<string>;
-    borderRightColor?: Responsive<Color | ColorLike>;
-    borderRightWidth?: Responsive<string | number>;
-    borderRightStyle?: Responsive<string>;
-    borderRightRadius?: Responsive<string | number>;
+    borderTop?: Responsive<Properties["borderTop"]>;
+    borderTopColor?: Responsive<
+        Color | ColorLike | Properties["borderTopColor"]
+    >;
+    borderTopWidth?: Responsive<Properties["borderTopWidth"]>;
+    borderTopStyle?: Responsive<Properties["borderTopStyle"]>;
+    borderTopRadius?: Responsive<
+        Properties["borderTopLeftRadius"] | Properties["borderTopRightRadius"]
+    >;
+    borderTopLeftRadius?: Responsive<Properties["borderTopLeftRadius"]>;
+    borderTopRightRadius?: Responsive<Properties["borderTopRightRadius"]>;
 
-    borderBottom?: Responsive<string>;
-    borderBottomColor?: Responsive<Color | ColorLike>;
-    borderBottomWidth?: Responsive<string | number>;
-    borderBottomStyle?: Responsive<string>;
-    borderBottomRadius?: Responsive<string | number>;
+    borderRight?: Responsive<Properties["borderRight"]>;
+    borderRightColor?: Responsive<
+        Color | ColorLike | Properties["borderRightColor"]
+    >;
+    borderRightWidth?: Responsive<Properties["borderRightWidth"]>;
+    borderRightStyle?: Responsive<Properties["borderRightStyle"]>;
+    borderRightRadius?: Responsive<
+        | Properties["borderRightTopRadius"]
+        | Properties["borderRightBottomRadius"]
+    >;
+    borderRightTopRadius?: Responsive<Properties["borderRightTopRadius"]>;
+    borderRightBottomRadius?: Responsive<Properties["borderRightBottomRadius"]>;
 
-    borderLeft?: Responsive<string>;
-    borderLeftColor?: Responsive<Color | ColorLike>;
-    borderLeftWidth?: Responsive<string | number>;
-    borderLeftStyle?: Responsive<string>;
-    borderLeftRadius?: Responsive<string | number>;
+    borderBottom?: Responsive<Properties["borderBottom"]>;
+    borderBottomColor?: Responsive<
+        Color | ColorLike | Properties["borderBottomColor"]
+    >;
+    borderBottomWidth?: Responsive<Properties["borderBottomWidth"]>;
+    borderBottomStyle?: Responsive<Properties["borderBottomStyle"]>;
+    borderBottomRadius?: Responsive<
+        | Properties["borderBottomLeftRadius"]
+        | Properties["borderBottomRightRadius"]
+    >;
+    borderBottomLeftRadius?: Responsive<Properties["borderBottomLeftRadius"]>;
+    borderBottomRightRadius?: Responsive<Properties["borderBottomRightRadius"]>;
 
-    borderX?: Responsive<string>;
-    borderXColor?: Responsive<Color | ColorLike>;
-    borderXWidth?: Responsive<string | number>;
-    borderXStyle?: Responsive<string>;
-    borderXRadius?: Responsive<string | number>;
+    borderLeft?: Responsive<Properties["borderLeft"]>;
+    borderLeftColor?: Responsive<
+        Color | ColorLike | Properties["borderLeftColor"]
+    >;
+    borderLeftWidth?: Responsive<Properties["borderLeftWidth"]>;
+    borderLeftStyle?: Responsive<Properties["borderLeftStyle"]>;
+    borderLeftRadius?: Responsive<
+        Properties["borderLeftTopRadius"] | Properties["borderLeftBottomRadius"]
+    >;
+    borderLeftTopRadius?: Responsive<Properties["borderLeftTopRadius"]>;
+    borderLeftBottomRadius?: Responsive<Properties["borderLeftBottomRadius"]>;
 
-    borderY?: Responsive<string>;
-    borderYColor?: Responsive<Color | ColorLike>;
-    borderYWidth?: Responsive<string | number>;
-    borderYStyle?: Responsive<string>;
-    borderYRadius?: Responsive<string | number>;
+    borderX?: Responsive<Properties["borderX"]>;
+    borderXColor?: Responsive<Color | ColorLike | Properties["borderXColor"]>;
+    borderXWidth?: Responsive<Properties["borderXWidth"]>;
+    borderXStyle?: Responsive<Properties["borderXStyle"]>;
+    borderXRadius?: Responsive<
+        Properties["borderLeftTopRadius"] | Properties["borderLeftBottomRadius"]
+    >;
+    borderXTopRadius?: Responsive<Properties["borderLeftTopRadius"]>;
+    borderXBottomRadius?: Responsive<Properties["borderLeftBottomRadius"]>;
+
+    borderY?: Responsive<Properties["borderY"]>;
+    borderYColor?: Responsive<Color | ColorLike | Properties["borderYColor"]>;
+    borderYWidth?: Responsive<Properties["borderYWidth"]>;
+    borderYStyle?: Responsive<Properties["borderYStyle"]>;
+    borderYRadius?: Responsive<
+        Properties["borderLeftTopRadius"] | Properties["borderLeftBottomRadius"]
+    >;
+    borderYTopRadius?: Responsive<Properties["borderLeftTopRadius"]>;
+    borderYBottomRadius?: Responsive<Properties["borderLeftBottomRadius"]>;
 }

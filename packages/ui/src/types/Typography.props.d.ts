@@ -1,105 +1,21 @@
-import type { Color, ColorLike, Responsive, TypographyColor } from "./index";
+import type { Responsive } from "./index";
 
-export type FontStyle =
-    | "normal"
-    | "italic"
-    | "oblique"
-    | "inherit"
-    | "initial"
-    | "unset"
-    | "revert";
+import { Properties } from "csstype";
 
-export type FontWeight =
-    | "normal"
-    | "bold"
-    | "lighter"
-    | "bolder"
-    | number
-    | "inherit"
-    | "initial"
-    | "unset"
-    | "revert";
+export interface HTMLTypographyProps {
+    fontFamily?: Responsive<Properties["fontFamily"]>;
+    fontSize?: Responsive<Properties["fontSize"]>;
+    fontStyle?: Responsive<Properties["fontStyle"]>;
+    fontWeight?: Responsive<Properties["fontWeight"]>;
+    letterSpacing?: Responsive<Properties["letterSpacing"]>;
+    lineHeight?: Responsive<Properties["lineHeight"]>;
+    textAlign?: Responsive<Properties["textAlign"]>;
+    textTransform?: Responsive<Properties["textTransform"]>;
 
-export type TextAlign =
-    | "left"
-    | "right"
-    | "center"
-    | "justify"
-    | "start"
-    | "end"
-    | "inherit"
-    | "initial"
-    | "unset"
-    | "revert";
+    textDecoration?: Responsive<Properties["textDecoration"]>;
+    textDecorationLine?: Responsive<Properties["textDecorationLine"]>;
+    textDecorationColor?: Responsive<Properties["textDecorationColor"]>;
+    textDecorationStyle?: Responsive<Properties["textDecorationStyle"]>;
 
-export type TextTransform =
-    | "none"
-    | "capitalize"
-    | "uppercase"
-    | "lowercase"
-    | "full-width"
-    | "full-size-kana"
-    | "inherit"
-    | "initial"
-    | "unset"
-    | "revert";
-
-export type TextDecoration =
-    | "none"
-    | "underline"
-    | "overline"
-    | "line-through"
-    | "blink"
-    | "inherit"
-    | "initial"
-    | "unset"
-    | "revert"
-    | string;
-
-export type TextDecorationLine =
-    | "none"
-    | "underline"
-    | "overline"
-    | "line-through"
-    | "blink" // deprecated
-    | "inherit"
-    | "initial"
-    | "unset"
-    | "revert";
-
-export type TextDecorationStyle =
-    | "solid"
-    | "double"
-    | "dotted"
-    | "dashed"
-    | "wavy"
-    | "inherit"
-    | "initial"
-    | "unset"
-    | "revert";
-
-export type TextOverflow =
-    | "clip"
-    | "ellipsis"
-    | "inherit"
-    | "initial"
-    | "unset"
-    | "revert";
-
-export interface TypographyProps {
-    fontFamily?: Responsive<string>;
-    fontSize?: Responsive<string | number>;
-    fontStyle?: Responsive<FontStyle>;
-    fontWeight?: Responsive<FontWeight>;
-    letterSpacing?: Responsive<string | number>;
-    lineHeight?: Responsive<string | number>;
-    textAlign?: Responsive<TextAlign>;
-    textTransform?: Responsive<TextTransform>;
-
-    textDecoration?: Responsive<TextDecoration>;
-    textDecorationLine?: Responsive<TextDecorationLine>;
-    textDecorationColor?: Responsive<Color | ColorLike | TypographyColor>;
-    textDecorationStyle?: Responsive<TextDecorationStyle>;
-
-    textOverflow?: Responsive<TextOverflow>;
+    textOverflow?: Responsive<Properties["textOverflow"]>;
 }
