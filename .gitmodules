@@ -1,0 +1,21 @@
+[submodule "packages/ui"]
+	path = packages/ui
+	url = https://github.com/Mutualzz/ui
+[submodule "packages/types"]
+	path = packages/types
+	url = https://github.com/Mutualzz/types
+[submodule "packages/logger"]
+	path = packages/logger
+	url = https://github.com/Mutualzz/logger
+[submodule "packages/eslint-config"]
+	path = packages/eslint-config
+	url = https://github.com/Mutualzz/eslint-config
+[submodule "apps/app"]
+	path = apps/app
+	url = https://github.com/Mutualzz/app
+[submodule "apps/gateway"]
+	path = apps/gateway
+	url = https://github.com/Mutualzz/gateway
+[submodule "apps/rest"]
+	path = apps/rest
+	url = https://github.com/Mutualzz/rest
