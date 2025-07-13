@@ -18,8 +18,7 @@ fi
 git submodule sync
 git submodule update --init --recursive
 
-
 ls -l packages
-ls -l apps || true
+ls -l apps
 
 git submodule status
