@@ -1,9 +1,6 @@
 #!/bin/bash
 set -euxo pipefail
 
-cd "$(dirname "$0")"
-
-
 git --version
 
 git submodule sync
