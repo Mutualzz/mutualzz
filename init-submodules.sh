@@ -5,7 +5,10 @@ cd "$(dirname "$0")"
 echo "CWD: $(pwd)"
 
 git --version
-git submodule status
+
+git submodule deinit -f apps/app packages/ui || true
+rm -rf apps/app packages/ui
+
 
 git submodule sync
 git submodule update --init --recursive --force apps/app packages/ui
