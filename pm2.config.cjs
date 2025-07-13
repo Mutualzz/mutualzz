@@ -3,7 +3,7 @@ module.exports = {
         {
             name: "mutualzz-rest",
             script: "bun",
-            args: ["run", "start:rest"],
+            args: ["run", "start"],
             interpreter: "none",
             cwd: "./apps/rest",
             env: {
@@ -13,7 +13,7 @@ module.exports = {
         {
             name: "mutualzz-gateway",
             script: "bun",
-            args: ["run", "start:gateway"],
+            args: ["run", "start"],
             interpreter: "none",
             cwd: "./apps/gateway",
             env: {
