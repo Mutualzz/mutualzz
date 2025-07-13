@@ -1,6 +1,9 @@
 #!/bin/bash
 set -euxo pipefail
 
+cd "$(dirname "$0")"
+echo "CWD: $(pwd)"
+
 echo "GITHUB_TOKEN: ${GITHUB_TOKEN:0:4}..."
 git --version
 git config --list
@@ -15,9 +18,7 @@ fi
 git submodule sync
 git submodule update --init --recursive
 
-echo "Submodule folders after init:"
 
-ls -a
 ls -l packages
 ls -l apps || true
 
