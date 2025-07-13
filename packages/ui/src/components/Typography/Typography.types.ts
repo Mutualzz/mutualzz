@@ -1,5 +1,5 @@
 import type { Color, ColorLike, TypographyLevel, Variant } from "@ui-types";
-import type { FontWeight } from "@ui-types/Typography.props";
+import type { Properties } from "csstype";
 import { type HTMLAttributes } from "react";
 
 export type TypographyVariant = Variant | "none";
@@ -16,7 +16,7 @@ export interface TypographyProps extends HTMLAttributes<HTMLSpanElement> {
      * This can be a predefined weight like "light", "normal", "medium", "bold", or a custom number.
      * It determines the thickness of the text.
      */
-    weight?: FontWeight;
+    weight?: Properties["fontWeight"];
     /**
      * Color or color-like value for the typography.
      * This can be a color name, hex code, or any valid color format, doesn't apply on "none" variant.

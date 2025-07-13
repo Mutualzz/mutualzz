@@ -1,12 +1,12 @@
 import type { HTMLAttributes } from "react";
-import type { BorderProps } from "./Border.props";
-import type { DisplayProps } from "./Display.props";
-import type { FlexboxProps } from "./Flexbox.props";
-import type { PositionsProps } from "./Positions.props";
-import type { ShadowsProps } from "./Shadows.props";
-import type { SizingProps } from "./Sizing.props";
-import type { SpacingProps } from "./Spacing.props";
-import type { TypographyProps } from "./Typography.props";
+import type { HTMLBorderProps } from "./Border.props";
+import type { HTMLDisplayProps } from "./Display.props";
+import type { HTMLFlexboxProps } from "./Flexbox.props";
+import type { HTMLPositionsProps } from "./Positions.props";
+import type { HTMLShadowsProps } from "./Shadows.props";
+import type { HTMLSizingProps } from "./Sizing.props";
+import type { HTMLSpacingProps } from "./Spacing.props";
+import type { HTMLTypographyProps } from "./Typography.props";
 
 export type Hex = `#${string}`;
 export type RGB = `rgb(${number}, ${number}, ${number})`;
@@ -59,15 +59,15 @@ export type Responsive<T> = T | Partial<Record<Breakpoint, T>>;
 export type ThemeMode = "light" | "dark" | "system";
 
 export type SystemProps = HTMLAttributes<HTMLElement> &
-    BorderProps &
-    DisplayProps &
-    FlexboxProps &
-    // PalleteProps &
-    PositionsProps &
-    ShadowsProps &
-    SizingProps &
-    SpacingProps &
-    TypographyProps;
+    HTMLBorderProps &
+    HTMLDisplayProps &
+    HTMLFlexboxProps &
+    // HTMLPalleteProps &
+    HTMLPositionsProps &
+    HTMLShadowsProps &
+    HTMLSizingProps &
+    HTMLSpacingProps &
+    HTMLTypographyProps;
 
 export interface MZTheme {
     id: string;
