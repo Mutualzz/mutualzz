@@ -10,9 +10,6 @@
 [submodule "packages/eslint-config"]
 	path = packages/eslint-config
 	url = https://github.com/Mutualzz/eslint-config
-[submodule "apps/app"]
-	path = apps/app
-	url = https://github.com/Mutualzz/app
 [submodule "apps/gateway"]
 	path = apps/gateway
 	url = https://github.com/Mutualzz/gateway
