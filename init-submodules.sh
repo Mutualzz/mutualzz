@@ -21,4 +21,6 @@ git submodule update --init --recursive
 ls -l packages
 ls -l apps
 
+cat .gitmodules
+
 git submodule status
