@@ -5,6 +5,9 @@
             "dependsOn": ["^build"],
             "inputs": ["$TURBO_DEFAULT$", ".env*"]
         },
+        "check-types": {
+            "dependsOn": []
+        },
         "dev": {
             "cache": false,
             "persistent": true
