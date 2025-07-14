@@ -218,6 +218,7 @@
         "culori": "^4.0.1",
       },
       "devDependencies": {
+        "@emotion/babel-plugin": "^11.13.5",
         "@types/react": "^19.1.8",
         "@types/react-dom": "^19.1.6",
         "bunchee": "^6.5.4",
