@@ -28,6 +28,7 @@ build
 dist
 
 logs
+*.log
 
 
 # Debug
