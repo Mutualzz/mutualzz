@@ -26,7 +26,7 @@ jobs:
               run: bun install -D netlify-cli
 
             - name: Build project
-              run: bunx turbo run build
+              run: bunx turbo run build --filter="./packages/ui" --filter="./apps/app" --filter="./packages/types"
 
             # Deploy to Netlify (using Netlify CLI)
             - name: Deploy to Netlify
