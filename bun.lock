@@ -257,6 +257,15 @@
         "react-dom": "^19.1.1",
       },
     },
+    "packages/units": {
+      "name": "@mutualzz/units",
+      "devDependencies": {
+        "@types/bun": "latest",
+      },
+      "peerDependencies": {
+        "typescript": "^5",
+      },
+    },
   },
   "trustedDependencies": [
     "bcrypt",
@@ -584,6 +593,8 @@
     "@mutualzz/types": ["@mutualzz/types@workspace:packages/types"],
 
     "@mutualzz/ui": ["@mutualzz/ui@workspace:packages/ui"],
+
+    "@mutualzz/units": ["@mutualzz/units@workspace:packages/units"],
 
     "@napi-rs/wasm-runtime": ["@napi-rs/wasm-runtime@0.2.12", "", { "dependencies": { "@emnapi/core": "^1.4.3", "@emnapi/runtime": "^1.4.3", "@tybys/wasm-util": "^0.10.0" } }, "sha512-ZVWUcfwY4E/yPitQJl481FjFo3K22D6qF0DuFH6Y/nbnE11GY5uguDxZMGXPQ8WQ0128MXQD7TnfHyK4oWoIJQ=="],
 
