@@ -25,8 +25,11 @@ jobs:
                   git submodule update --init apps/app
                   git submodule update --init packages/types
 
-            - name: Install dependencies (and add netlify-cli for later)
+            - name: Install netlify-cli for later
               run: pnpm install -w -D netlify-cli
+
+            - name: Install all dependencies (just in case)
+              run: pnpm i
 
             - name: Build project
               run: pnpm turbo run build --filter="./packages/ui" --filter="./apps/app" --filter="./packages/types"
