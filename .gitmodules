@@ -7,8 +7,8 @@
 [submodule "packages/logger"]
 	path = packages/logger
 	url = https://github.com/Mutualzz/logger
-[submodule "packages/eslint-config"]
-	path = packages/eslint-config
+[submodule "tooling/eslint-config"]
+	path = tooling/eslint-config
 	url = https://github.com/Mutualzz/eslint-config
 [submodule "apps/gateway"]
 	path = apps/gateway
