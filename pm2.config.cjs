@@ -2,8 +2,8 @@ module.exports = {
     apps: [
         {
             name: "mutualzz-rest",
-            script: "bun",
-            args: ["run", "start"],
+            script: "pnpm",
+            args: ["start"],
             interpreter: "none",
             cwd: "./apps/rest",
             env: {
@@ -12,8 +12,8 @@ module.exports = {
         },
         {
             name: "mutualzz-gateway",
-            script: "bun",
-            args: ["run", "start"],
+            script: "pnpm",
+            args: ["start"],
             interpreter: "none",
             cwd: "./apps/gateway",
             env: {
