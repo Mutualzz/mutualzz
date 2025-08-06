@@ -5,10 +5,10 @@
 	path = packages/types
 	url = https://github.com/Mutualzz/types
 [submodule "packages/logger"]
-	path = packages/logger
+	path = tooling/logger
 	url = https://github.com/Mutualzz/logger
 [submodule "packages/eslint-config"]
-	path = packages/eslint-config
+	path = tooling/eslint-config
 	url = https://github.com/Mutualzz/eslint-config
 [submodule "apps/gateway"]
 	path = apps/gateway

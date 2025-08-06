@@ -1,32 +1,35 @@
 {
-    "name": "mutualzz",
-    "private": true,
-    "scripts": {
-        "build": "turbo run build",
-        "dev": "turbo run dev",
-        "lint": "turbo run lint",
-        "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-        "check-types": "turbo run check-types --filter=@mutualzz/rest --filter=@mutualzz/gateway --filter=@mutualzz/logger --filter=@mutualzz/ui --filter=@mutualzz/app",
-        "prestart": "bun install && turbo run build --filter=@mutualzz/rest --filter=@mutualzz/gateway --filter=@mutualzz/logger",
-        "start": "pm2 start ./pm2.config.cjs --env production",
-        "start:rest": "bun run ./apps/rest/dist/index.js",
-        "start:gateway": "bun run ./apps/gateway/dist/index.js"
-    },
-    "devDependencies": {
-        "prettier": "^3.6.2",
-        "prettier-plugin-organize-imports": "^4.2.0",
-        "turbo": "^2.5.5",
-        "typescript": "5.9.2"
-    },
-    "engines": {
-        "node": ">=22"
-    },
-    "packageManager": "bun@1.2.19",
-    "workspaces": [
-        "apps/*",
-        "packages/*"
-    ],
-    "trustedDependencies": [
-        "@sentry/cli"
-    ]
+  "name": "mutualzz",
+  "private": true,
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "check-types": "turbo run check-types --filter=@mutualzz/rest --filter=@mutualzz/gateway --filter=@mutualzz/logger --filter=@mutualzz/ui --filter=@mutualzz/app",
+    "prestart": "bun install && turbo run build --filter=@mutualzz/rest --filter=@mutualzz/gateway --filter=@mutualzz/logger",
+    "start": "pm2 start ./pm2.config.cjs --env production",
+    "start:rest": "bun run ./apps/rest/dist/index.js",
+    "start:gateway": "bun run ./apps/gateway/dist/index.js"
+  },
+  "devDependencies": {
+    "prettier": "^3.6.2",
+    "prettier-plugin-organize-imports": "^4.2.0",
+    "turbo": "^2.5.5",
+    "typescript": "5.9.2"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "bun@1.2.19",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "trustedDependencies": [
+    "@sentry/cli",
+    "bufferutil",
+    "unrs-resolver",
+    "zlib-sync"
+  ]
 }
