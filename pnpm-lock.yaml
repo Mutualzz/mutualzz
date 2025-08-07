@@ -35,6 +35,9 @@ importers:
       '@mutualzz/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      '@mutualzz/validators':
+        specifier: workspace:*
+        version: link:../../packages/validators
       '@sentry/node':
         specifier: ^10.1.0
         version: 10.2.0
@@ -508,6 +511,19 @@ importers:
       tsc-alias:
         specifier: ^1.8.16
         version: 1.8.16
+
+  packages/validators:
+    dependencies:
+      emojibase-regex:
+        specifier: ^16.0.0
+        version: 16.0.0
+      zod:
+        specifier: ^4.0.15
+        version: 4.0.15
+    devDependencies:
+      bunchee:
+        specifier: ^6.6.0
+        version: 6.6.0(typescript@5.9.2)
 
   tooling/eslint-config:
     devDependencies:

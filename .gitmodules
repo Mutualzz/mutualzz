@@ -19,3 +19,6 @@
 [submodule "apps/app"]
 	path = apps/app
 	url = https://github.com/Mutualzz/app
+[submodule "packages/validators"]
+	path = packages/validators
+	url = https://github.com/Mutualzz/validators
