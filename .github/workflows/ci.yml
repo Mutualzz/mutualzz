@@ -24,6 +24,7 @@ jobs:
                   git submodule update --init packages/ui
                   git submodule update --init apps/app
                   git submodule update --init packages/types
+                  git submodule update --init packages/validators
 
             - name: Install netlify-cli for later
               run: pnpm install -w -D netlify-cli
@@ -32,7 +33,7 @@ jobs:
               run: pnpm i
 
             - name: Build project
-              run: pnpm turbo run build --filter="./packages/ui" --filter="./apps/app" --filter="./packages/types"
+              run: pnpm turbo run build --filter="./packages/ui" --filter="./apps/app" --filter="./packages/types" --filter="./packages/validators"
 
             # Deploy to Netlify (using Netlify CLI)
             - name: Deploy to Netlify
