@@ -6,8 +6,8 @@
             "inputs": ["$TURBO_DEFAULT$", ".env*"],
             "outputs": ["dist/**", "build/**"]
         },
-        "check-types": {
-            "dependsOn": ["^check-types"],
+        "typecheck": {
+            "dependsOn": ["^typecheck"],
             "outputs": []
         },
         "dev": {

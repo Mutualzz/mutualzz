@@ -6,7 +6,7 @@
         "dev": "turbo run dev",
         "lint": "turbo run lint",
         "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-        "check-types": "turbo run check-types --filter=@mutualzz/rest --filter=@mutualzz/gateway --filter=@mutualzz/logger --filter=@mutualzz/ui --filter=@mutualzz/app",
+        "typecheck": "turbo run typecheck --filter=@mutualzz/rest --filter=@mutualzz/gateway --filter=@mutualzz/logger --filter=@mutualzz/ui --filter=@mutualzz/app",
         "prestart": "pnpm install && turbo run build --filter=@mutualzz/rest --filter=@mutualzz/gateway --filter=@mutualzz/logger",
         "start": "pm2 start ./pm2.config.cjs --env production",
         "start:rest": "node ./apps/rest/dist/index.js",
