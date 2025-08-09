@@ -7,10 +7,10 @@
         "lint": "turbo run lint",
         "format": "prettier --write \"**/*.{ts,tsx,md}\"",
         "typecheck": "turbo run typecheck",
-        "prestart": "pnpm install && turbo run build --filter=@mutualzz/rest --filter=@mutualzz/gateway --filter=@mutualzz/logger",
-        "start": "pm2 start ./pm2.config.cjs --env production",
-        "start:rest": "node ./apps/rest/dist/index.js",
-        "start:gateway": "node ./apps/gateway/dist/index.js"
+        "prestart": "pnpm install && pnpm build:packages && pnpm build:server",
+        "build:server": "turbo run build --filter=apps/server",
+        "build:packages": "turbo run build --filter=packages/logger --filter=packages/validators --filter=packages/types",
+        "start": "pm2 start ./pm2.config.cjs"
     },
     "devDependencies": {
         "prettier": "^3.6.2",
