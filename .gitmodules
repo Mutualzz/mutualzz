@@ -17,5 +17,5 @@
 	path = packages/validators
 	url = https://github.com/Mutualzz/validators
 [submodule "apps/server"]
-	path = apps/serverw
+	path = apps/server
 	url = https://github.com/Mutualzz/server
