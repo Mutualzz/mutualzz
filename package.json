@@ -8,8 +8,8 @@
         "format": "prettier --write \"**/*.{ts,tsx,md}\"",
         "typecheck": "turbo run typecheck",
         "prestart": "pnpm install && pnpm build:packages && pnpm build:server",
-        "build:server": "turbo run build --filter=apps/server",
-        "build:packages": "turbo run build --filter=packages/logger --filter=packages/validators --filter=packages/types",
+        "build:server": "turbo run build --filter=\"./apps/server\"",
+        "build:packages": "turbo run build --filter=\"./packages/logger\" --filter=\"./packages/validators\" --filter=\"./packages/types\"",
         "start": "pm2 start ./pm2.config.cjs"
     },
     "devDependencies": {
