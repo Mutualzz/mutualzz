@@ -21,10 +21,10 @@ jobs:
 
             - name: Init needed submodules
               run: |
-                  git config --global url."https://${GH_PAT}:@github.com/".insteadOf "https://github.com/"
                   git submodule update --init packages/ui
                   git submodule update --init apps/app
                   git submodule update --init packages/types
+                  git config --global url."https://${GH_PAT}:@github.com/".insteadOf "https://github.com/"
                   git submodule update --init packages/validators
               env:
                   GH_PAT: ${{ secrets.GH_PAT }}
