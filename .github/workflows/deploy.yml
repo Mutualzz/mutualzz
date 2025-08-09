@@ -13,16 +13,6 @@ jobs:
               with:
                   submodules: false
 
-            - name: Setup SSH Agent
-              uses: webfactory/ssh-agent@v0.9.0
-              with:
-                  ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-            - name: Added github.comS to known_hosts
-              run: |
-                  mkdir -p ~/.ssh
-                  ssh-keyscan github.com >> ~/.ssh/known_hosts
-
             - name: Enable Corepack (for pnpm)
               run: corepack enable
 
@@ -31,10 +21,13 @@ jobs:
 
             - name: Init needed submodules
               run: |
+                  git config --global url."https://${GH_PAT}:@github.com/".insteadOf "https://github.com/"
                   git submodule update --init packages/ui
                   git submodule update --init apps/app
                   git submodule update --init packages/types
                   git submodule update --init packages/validators
+              env:
+                  GH_PAT: ${{ secrets.GH_PAT }}
 
             - name: Install netlify-cli for later
               run: pnpm install -w -D netlify-cli
