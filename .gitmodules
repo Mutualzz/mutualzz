@@ -10,15 +10,12 @@
 [submodule "tooling/eslint-config"]
 	path = tooling/eslint-config
 	url = https://github.com/Mutualzz/eslint-config
-[submodule "apps/gateway"]
-	path = apps/gateway
-	url = https://github.com/Mutualzz/gateway
-[submodule "apps/rest"]
-	path = apps/rest
-	url = https://github.com/Mutualzz/rest
 [submodule "apps/app"]
 	path = apps/app
 	url = https://github.com/Mutualzz/app
 [submodule "packages/validators"]
 	path = packages/validators
 	url = https://github.com/Mutualzz/validators
+[submodule "apps/server"]
+	path = apps/serverw
+	url = https://github.com/Mutualzz/server
