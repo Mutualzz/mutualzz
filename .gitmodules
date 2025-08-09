@@ -1,21 +1,21 @@
 [submodule "packages/ui"]
 	path = packages/ui
-	url = git@github.com:Mutualzz/ui.git
+	url = https://github.com/Mutualzz/ui.git
 [submodule "packages/types"]
 	path = packages/types
-	url = git@github.com:Mutualzz/types.git
+	url = https://github.com/Mutualzz/types.git
 [submodule "packages/logger"]
 	path = packages/logger
-	url = git@github.com:Mutualzz/logger.git
+	url = https://github.com/Mutualzz/logger.git
 [submodule "tooling/eslint-config"]
 	path = tooling/eslint-config
-	url = git@github.com:Mutualzz/eslint-config.git
+	url = https://github.com/Mutualzz/eslint-config.git
 [submodule "apps/app"]
 	path = apps/app
-	url = git@github.com:Mutualzz/app.git
+	url = https://github.com/Mutualzz/app.git
 [submodule "packages/validators"]
 	path = packages/validators
-	url = git@github.com:Mutualzz/validators.git
+	url = https://github.com/Mutualzz/validators.git
 [submodule "apps/server"]
 	path = apps/server
-	url = git@github.com:Mutualzz/server.git
+	url = https://github.com/Mutualzz/server.git
