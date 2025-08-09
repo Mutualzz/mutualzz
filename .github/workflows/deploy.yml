@@ -19,12 +19,15 @@ jobs:
             - name: Prepare pnpm
               run: corepack prepare pnpm@10.14.0 --activate
 
-            - name: Init needed submodules
+            - name: Init public submodules
               run: |
                   git submodule update --init packages/ui
-                  git submodule update --init apps/app
                   git submodule update --init packages/types
+
+            - name: Init private submodules
+              run: |
                   git config --global url."https://${GH_PAT}:@github.com/".insteadOf "https://github.com/"
+                  git submodule update --init apps/app
                   git submodule update --init packages/validators
               env:
                   GH_PAT: ${{ secrets.GH_PAT }}
