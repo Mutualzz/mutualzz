@@ -4,4 +4,17 @@ packages:
   - tooling/*
 
 onlyBuiltDependencies:
+  - '@parcel/watcher'
+  - '@sentry-internal/node-cpu-profiler'
+  - '@sentry/cli'
+  - '@swc/core'
+  - bcrypt
+  - bufferutil
+  - core-js
+  - core-js-pure
+  - deasync
   - esbuild
+  - fsevents
+  - parcel-bundler
+  - unrs-resolver
+  - zlib-sync
