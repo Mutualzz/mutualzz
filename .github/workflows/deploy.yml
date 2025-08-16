@@ -1,48 +1,55 @@
 name: Build and Deploy to Netlify
 
 on:
-    push:
-        branches:
-            - master
+  push:
+    branches:
+      - master
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
-              with:
-                  submodules: false
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
 
-            - name: Enable Corepack (for pnpm)
-              run: corepack enable
+        # Setup Node.js
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: "pnpm"
 
-            - name: Prepare pnpm
-              run: corepack prepare pnpm@10.14.0 --activate
+      - name: Enable Corepack (for pnpm)
+        run: corepack enable
 
-            - name: Init public submodules
-              run: |
-                  git submodule update --init packages/ui
-                  git submodule update --init packages/types
+      - name: Prepare pnpm
+        run: corepack prepare pnpm@10.14.0 --activate
 
-            - name: Init private submodules
-              run: |
-                  git config --global url."https://${GH_PAT}:@github.com/".insteadOf "https://github.com/"
-                  git submodule update --init apps/app
-                  git submodule update --init packages/validators
-              env:
-                  GH_PAT: ${{ secrets.GH_PAT }}
+      - name: Init public submodules
+        run: |
+          git submodule update --init packages/ui
+          git submodule update --init packages/types
 
-            - name: Install netlify-cli for later
-              run: pnpm install -w -D netlify-cli
+      - name: Init private submodules
+        run: |
+          git config --global url."https://${GH_PAT}:@github.com/".insteadOf "https://github.com/"
+          git submodule update --init apps/app
+          git submodule update --init packages/validators
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
 
-            - name: Install all dependencies (just in case)
-              run: pnpm i
+      - name: Install netlify-cli for later
+        run: pnpm install -w -D netlify-cli
 
-            - name: Build project
-              run: pnpm turbo run build --filter="./packages/ui" --filter="./apps/app" --filter="./packages/types" --filter="./packages/validators"
+      - name: Install all dependencies (just in case)
+        run: pnpm i
 
-            # Deploy to Netlify (using Netlify CLI)
-            - name: Deploy to Netlify
-              env:
-                  NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-              run: pnpm exec netlify deploy --prod --site=94e51d96-ca0f-4128-bda5-7f22eb07fcc5 --filter=@mutualzz/app --dir=apps/app/dist --message "${{ github.event.head_commit.message }}"
+      - name: Build project
+        run: pnpm turbo run build --filter="./packages/ui" --filter="./apps/app" --filter="./packages/types" --filter="./packages/validators"
+
+      # Deploy to Netlify (using Netlify CLI)
+      - name: Deploy to Netlify
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        run: pnpm exec netlify deploy --prod --site=94e51d96-ca0f-4128-bda5-7f22eb07fcc5 --filter=@mutualzz/app --dir=apps/app/dist --message "${{ github.event.head_commit.message }}"
