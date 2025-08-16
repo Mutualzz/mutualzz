@@ -93,7 +93,7 @@ jobs:
         with:
           tagName: __VERSION__
           releaseName: "Mutualzz __VERSION__"
-          releaseBody: PATCH_NOTES.md
+          releaseBody: CHANGELOG.md
           releaseDraft: false                 # Set to true if testing
           prerelease: false
           includeRelease: true
