@@ -55,6 +55,19 @@ jobs:
         with:
           targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
 
+      - name: Init public submodules
+        run: |
+          git submodule update --init packages/ui
+          git submodule update --init packages/types
+
+      - name: Init private submodules
+        run: |
+          git config --global url."https://${GH_PAT}:@github.com/".insteadOf "https://github.com/"
+          git submodule update --init apps/app
+          git submodule update --init packages/validators
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+
       # Rust cache
       - name: Rust cache
         uses: swatinem/rust-cache@v2
