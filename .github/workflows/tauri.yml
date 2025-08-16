@@ -84,6 +84,32 @@ jobs:
         working-directory: apps/app
         run: pnpm run ci:prebuild
 
+      - name: Generate patch notes
+        id: patch_notes
+        run: |
+            # Main repo commits
+            echo "## Main repository patch notes" > patch_notes.md
+            git log ${{ github.event.before }}..${{ github.event.after }} --pretty=format:"- %h %s (%an)" >> patch_notes.md
+              
+            # Submodules
+            echo "" >> patch_notes.md
+            for sub in $(git config --file .gitmodules --get-regexp path | awk '{ print $2 }'); do
+              echo "## Submodule $sub patch notes" >> patch_notes.md
+              pushd $sub
+              # Get previous and current commit for this push
+              PREV=$(git rev-parse HEAD@{1} || echo HEAD)
+              CUR=$(git rev-parse HEAD)
+              git log $PREV..$CUR --pretty=format:"- %h %s (%an)" >> ../patch_notes.md
+              popd
+              echo "" >> patch_notes.md
+            done
+              
+            # Export patch notes to a variable
+            PATCH_BODY=$(cat patch_notes.md)
+            echo "patch_body<<EOF" >> $GITHUB_ENV
+            echo "$PATCH_BODY" >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
+
       # Build and release Tauri app
       - uses: tauri-apps/tauri-action@v0
         env:
@@ -92,7 +118,7 @@ jobs:
         with:
           tagName: mz-__VERSION__
           releaseName: "Mutualzz __VERSION__"
-          releaseBody: "See the assets to download this version and install."
+          releaseBody: ${{ env.patch_body }}
           releaseDraft: false                 # Set to true if testing
           prerelease: false
           includeRelease: true
