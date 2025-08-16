@@ -30,7 +30,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
             fetch-depth: 0  # Fetch all history for accurate versioning
-            submodules: recursive  # Initialize submodules
+            submodules: false  # Don't initialize submodules, we do that later
 
       # Install system dependencies for Linux
       - name: Install dependencies (Linux only)
