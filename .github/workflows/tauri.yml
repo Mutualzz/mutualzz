@@ -90,8 +90,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
         with:
-          tagName: mz-v__VERSION__
-          releaseName: "Mutualzz v__VERSION__"
+          tagName: mz-__VERSION__
+          releaseName: "Mutualzz __VERSION__"
           releaseBody: "See the assets to download this version and install."
           releaseDraft: false                 # Set to true if testing
           prerelease: false
