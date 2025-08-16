@@ -79,6 +79,7 @@ jobs:
             git fetch --unshallow || true
             popd
           done
+        shell: bash
 
       # Rust cache
       - name: Rust cache
@@ -119,6 +120,7 @@ jobs:
             echo "patch_body<<EOF" >> $GITHUB_ENV
             echo "$PATCH_BODY" >> $GITHUB_ENV
             echo "EOF" >> $GITHUB_ENV
+        shell: bash
       
 
       # Build and release Tauri app
