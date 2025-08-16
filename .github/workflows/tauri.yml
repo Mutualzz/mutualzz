@@ -67,6 +67,7 @@ jobs:
           git submodule update --init packages/validators
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
+        shell: bash
 
       # Rust cache
       - name: Rust cache
