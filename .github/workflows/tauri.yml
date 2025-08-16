@@ -28,6 +28,9 @@ jobs:
     steps:
       # Checkout repository
       - uses: actions/checkout@v4
+        with:
+            fetch-depth: 0  # Fetch all history for accurate versioning
+            submodules: recursive  # Initialize submodules
 
       # Install system dependencies for Linux
       - name: Install dependencies (Linux only)
@@ -69,6 +72,14 @@ jobs:
           GH_PAT: ${{ secrets.GH_PAT }}
         shell: bash
 
+      - name: Unshallow submodules
+        run: |
+          for sub in $(git config --file .gitmodules --get-regexp path | awk '{print $2}'); do
+            pushd $sub
+            git fetch --unshallow || true
+            popd
+          done
+
       # Rust cache
       - name: Rust cache
         uses: swatinem/rust-cache@v2
@@ -87,10 +98,9 @@ jobs:
       - name: Generate patch notes
         id: patch_notes
         run: |
-            # Main repo commits
             echo "## Main repository patch notes" > patch_notes.md
             git log ${{ github.event.before }}..${{ github.event.after }} --pretty=format:"- %h %s (%an)" >> patch_notes.md
-              
+            
             # Submodules
             echo "" >> patch_notes.md
             for sub in $(git config --file .gitmodules --get-regexp path | awk '{ print $2 }'); do
@@ -103,12 +113,13 @@ jobs:
               popd
               echo "" >> patch_notes.md
             done
-              
-            # Export patch notes to a variable
+            
+            # Export patch notes
             PATCH_BODY=$(cat patch_notes.md)
             echo "patch_body<<EOF" >> $GITHUB_ENV
             echo "$PATCH_BODY" >> $GITHUB_ENV
             echo "EOF" >> $GITHUB_ENV
+      
 
       # Build and release Tauri app
       - uses: tauri-apps/tauri-action@v0
@@ -116,7 +127,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
         with:
-          tagName: mz-__VERSION__
+          tagName: __VERSION__
           releaseName: "Mutualzz __VERSION__"
           releaseBody: ${{ env.patch_body }}
           releaseDraft: false                 # Set to true if testing
