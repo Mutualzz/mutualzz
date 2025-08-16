@@ -59,7 +59,7 @@ jobs:
       - name: Rust cache
         uses: swatinem/rust-cache@v2
         with:
-          workspaces: "./apps/app/src-tauri -> target"
+          workspaces: "apps/app/src-tauri -> target"
 
       # Install frontend dependencies
       - name: Install frontend dependencies
@@ -67,6 +67,7 @@ jobs:
 
       # Pre-build tasks (version generator, etc.)
       - name: Run pre-build tasks
+        working-directory: apps/app
         run: pnpm run ci:prebuild
 
       # Build and release Tauri app
@@ -75,13 +76,15 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
         with:
-          tagName: "v__VERSION__"             # Will be replaced automatically with app version
+          tagName: "v__VERSION__"
           releaseName: "Mutualzz v__VERSION__"
           releaseBody: "See assets to download this version."
           releaseDraft: false                 # Set to true if testing
           prerelease: false
-          args: ${{ matrix.args }}
+          args: "cd apps/app && ${{ matrix.args }}"
+
 
       # Optional: list generated files for debugging
       - name: List built binaries
+        working-directory: apps/app
         run: ls -R src-tauri/target/release/bundle
