@@ -90,9 +90,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
         with:
-          tagName: "v__VERSION__"
-          releaseName: "Mutualzz v__VERSION__"
-          releaseBody: "See assets to download this version."
+          tagName: client-__BRANCH__-v__VERSION__
+          releaseName: "Mutualzz v__VERSION__ (__BRANCH__)"
+          releaseBody: "See the assets to download this version and install. The current commit is __SHA__."
           releaseDraft: false                 # Set to true if testing
           prerelease: false
+          includeRelease: true
+          includeUpdaterJson: true
           args: ${{ matrix.args }}
