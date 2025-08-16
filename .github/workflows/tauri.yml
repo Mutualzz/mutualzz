@@ -83,6 +83,16 @@ jobs:
       - name: Run pre-build tasks
         working-directory: apps/app
         run: pnpm run ci:prebuild
+
+      - id: changelog
+        run: |
+          if [ -f CHANGELOG.md ]; then
+            echo "body<<EOF" >> $GITHUB_OUTPUT
+            cat CHANGELOG.md >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          else
+            echo "body=" >> $GITHUB_OUTPUT
+          fi
       
 
       # Build and release Tauri app
@@ -93,7 +103,7 @@ jobs:
         with:
           tagName: __VERSION__
           releaseName: "Mutualzz __VERSION__"
-          releaseBody: CHANGELOG.md
+          releaseBody: ${{ steps.changelog.outputs.body }}
           releaseDraft: false                 # Set to true if testing
           prerelease: false
           includeRelease: true
