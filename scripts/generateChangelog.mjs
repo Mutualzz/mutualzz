@@ -85,16 +85,16 @@ function main() {
     }
 
     if (submodulesMarkdown.length === 0) {
-        console.warn("⚠️ No changes found. Not going to write patch notes.");
+        console.warn("⚠️ No changes found. Not going to write changelog.");
         return;
     }
 
-    const markdown = "# Patch Notes\n\n" + submodulesMarkdown;
+    const markdown = "# Changelog\n\n" + submodulesMarkdown;
 
     // --- Write markdown file ---
-    const outputFile = process.argv[2] || "PATCH_NOTES.md";
+    const outputFile = process.argv[2] || "CHANGELOG.md";
     fs.writeFileSync(outputFile, markdown);
-    console.log(`✅ Patch notes written to ${outputFile}`);
+    console.log(`✅ Changelog written to ${outputFile}`);
 }
 
 main();

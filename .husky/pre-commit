@@ -1,17 +1,26 @@
 #!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
 
-# Generate patch notes
-pnpm run gen-patch-notes
+# Generate changelog
+pnpm run gen-changelog
 
-# Only stage PATCH_NOTES.md if it exists and has changes
-if [ -f "PATCH_NOTES.md" ]; then
-  if ! git diff --quiet PATCH_NOTES.md; then
-    git add PATCH_NOTES.md
-    echo "PATCH_NOTES.md updated and staged."
-  else
-    echo "PATCH_NOTES.md unchanged, skipping."
-  fi
+CHANGELOG_FILE="CHANGELOG.md"
+
+# Check if file exists
+if [ ! -f "CHANGELOG_FILE" ]; then
+  echo "CHANGELOG_FILE not found, skipping."
+  exit 0
+fi
+
+# Check if file is empty
+if [ ! -s "CHANGELOG_FILE" ]; then
+  echo "CHANGELOG_FILE is empty, skipping."
+  exit 0
+fi
+
+# Check if file has changes compared to HEAD (including submodules)
+if ! git diff --quiet --ignore-submodules=none HEAD -- "CHANGELOG_FILE"; then
+  git add "CHANGELOG_FILE"
+  echo "CHANGELOG_FILE updated and staged."
 else
-  echo "PATCH_NOTES.md not found, skipping."
+  echo "CHANGELOG_FILE unchanged, skipping."
 fi

@@ -11,7 +11,7 @@
     "build:server": "turbo run build --filter=\"./apps/server\"",
     "build:packages": "turbo run build --filter=\"./packages/logger\" --filter=\"./packages/validators\" --filter=\"./packages/types\"",
     "start": "pm2 start ./pm2.config.cjs",
-    "gen-patch-notes": "node scripts/generatePatchNotes.mjs",
+    "gen-changelog": "node scripts/generateChangelog.mjs",
     "prepare": "husky"
   },
   "devDependencies": {
