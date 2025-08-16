@@ -1,1 +1,17 @@
-pnpm run gen-patch-notes && git add PATCH_NOTES.md
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Generate patch notes
+pnpm run gen-patch-notes
+
+# Only stage PATCH_NOTES.md if it exists and has changes
+if [ -f "PATCH_NOTES.md" ]; then
+  if ! git diff --quiet PATCH_NOTES.md; then
+    git add PATCH_NOTES.md
+    echo "PATCH_NOTES.md updated and staged."
+  else
+    echo "PATCH_NOTES.md unchanged, skipping."
+  fi
+else
+  echo "PATCH_NOTES.md not found, skipping."
+fi
