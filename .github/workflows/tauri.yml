@@ -101,4 +101,4 @@ jobs:
       # Optional: list generated files for debugging
       - name: List built binaries
         working-directory: apps/app
-        run: ls -R src-tauri/target/release/bundle
+        run: ls -R ./src-tauri/target/release/bundle
