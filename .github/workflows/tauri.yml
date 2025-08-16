@@ -96,9 +96,3 @@ jobs:
           releaseDraft: false                 # Set to true if testing
           prerelease: false
           args: ${{ matrix.args }}
-
-
-      # Optional: list generated files for debugging
-      - name: List built binaries
-        working-directory: apps/app
-        run: ls -R ./src-tauri/target/release/bundle
