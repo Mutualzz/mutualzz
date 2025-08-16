@@ -75,12 +75,9 @@ jobs:
         with:
           workspaces: "apps/app/src-tauri -> target"
 
-      # Install frontend dependencies
-      - name: Install frontend dependencies
+      # Install dependencies
+      - name: Install dependencies
         run: pnpm install
-
-      - name: Build project
-        run: pnpm turbo run build --filter="./packages/ui" --filter="./apps/app" --filter="./packages/types" --filter="./packages/validators"
 
       # Pre-build tasks (version generator, etc.)
       - name: Run pre-build tasks
