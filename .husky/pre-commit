@@ -18,9 +18,5 @@ if [ ! -s "$CHANGELOG_FILE" ]; then
 fi
 
 # Check if file has changes compared to HEAD (including submodules)
-if ! git diff --quiet --ignore-submodules=none HEAD -- "$CHANGELOG_FILE"; then
-  git add "$CHANGELOG_FILE"
-  echo "$CHANGELOG_FILE updated and staged."
-else
-  echo "$CHANGELOG_FILE unchanged, skipping."
-fi
+git add "$CHANGELOG_FILE"
+echo "$CHANGELOG_FILE updated and staged."

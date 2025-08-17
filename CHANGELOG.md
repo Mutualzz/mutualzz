@@ -1,5 +1,5 @@
 # Changelog
 
 ## Mutualzz
-- Fixed window labels breaking (mateie)
+- Updated tauri versioning and endpoints for auto updater (mateie)
 
