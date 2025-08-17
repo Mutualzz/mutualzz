@@ -1,5 +1,5 @@
 # Changelog
 
 ## Mutualzz
-- Fixed Tauri build issues (mateie)
+- Fixed endpoiint link for the updater (mateie)
 
