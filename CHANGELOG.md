@@ -1,42 +1,23 @@
 # Changelog
 
 ## Mutualzz UI
+- Avatar: Added them :3 (mateie)
+- Checkbox: Allow any type of value for checkboxes (not only strings) (mateie)
 
-- Checkbox & Radio: Made the whole component clickable (before you had to click the label) (mateie)
-- Checkbox: Removed wrapper padding (mateie)
-- Radio: Style change to box-sizing (mateie)
-- CheckboxGroup: Fixed orientation not being passed in context (mateie)
-- RadioGroup: Fixed orientation not being passed in context (mateie)
-- Slider: Removed transition animations (we need it to be instant) (mateie)
-- RadioGroup: Added proper spacing, color, variant, size and orientation (responsive as well) (mateie)
-- Radio: Support color,size,variant from the group otherwise default (mateie)
-- CheckboxGroup: Fixed us not passing color,variant,size into the context (mateie)
-- CheckboxGroup: exporting baseSpacingMap is not necessessary (mateie)
-- CheckboxGroup: Added proper orientation and spacing prop (mateie)
-- Checkbox: Added group color, variant, size support (mateie)
-- ButtonGroup: Fixed Orientation direction not being responsive (mateie)
-- ButtonGroup now can accept "sm", "md", "lg" or a custom value spacing (not just numbers) (mateie)
-- GlobalStyles: 0 padding and margin for "pre" elements (mateie)
-- Typography: Tweaked level (mateie)
-- Paper: Fixed not having display "flex" by default (mateie)
+## Mutualzz Types
+- Avatar: Added types (mateie)
+- User: Adde avatars and previous avatars <- (coming soon) (mateie)
 
 ## Mutualzz
+- Avatar: Implemented into the app (mateie)
+- CDN: Fixed url maker (mateie)
+- AccountStore: Implemented avatar related properties (mateie)
+- Markdown Input & Renderer: Made Scrollable so no overflow happens (mateie)
 
-- Playground: Unionized Groups (ButtonGroup, CheckboxGroup, RadioGroup) for easier messing with components (mateie)
-- Playground: Utilized new orientation for CheckboxGroup and RadioGroup (mateie)
-- HoverToolbar: moved with Markdown Components (mateie)
-- Utilities: New utility for converting ReactNodes to Html (mateie)
-- Spoilers: Localized Spoiler styles to the component (mateie)
-- Markdown Renderer: Made sure that heading in markdown can only be 3 levels (mateie)
-- Markdown Renderer: Fixed inline code and code block renders (mateie)
-- Markdown Renderer: Made components as their own components (mateie)
-- Markdown Input: fixed Shift+Enter not entering new line correctly (mateie)
-- Markdown Renderer:Fixed some codeblock parsing issues (mateie)
-- Markdown Renderer: Made codeblock better (mateie)
-- Markdown Input: fixed emojis deletion logic causing desync with markdown editor (mateie)
-- Markdown Renderer: Fixed blockquote appearing when just typing empty ">" (mateie)
-- Markdown Renderer: Removed CodeBlock using triple ~ (mateie)
-- HoverToolbar: Moved into a different direcotry (mateie)
-- HoverToolbar: Adjusted sizing (mateie)
-- Updater: Fixed updater still running in dev environement (mateie)
-- App Client: environment variables (mateie)
+## Mutualzz API
+- CDN: Implemented (with in-memory caching) but currently only has defaultAvatars route (mateie)
+- Database -> User: added defaultAvatar, avatar and previousAvatars (mateie)
+- REST: added default avatar assignment upon creating an account (mateie)
+- Global: Moved createRouter utility in global utilities (mateie)
+- Global: Added S3 Client (mateie)
+
