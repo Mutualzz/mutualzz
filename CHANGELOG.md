@@ -14,7 +14,7 @@
 - Applicable components: Fixed how text color changes with background luminance depeneding darkness or lightness of component's background (mateie)
 - InputColor: Added a button for random colors ^^ (toggleable) (mateie)
 - Button: No need to export baseSizeMap (mateie)
-- Util getLuminance: return null if the color is invalid (mateie)
+- Util -> getLuminance: return null if the color is invalid (mateie)
 - IconButton: Implemented (mateie)
 - Radio: Fixed priorities for color, variant, size (the child gets prioritized) (mateie)
 - Option: Fixed priorities for color, variant, size (the child gets prioritized) (mateie)
