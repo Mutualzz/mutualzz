@@ -1,5 +1,5 @@
 # Changelog
 
 ## Mutualzz
-- Package JSON: Fixed the script? (mateie)
+- Package JSON: this should fix it (mateie)
 
