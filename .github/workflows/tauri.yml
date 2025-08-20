@@ -115,6 +115,7 @@ jobs:
                   args: ${{ matrix.args }}
 
             - name: Upload binaries to R2 with custom names
+              working-directory: apps/app
               run: |
                   echo "Uploading binaries for ${{ matrix.platform }}"
 
