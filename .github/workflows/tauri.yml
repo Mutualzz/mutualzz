@@ -15,9 +15,7 @@ jobs:
             matrix:
                 include:
                     - platform: "macos-latest"
-                      args: "--target aarch64-apple-darwin" # ARM Macs
-                    - platform: "macos-latest"
-                      args: "--target x86_64-apple-darwin" # Intel Macs
+                      args: "--target universal-apple-darwin"
                     - platform: "ubuntu-22.04"
                       args: "" # Linux
                     - platform: "windows-latest"
@@ -115,3 +113,23 @@ jobs:
                   includeRelease: true
                   includeUpdaterJson: true
                   args: ${{ matrix.args }}
+
+            - name: Upload binaries to R2
+              run: |
+                  # Define custom filenames
+                  if [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
+                    files=("src-tauri/target/release/bundle/msi/MutualzzSetup.msi" "src-tauri/target/release/bundle/msi/MutualzzSetup.exe")
+                  elif [[ "${{ matrix.platform }}" == "macos-latest" ]]; then
+                    files=("src-tauri/target/release/bundle/dmg/Mutualzz.dmg")
+                  elif [[ "${{ matrix.platform }}" == "ubuntu-22.04" ]]; then
+                    files=("src-tauri/target/release/bundle/deb/Mutualzz.deb" "src-tauri/target/release/bundle/appimage/Mutualzz.AppImage")
+                  fi
+
+                  for file in "${files[@]}"; do
+                    if [[ -f "$file" ]]; then
+                      filename=$(basename "$file")
+                      wrangler r2 put "mutualzz/releases/latest/$filename" "$file" --binding=R2_BUCKET --account-id=${{ secrets.CF_ACCOUNT_ID }} --auth-key=${{ secrets.CF_API_TOKEN }}
+                    fi
+                  done
+                  env:
+                    R2_BUCKET: mutualzz
