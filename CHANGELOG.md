@@ -1,6 +1,7 @@
 # Changelog
 
 ## Mutualzz UI
+- Utils: Removed getContrastRatio, we never use it. we have getLuminance (mateie)
 - Popover: added closeOnClickOutside (toggleable via prop) (mateie)
 - InputColor: made color picker non-controlled (not necessary) (mateie)
 - CircularProgress: Fixed sizes not applying correctly (mateie)
@@ -19,6 +20,7 @@
 - Checkbox: Fixed priorities for color, variant, size (the child gets prioritized) (mateie)
 
 ## Mutualzz
+- PlaygroundLeftSidebar: Removed unused import (mateie)
 - Register Page: Same as Login page (mateie)
 - Login Page: Fixed Form alignment and made the back button prettier (mateie)
 - Playground: A lot of reallignments, style changes, fixes and rework (mateie)
