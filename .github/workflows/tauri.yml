@@ -183,3 +183,29 @@ jobs:
               env:
                   R2_BUCKET: mutualzz
               shell: bash
+
+            - name: Generate latest.json manifest
+              run: |
+                  echo "Generating latest.json manifest"
+
+                  BASE_URL="https://proxy.mutualzz.com/releases/latest"
+
+                  cat <<EOF > latest.json
+                    {
+                      "win": {
+                        "exe": "$BASE_URL/MutualzzSetup.exe",
+                        "msi": "$BASE_URL/MutualzzSetup.msi"
+                      },
+                      "osx": "$BASE_URL/Mutualzz.dmg",
+                      "linux": {
+                        "debian": "$BASE_URL/Mutualzz.deb",
+                        "rpm": "$BASE_URL/Mutualzz.rpm",
+                        "appimage": "$BASE_URL/Mutualzz.AppImage"
+                      }
+                    }
+                    EOF
+
+                    wrangler r2 put "mutualzz/releases/latest/latest.json" latest.json \
+                      --binding=R2_BUCKET --account-id=${{ secrets.CF_ACCOUNT_ID }} --auth-key=${{ secrets.CF_API_TOKEN }}
+
+                    echo "latest.json uploaded"
