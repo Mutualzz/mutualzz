@@ -117,107 +117,96 @@ jobs:
                   includeUpdaterJson: true
                   args: ${{ matrix.args }}
 
-            - name: Upload binaries and generate latest.json
+            - name: Upload binaries & generate latest.json
               run: |
                   echo "Uploading binaries for ${{ matrix.platform }}"
 
+                  BASE_DIR="./apps/app/src-tauri/target/release/bundle"
+
+                  # Initialize variables
+                  win_exe=""
+                  win_msi=""
+                  osx=""
+                  linux_debian=""
+                  linux_rpm=""
+                  linux_appimage=""
+
+                  # WINDOWS
+                  if [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
+                    win_exe=$(ls "$BASE_DIR/msi/"*.exe 2>/dev/null | head -n1)
+                    win_msi=$(ls "$BASE_DIR/msi/"*.msi 2>/dev/null | head -n1)
+
+                    if [[ -f "$win_exe" ]]; then
+                      mv "$win_exe" "MutualzzSetup.exe"
+                      wrangler r2 put "mutualzz/releases/latest/MutualzzSetup.exe" "MutualzzSetup.exe" \
+                        --binding=R2_BUCKET --account-id=${{ secrets.CF_ACCOUNT_ID }} --auth-key=${{ secrets.CF_API_TOKEN }}
+                    fi
+
+                    if [[ -f "$win_msi" ]]; then
+                      mv "$win_msi" "MutualzzSetup.msi"
+                      wrangler r2 put "mutualzz/releases/latest/MutualzzSetup.msi" "MutualzzSetup.msi" \
+                        --binding=R2_BUCKET --account-id=${{ secrets.CF_ACCOUNT_ID }} --auth-key=${{ secrets.CF_API_TOKEN }}
+                    fi
+                  fi
+
+                  # MACOS
+                  if [[ "${{ matrix.platform }}" == "macos-latest" ]]; then
+                    osx=$(ls "$BASE_DIR/dmg/"*.dmg 2>/dev/null | head -n1)
+                    if [[ -f "$osx" ]]; then
+                      mv "$osx" "Mutualzz.dmg"
+                      wrangler r2 put "mutualzz/releases/latest/Mutualzz.dmg" "Mutualzz.dmg" \
+                        --binding=R2_BUCKET --account-id=${{ secrets.CF_ACCOUNT_ID }} --auth-key=${{ secrets.CF_API_TOKEN }}
+                    fi
+                  fi
+
+                  # LINUX
+                  if [[ "${{ matrix.platform }}" == "ubuntu-22.04" ]]; then
+                    linux_debian=$(ls "$BASE_DIR/deb/"*.deb 2>/dev/null | head -n1)
+                    linux_rpm=$(ls "$BASE_DIR/rpm/"*.rpm 2>/dev/null | head -n1)
+                    linux_appimage=$(ls "$BASE_DIR/appimage/"*.AppImage 2>/dev/null | head -n1)
+
+                    if [[ -f "$linux_debian" ]]; then
+                      mv "$linux_debian" "Mutualzz.deb"
+                      wrangler r2 put "mutualzz/releases/latest/Mutualzz.deb" "Mutualzz.deb" \
+                        --binding=R2_BUCKET --account-id=${{ secrets.CF_ACCOUNT_ID }} --auth-key=${{ secrets.CF_API_TOKEN }}
+                    fi
+
+                    if [[ -f "$linux_rpm" ]]; then
+                      mv "$linux_rpm" "Mutualzz.rpm"
+                      wrangler r2 put "mutualzz/releases/latest/Mutualzz.rpm" "Mutualzz.rpm" \
+                        --binding=R2_BUCKET --account-id=${{ secrets.CF_ACCOUNT_ID }} --auth-key=${{ secrets.CF_API_TOKEN }}
+                    fi
+
+                    if [[ -f "$linux_appimage" ]]; then
+                      mv "$linux_appimage" "Mutualzz.AppImage"
+                      wrangler r2 put "mutualzz/releases/latest/Mutualzz.AppImage" "Mutualzz.AppImage" \
+                        --binding=R2_BUCKET --account-id=${{ secrets.CF_ACCOUNT_ID }} --auth-key=${{ secrets.CF_API_TOKEN }}
+                    fi
+                  fi
+
+                  # Generate latest.json
                   BASE_URL="https://proxy.mutualzz.com/releases/latest"
 
-                  declare -A files
-
-                  case "${{ matrix.platform }}" in
-                    "windows-latest")
-                      src_msi=$(find ./apps/app/src-tauri/target/release/bundle/msi -name "*.msi" | head -n1)
-                      src_exe=$(find ./apps/app/src-tauri/target/release/bundle/msi -name "*.exe" | head -n1)
-
-                      if [[ -f "$src_msi" ]]; then
-                        dst_msi="MutualzzSetup.msi"
-                        mv "$src_msi" "$dst_msi"
-                        wrangler r2 put "mutualzz/releases/latest/$dst_msi" "$dst_msi" \
-                          --binding=R2_BUCKET --account-id=${{ secrets.CF_ACCOUNT_ID }} --auth-key=${{ secrets.CF_API_TOKEN }}
-                        files[win_msi]="$dst_msi"
-                      fi
-
-                      if [[ -f "$src_exe" ]]; then
-                        dst_exe="MutualzzSetup.exe"
-                        mv "$src_exe" "$dst_exe"
-                        wrangler r2 put "mutualzz/releases/latest/$dst_exe" "$dst_exe" \
-                          --binding=R2_BUCKET --account-id=${{ secrets.CF_ACCOUNT_ID }} --auth-key=${{ secrets.CF_API_TOKEN }}
-                        files[win_exe]="$dst_exe"
-                      fi
-                      ;;
-
-                    "macos-latest")
-                      src_dmg=$(find ./apps/app/src-tauri/target/release/bundle/dmg -name "*.dmg" | head -n1)
-                      if [[ -f "$src_dmg" ]]; then
-                        dst_dmg="Mutualzz.dmg"
-                        mv "$src_dmg" "$dst_dmg"
-                        wrangler r2 put "mutualzz/releases/latest/$dst_dmg" "$dst_dmg" \
-                          --binding=R2_BUCKET --account-id=${{ secrets.CF_ACCOUNT_ID }} --auth-key=${{ secrets.CF_API_TOKEN }}
-                        files[osx]="$dst_dmg"
-                      fi
-                      ;;
-
-                    "ubuntu-22.04")
-                      src_deb=$(find ./apps/app/src-tauri/target/release/bundle/deb -name "*.deb" | head -n1)
-                      src_rpm=$(find ./apps/app/src-tauri/target/release/bundle/rpm -name "*.rpm" | head -n1)
-                      src_appimage=$(find ./apps/app/src-tauri/target/release/bundle/appimage -name "*.AppImage" | head -n1)
-
-                      if [[ -f "$src_deb" ]]; then
-                        dst_deb="Mutualzz.deb"
-                        mv "$src_deb" "$dst_deb"
-                        wrangler r2 put "mutualzz/releases/latest/$dst_deb" "$dst_deb" \
-                          --binding=R2_BUCKET --account-id=${{ secrets.CF_ACCOUNT_ID }} --auth-key=${{ secrets.CF_API_TOKEN }}
-                        files[linux_debian]="$dst_deb"
-                      fi
-
-                      if [[ -f "$src_rpm" ]]; then
-                        dst_rpm="Mutualzz.rpm"
-                        mv "$src_rpm" "$dst_rpm"
-                        wrangler r2 put "mutualzz/releases/latest/$dst_rpm" "$dst_rpm" \
-                          --binding=R2_BUCKET --account-id=${{ secrets.CF_ACCOUNT_ID }} --auth-key=${{ secrets.CF_API_TOKEN }}
-                        files[linux_rpm]="$dst_rpm"
-                      fi
-
-                      if [[ -f "$src_appimage" ]]; then
-                        dst_appimage="Mutualzz.AppImage"
-                        mv "$src_appimage" "$dst_appimage"
-                        wrangler r2 put "mutualzz/releases/latest/$dst_appimage" "$dst_appimage" \
-                          --binding=R2_BUCKET --account-id=${{ secrets.CF_ACCOUNT_ID }} --auth-key=${{ secrets.CF_API_TOKEN }}
-                        files[linux_appimage]="$dst_appimage"
-                      fi
-                      ;;
-                  esac
-
                   echo "Generating latest.json manifest"
-
-                  echo "{" > latest.json
-
-                  if [[ -n "${files[win_exe]}" || -n "${files[win_msi]}" ]]; then
-                    echo "  \"win\": {" >> latest.json
-                    [[ -n "${files[win_exe]}" ]] && echo "    \"exe\": \"$BASE_URL/${files[win_exe]}\"," >> latest.json
-                    [[ -n "${files[win_msi]}" ]] && echo "    \"msi\": \"$BASE_URL/${files[win_msi]}\"" >> latest.json
-                    echo "  }," >> latest.json
-                  fi
-
-                  if [[ -n "${files[osx]}" ]]; then
-                    echo "  \"osx\": \"$BASE_URL/${files[osx]}\"," >> latest.json
-                  fi
-
-                  linux_entries=()
-                  [[ -n "${files[linux_debian]}" ]] && linux_entries+=("\"debian\": \"$BASE_URL/${files[linux_debian]}\"")
-                  [[ -n "${files[linux_rpm]}" ]] && linux_entries+=("\"rpm\": \"$BASE_URL/${files[linux_rpm]}\"")
-                  [[ -n "${files[linux_appimage]}" ]] && linux_entries+=("\"appimage\": \"$BASE_URL/${files[linux_appimage]}\"")
-                  if [[ ${#linux_entries[@]} -gt 0 ]]; then
-                    echo "  \"linux\": { ${linux_entries[*]} }" >> latest.json
-                  fi
-
-                  echo "}" >> latest.json
+                  cat <<EOF > latest.json
+                  {
+                    "win": {
+                      "exe": "$BASE_URL/MutualzzSetup.exe",
+                      "msi": "$BASE_URL/MutualzzSetup.msi"
+                    },
+                    "osx": "$BASE_URL/Mutualzz.dmg",
+                    "linux": {
+                      "debian": "$BASE_URL/Mutualzz.deb",
+                      "rpm": "$BASE_URL/Mutualzz.rpm",
+                      "appimage": "$BASE_URL/Mutualzz.AppImage"
+                    }
+                  }
+                  EOF
 
                   wrangler r2 put "mutualzz/releases/latest/latest.json" latest.json \
                     --binding=R2_BUCKET --account-id=${{ secrets.CF_ACCOUNT_ID }} --auth-key=${{ secrets.CF_API_TOKEN }}
 
-                  echo "Upload complete"
+                  echo "Upload and latest.json generation complete"
               env:
                   R2_BUCKET: mutualzz
               shell: bash
