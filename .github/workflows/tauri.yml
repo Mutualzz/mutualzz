@@ -114,23 +114,71 @@ jobs:
                   includeUpdaterJson: true
                   args: ${{ matrix.args }}
 
-            - name: Upload binaries to R2
+            - name: Upload binaries to R2 with custom names
               run: |
-                  # Define custom filenames
-                  if [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
-                    files=("src-tauri/target/release/bundle/msi/MutualzzSetup.msi" "src-tauri/target/release/bundle/msi/MutualzzSetup.exe")
-                  elif [[ "${{ matrix.platform }}" == "macos-latest" ]]; then
-                    files=("src-tauri/target/release/bundle/dmg/Mutualzz.dmg")
-                  elif [[ "${{ matrix.platform }}" == "ubuntu-22.04" ]]; then
-                    files=("src-tauri/target/release/bundle/deb/Mutualzz.deb" "src-tauri/target/release/bundle/appimage/Mutualzz.AppImage")
-                  fi
+                  echo "Uploading binaries for ${{ matrix.platform }}"
 
-                  for file in "${files[@]}"; do
-                    if [[ -f "$file" ]]; then
-                      filename=$(basename "$file")
-                      wrangler r2 put "mutualzz/releases/latest/$filename" "$file" --binding=R2_BUCKET --account-id=${{ secrets.CF_ACCOUNT_ID }} --auth-key=${{ secrets.CF_API_TOKEN }}
-                    fi
-                  done
+                  case "${{ matrix.platform }}" in
+                    "windows-latest")
+                      # Find Tauri outputs
+                      src_msi=$(find src-tauri/target/release/bundle/msi -name "*.msi" | head -n1)
+                      src_exe=$(find src-tauri/target/release/bundle/msi -name "*.exe" | head -n1)
+
+                      # Rename and upload if exist
+                      if [[ -f "$src_msi" ]]; then
+                        dst_msi="MutualzzSetup.msi"
+                        mv "$src_msi" "$dst_msi"
+                        wrangler r2 put "mutualzz/releases/latest/$dst_msi" "$dst_msi" \
+                          --binding=R2_BUCKET --account-id=${{ secrets.CF_ACCOUNT_ID }} --auth-key=${{ secrets.CF_API_TOKEN }}
+                      fi
+
+                      if [[ -f "$src_exe" ]]; then
+                        dst_exe="MutualzzSetup.exe"
+                        mv "$src_exe" "$dst_exe"
+                        wrangler r2 put "mutualzz/releases/latest/$dst_exe" "$dst_exe" \
+                          --binding=R2_BUCKET --account-id=${{ secrets.CF_ACCOUNT_ID }} --auth-key=${{ secrets.CF_API_TOKEN }}
+                      fi
+                      ;;
+
+                    "macos-latest")
+                      src_dmg=$(find src-tauri/target/release/bundle/dmg -name "*.dmg" | head -n1)
+                      if [[ -f "$src_dmg" ]]; then
+                        dst_dmg="Mutualzz.dmg"
+                        mv "$src_dmg" "$dst_dmg"
+                        wrangler r2 put "mutualzz/releases/latest/$dst_dmg" "$dst_dmg" \
+                          --binding=R2_BUCKET --account-id=${{ secrets.CF_ACCOUNT_ID }} --auth-key=${{ secrets.CF_API_TOKEN }}
+                      fi
+                      ;;
+
+                    "ubuntu-22.04")
+                      src_deb=$(find src-tauri/target/release/bundle/deb -name "*.deb" | head -n1)
+                      if [[ -f "$src_deb" ]]; then
+                        dst_deb="Mutualzz.deb"
+                        mv "$src_deb" "$dst_deb"
+                        wrangler r2 put "mutualzz/releases/latest/$dst_deb" "$dst_deb" \
+                          --binding=R2_BUCKET --account-id=${{ secrets.CF_ACCOUNT_ID }} --auth-key=${{ secrets.CF_API_TOKEN }}
+                      fi
+
+                      src_rpm=$(find src-tauri/target/release/bundle/rpm -name "*.rpm" | head -n1)
+                      if [[ -f "$src_rpm" ]]; then
+                        dst_rpm="Mutualzz.rpm"
+                        mv "$src_rpm" "$dst_rpm"
+                        wrangler r2 put "mutualzz/releases/latest/$dst_rpm" "$dst_rpm" \
+                          --binding=R2_BUCKET --account-id=${{ secrets.CF_ACCOUNT_ID }} --auth-key=${{ secrets.CF_API_TOKEN }}
+                      fi
+
+                      src_appimage=$(find src-tauri/target/release/bundle/appimage -name "*.AppImage" | head -n1)
+                      if [[ -f "$src_appimage" ]]; then
+                        dst_appimage="Mutualzz.AppImage"
+                        mv "$src_appimage" "$dst_appimage"
+                        wrangler r2 put "mutualzz/releases/latest/$dst_appimage" "$dst_appimage" \
+                          --binding=R2_BUCKET --account-id=${{ secrets.CF_ACCOUNT_ID }} --auth-key=${{ secrets.CF_API_TOKEN }}
+                      fi
+                      ;;
+                  esac
+
+                  echo "Upload complete"
+
               env:
                   R2_BUCKET: mutualzz
               shell: bash
