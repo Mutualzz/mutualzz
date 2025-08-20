@@ -1,112 +1,138 @@
 name: Build and Deploy Binaries
 
 on:
-  workflow_dispatch:
-  push:
-    branches:
-      - release
+    workflow_dispatch:
+    push:
+        branches:
+            - release
 
 jobs:
-  publish-tauri:
-    permissions:
-      contents: write
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - platform: "macos-latest"
-            args: "--target aarch64-apple-darwin" # ARM Macs
-          - platform: "macos-latest"
-            args: "--target x86_64-apple-darwin" # Intel Macs
-          - platform: "ubuntu-22.04"
-            args: "" # Linux
-          - platform: "windows-latest"
-            args: "" # Windows
+    publish-tauri:
+        permissions:
+            contents: write
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - platform: "macos-latest"
+                      args: "--target aarch64-apple-darwin" # ARM Macs
+                    - platform: "macos-latest"
+                      args: "--target x86_64-apple-darwin" # Intel Macs
+                    - platform: "ubuntu-22.04"
+                      args: "" # Linux
+                    - platform: "windows-latest"
+                      args: "" # Windows
 
-    runs-on: ${{ matrix.platform }}
-
-    steps:
-      # Checkout repository
-      - uses: actions/checkout@v4
-
-      # Install system dependencies for Linux
-      - name: Install dependencies (Linux only)
-        if: matrix.platform == 'ubuntu-22.04'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
-
-      # Setup Node.js
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
-
-      # Enable Corepack and prepare pnpm
-      - name: Enable Corepack (for pnpm)
-        run: corepack enable
-
-      - name: Prepare pnpm
-        run: corepack prepare pnpm@10.14.0 --activate
-
-      # Install Rust
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
-
-      - name: Init public submodules
-        run: |
-          git submodule update --init packages/ui
-          git submodule update --init packages/types
-
-      - name: Init private submodules
-        run: |
-          git config --global url."https://${GH_PAT}:@github.com/".insteadOf "https://github.com/"
-          git submodule update --init apps/app
-          git submodule update --init packages/validators
+        runs-on: ${{ matrix.platform }}
         env:
-          GH_PAT: ${{ secrets.GH_PAT }}
-        shell: bash
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
 
-      # Rust cache
-      - name: Rust cache
-        uses: swatinem/rust-cache@v2
-        with:
-          workspaces: "apps/app/src-tauri -> target"
+        steps:
+            - name: Import Apple Developer Certificate
+            env:
+              APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+              APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+            run: |
+              echo $APPLE_CERTIFICATE | base64 --decode > certificate.p12
+              security create-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
+              security default-keychain -s build.keychain
+              security unlock-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
+              security set-keychain-settings -t 3600 -u build.keychain
+              security import certificate.p12 -k build.keychain -P "$APPLE_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+              security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" build.keychain
+              security find-identity -v -p codesigning build.keychain
 
-      # Install dependencies
-      - name: Install dependencies
-        run: pnpm install
+            - name: Verify Certificate
+            run: |
+              CERT_INFO=$(security find-identity -v -p codesigning build.keychain | grep "Apple Development")
+              CERT_ID=$(echo "$CERT_INFO" | awk -F'"' '{print $2}')
+              echo "CERT_ID=$CERT_ID" >> $GITHUB_ENV
+              echo "Certificate imported."
 
-      # Pre-build tasks (version generator, etc.)
-      - name: Run pre-build tasks
-        working-directory: apps/app
-        run: pnpm run ci:prebuild
+            # Checkout repository
+            - uses: actions/checkout@v4
 
-      - id: changelog
-        run: |
-          if [ -f CHANGELOG.md ]; then
-            echo "body<<EOF" >> $GITHUB_OUTPUT
-            cat CHANGELOG.md >> $GITHUB_OUTPUT
-            echo "EOF" >> $GITHUB_OUTPUT
-          else
-            echo "body=" >> $GITHUB_OUTPUT
-          fi
-        shell: bash
-      
+            # Install system dependencies for Linux
+            - name: Install dependencies (Linux only)
+              if: matrix.platform == 'ubuntu-22.04'
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
 
-      # Build and release Tauri app
-      - uses: tauri-apps/tauri-action@v0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
-        with:
-          tagName: __VERSION__
-          releaseName: "Mutualzz __VERSION__"
-          releaseBody: ${{ steps.changelog.outputs.body }}
-          releaseDraft: false                 # Set to true if testing
-          prerelease: false
-          includeRelease: true
-          includeUpdaterJson: true
-          args: ${{ matrix.args }}
+            # Setup Node.js
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: lts/*
+
+            # Enable Corepack and prepare pnpm
+            - name: Enable Corepack (for pnpm)
+              run: corepack enable
+
+            - name: Prepare pnpm
+              run: corepack prepare pnpm@10.14.0 --activate
+
+            # Install Rust
+            - name: Setup Rust
+              uses: dtolnay/rust-toolchain@stable
+              with:
+                  targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+            - name: Init public submodules
+              run: |
+                  git submodule update --init packages/ui
+                  git submodule update --init packages/types
+
+            - name: Init private submodules
+              run: |
+                  git config --global url."https://${GH_PAT}:@github.com/".insteadOf "https://github.com/"
+                  git submodule update --init apps/app
+                  git submodule update --init packages/validators
+              env:
+                  GH_PAT: ${{ secrets.GH_PAT }}
+              shell: bash
+
+            # Rust cache
+            - name: Rust cache
+              uses: swatinem/rust-cache@v2
+              with:
+                  workspaces: "apps/app/src-tauri -> target"
+
+            # Install dependencies
+            - name: Install dependencies
+              run: pnpm install
+
+            # Pre-build tasks (version generator, etc.)
+            - name: Run pre-build tasks
+              working-directory: apps/app
+              run: pnpm run ci:prebuild
+
+            - id: changelog
+              run: |
+                  if [ -f CHANGELOG.md ]; then
+                    echo "body<<EOF" >> $GITHUB_OUTPUT
+                    cat CHANGELOG.md >> $GITHUB_OUTPUT
+                    echo "EOF" >> $GITHUB_OUTPUT
+                  else
+                    echo "body=" >> $GITHUB_OUTPUT
+                  fi
+              shell: bash
+
+            # Build and release Tauri app
+            - uses: tauri-apps/tauri-action@v0
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+                APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+                APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+                APPLE_SIGNING_IDENTITY: ${{ env.CERT_ID }}
+              with:
+                tagName: __VERSION__
+                releaseName: "Mutualzz __VERSION__"
+                releaseBody: ${{ steps.changelog.outputs.body }}
+                releaseDraft: false # Set to true if testing
+                prerelease: false
+                includeRelease: true
+                includeUpdaterJson: true
+                args: ${{ matrix.args }}
