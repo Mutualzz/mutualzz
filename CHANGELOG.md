@@ -1,26 +1,32 @@
 # Changelog
 
 ## Mutualzz UI
-
-- Avatar: Added them :3 (mateie)
-- Checkbox: Allow any type of value for checkboxes (not only strings) (mateie)
-
-## Mutualzz Types
-
-- Avatar: Added types (mateie)
-- User: Added avatars and previous avatars <- (coming soon) (mateie)
+- Popover: added closeOnClickOutside (toggleable via prop) (mateie)
+- InputColor: made color picker non-controlled (not necessary) (mateie)
+- CircularProgress: Fixed sizes not applying correctly (mateie)
+- List: FIxed orientation not being passed in ListRoot (mateie)
+- InputColor: made RandomIcon adaptable with luminance (mateie)
+- InputColor: Synced value change with the input (mateie)
+- All: Added forwardRef where needed (mateie)
+- InptuRoot: Fixed luminance bug (mateie)
+- Applicable components: Fixed how text color changes with background luminance depeneding darkness or lightness of component's background (mateie)
+- InputColor: Added a button for random colors ^^ (toggleable) (mateie)
+- Button: No need to export baseSizeMap (mateie)
+- Util getLuminance: return null if the color is invalid (mateie)
+- IconButton: Implemented (mateie)
+- Radio: Fixed priorities for color, variant, size (the child gets prioritized) (mateie)
+- Option: Fixed priorities for color, variant, size (the child gets prioritized) (mateie)
+- Checkbox: Fixed priorities for color, variant, size (the child gets prioritized) (mateie)
 
 ## Mutualzz
+- Register Page: Same as Login page (mateie)
+- Login Page: Fixed Form alignment and made the back button prettier (mateie)
+- Playground: A lot of reallignments, style changes, fixes and rework (mateie)
+- UI Index: Same as Root (mateie)
+- Home Page: Removed logo (moved it to top nav) (mateie)
+- Root: How its aligned and styled with proper flexbox (mateie)
+- App: Added top navigation (mateie)
+- Markdown Input: Made it be able to accept Ref (mateie)
+- AppStore: Fixed Logger import (mateie)
+- Project: Fixed some eslint issues (mateie)
 
-- Avatar: Implemented into the app (mateie)
-- CDN: Fixed url maker (mateie)
-- AccountStore: Implemented avatar related properties (mateie)
-- Markdown Input & Renderer: Made Scrollable so no overflow happens (mateie)
-
-## Mutualzz API
-
-- CDN: Implemented (with in-memory caching) but currently only has defaultAvatars route (mateie)
-- Database -> User: added defaultAvatar, avatar and previousAvatars (mateie)
-- REST: added default avatar assignment upon creating an account (mateie)
-- Global: Moved createRouter utility in global utilities (mateie)
-- Global: Added S3 Client (mateie)
