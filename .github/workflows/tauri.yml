@@ -131,5 +131,6 @@ jobs:
                       wrangler r2 put "mutualzz/releases/latest/$filename" "$file" --binding=R2_BUCKET --account-id=${{ secrets.CF_ACCOUNT_ID }} --auth-key=${{ secrets.CF_API_TOKEN }}
                     fi
                   done
-                  env:
-                    R2_BUCKET: mutualzz
+              env:
+                  R2_BUCKET: mutualzz
+              shell: bash
