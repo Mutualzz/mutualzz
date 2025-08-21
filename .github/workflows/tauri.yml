@@ -178,9 +178,7 @@ jobs:
                   echo "Generating latest.json manifest"
                   cat <<EOF > latest.json
                   {
-                    "win": {
-                      "exe": "$BASE_URL/MutualzzSetup.exe",
-                    },
+                    "win": "$BASE_URL/MutualzzSetup.exe",
                     "osx": "$BASE_URL/Mutualzz.dmg",
                     "linux": {
                       "debian": "$BASE_URL/Mutualzz.deb",
