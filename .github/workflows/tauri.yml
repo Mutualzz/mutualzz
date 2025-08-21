@@ -174,7 +174,7 @@ jobs:
 
                     if [[ -f "$linux_appimage" ]]; then
                       mv "$linux_appimage" "Mutualzz.AppImage"
-                      wrangler r2 object put "mutualzz/releases/latest/Mutualzz.AppImage" --file"Mutualzz.AppImage"
+                      wrangler r2 object put "mutualzz/releases/latest/Mutualzz.AppImage" --file "Mutualzz.AppImage"
                     fi
                   fi
 
