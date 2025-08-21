@@ -173,7 +173,7 @@ jobs:
                   fi
 
                   # Generate latest.json
-                  BASE_URL="$CLOUDFLARE_ENDPOINT"
+                  BASE_URL="https://proxy.mutualzz.com/releases/latest"
 
                   echo "Generating latest.json manifest"
                   cat <<EOF > latest.json
