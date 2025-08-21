@@ -137,7 +137,7 @@ jobs:
 
                     if [[ -f "$win_exe" ]]; then
                       mv "$win_exe" "MutualzzSetup.exe"
-                      wrangler r2 object put "mutualzz/releases/latest/MutualzzSetup.exe" --file "MutualzzSetup.exe" --remote
+                      wrangler r2 object put "mutualzz/releases/latest/MutualzzSetup.exe" --file "MutualzzSetup.exe"
                     fi
                   fi
 
@@ -146,7 +146,7 @@ jobs:
                     osx=$(ls "$MACOS_DIR/dmg/"*.dmg 2>/dev/null | head -n1)
                     if [[ -f "$osx" ]]; then
                       mv "$osx" "Mutualzz.dmg"
-                      wrangler r2 object put "mutualzz/releases/latest/Mutualzz.dmg" --file "Mutualzz.dmg" --remote
+                      wrangler r2 object put "mutualzz/releases/latest/Mutualzz.dmg" --file "Mutualzz.dmg"
                     fi
                   fi
 
@@ -158,17 +158,17 @@ jobs:
 
                     if [[ -f "$linux_debian" ]]; then
                       mv "$linux_debian" "Mutualzz.deb"
-                      wrangler r2 object put "mutualzz/releases/latest/Mutualzz.deb" --file "Mutualzz.deb" --remote
+                      wrangler r2 object put "mutualzz/releases/latest/Mutualzz.deb" --file "Mutualzz.deb"
                     fi
 
                     if [[ -f "$linux_rpm" ]]; then
                       mv "$linux_rpm" "Mutualzz.rpm"
-                      wrangler r2 object put "mutualzz/releases/latest/Mutualzz.rpm" --file "Mutualzz.rpm"  --remote
+                      wrangler r2 object put "mutualzz/releases/latest/Mutualzz.rpm" --file "Mutualzz.rpm" 
                     fi
 
                     if [[ -f "$linux_appimage" ]]; then
                       mv "$linux_appimage" "Mutualzz.AppImage"
-                      wrangler r2 object put "mutualzz/releases/latest/Mutualzz.AppImage" --file "Mutualzz.AppImage" --remote
+                      wrangler r2 object put "mutualzz/releases/latest/Mutualzz.AppImage" --file "Mutualzz.AppImage"
                     fi
                   fi
 
@@ -190,7 +190,7 @@ jobs:
                   }
                   EOF
 
-                  wrangler r2 object put "mutualzz/releases/latest/latest.json" --file latest.json --remote
+                  wrangler r2 object put "mutualzz/releases/latest/latest.json" --file latest.json
 
                   echo "Upload and latest.json generation complete"
               env:
