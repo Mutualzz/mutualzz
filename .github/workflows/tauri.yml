@@ -173,7 +173,7 @@ jobs:
                   fi
 
                   # Generate latest.json
-                  BASE_URL="https://proxy.mutualzz.com/releases/latest"
+                  BASE_URL="$CLOUDFLARE_ENDPOINT"
 
                   echo "Generating latest.json manifest"
                   cat <<EOF > latest.json
@@ -195,6 +195,7 @@ jobs:
                   echo "Upload and latest.json generation complete"
               env:
                   R2_BUCKET: mutualzz
+                  CLOUDFLARE_ENDPOINT: ${{ secrets.CLOUDFLARE_ENDPOINT }}
                   CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
                   CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
               shell: bash
