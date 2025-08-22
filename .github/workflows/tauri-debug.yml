@@ -112,7 +112,7 @@ jobs:
                   VITE_CDN_URL: ${{ secrets.VITE_CDN_URL }}
                   VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
               with:
-                  tagName: __VERSION__
+                  tagName: debug-__VERSION__
                   releaseName: "Mutualzz __VERSION__ (DEBUG)"
                   releaseBody: ${{ steps.changelog.outputs.body }}
                   releaseDraft: false # Set to true if testing
