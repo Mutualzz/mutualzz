@@ -49,11 +49,6 @@ jobs:
 
             - name: Build the app
               working-directory: apps/app
-              env:
-                  VITE_API_URL: ${{ secrets.VITE_API_URL }}
-                  VITE_WS_URL: ${{ secrets.VITE_WS_URL }}
-                  VITE_CDN_URL: ${{ secrets.VITE_CDN_URL }}
-                  VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
               run: pnpm vite:build
 
             # Deploy to Netlify (using Netlify CLI)
