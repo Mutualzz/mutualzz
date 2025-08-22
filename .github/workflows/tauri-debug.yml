@@ -126,8 +126,8 @@ jobs:
               run: |
                   echo "Uploading binaries for ${{ matrix.platform }}"
 
-                  BASE_DIR="./apps/app/src-tauri/target/release/bundle"
-                  MACOS_DIR="./apps/app/src-tauri/target/universal-apple-darwin/release/bundle"
+                  BASE_DIR="./apps/app/src-tauri/target/debug/bundle"
+                  MACOS_DIR="./apps/app/src-tauri/target/universal-apple-darwin/debug/bundle"
 
                   # Initialize variables
                   win_exe=""
