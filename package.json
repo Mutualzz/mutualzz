@@ -13,7 +13,8 @@
         "start": "pm2 start ./pm2.config.cjs",
         "gen-changelog": "node scripts/generateChangelog.mjs",
         "prepare": "husky",
-        "dev:frontend": "turbo run dev --filter=\"./apps/app\" --filter=\"./packages/ui\""
+        "dev:frontend": "turbo run dev --filter=\"./apps/app\" --filter=\"./packages/ui\"",
+        "release": "git checkout release && git merge master && git push origin release && git checkout master"
     },
     "devDependencies": {
         "husky": "^9.1.7",
