@@ -15,7 +15,8 @@
         "prepare": "husky",
         "dev:frontend": "turbo run dev --filter=\"./apps/app\" --filter=\"./packages/ui\"",
         "release": "git checkout release && git merge master && git push origin release && git checkout master",
-        "release-debug": "git checkout debug && git merge master && git push origin debug && git checkout master"
+        "release-debug": "git checkout debug && git merge master && git push origin debug && git checkout master",
+        "release-web": "git checkout web && git merge master && git push origin web && git checkout master"
     },
     "devDependencies": {
         "husky": "^9.1.7",
