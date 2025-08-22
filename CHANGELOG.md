@@ -1,5 +1,5 @@
 # Changelog
 
 ## Mutualzz
-- Root: Fixed overflow issues (mateie)
 
+- App: Fixed environment variables (mateie)
