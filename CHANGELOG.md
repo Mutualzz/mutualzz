@@ -1,5 +1,5 @@
 # Changelog
 
 ## Mutualzz
+- App: Fixed env variables (mateie)
 
-- App: Fixed environment variables (mateie)
