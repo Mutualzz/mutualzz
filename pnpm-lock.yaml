@@ -378,6 +378,9 @@ importers:
       cryptr:
         specifier: ^6.3.0
         version: 6.3.0
+      culori:
+        specifier: ^4.0.2
+        version: 4.0.2
       emojibase-regex:
         specifier: ^16.0.0
         version: 16.0.0
