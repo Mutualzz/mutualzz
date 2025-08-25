@@ -44,8 +44,11 @@ jobs:
             - name: Install all dependencies (just in case)
               run: pnpm i
 
+            - name: Build types
+              run: pnpm turbo run build --filter="./packages/types"
+
             - name: Build dependencies
-              run: pnpm turbo run build --filter="./packages/ui" --filter="./packages/types" --filter="./packages/validators"
+              run: pnpm turbo run build --filter="./packages/ui" --filter="./packages/validators"
 
             - name: Build the app
               working-directory: apps/app

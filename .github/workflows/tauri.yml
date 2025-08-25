@@ -85,6 +85,9 @@ jobs:
               working-directory: apps/app
               run: pnpm run ci:prebuild
 
+            - name: Build types
+              run: pnpm turbo run build --filter="./packages/types"
+
             - id: changelog
               run: |
                   if [ -f CHANGELOG.md ]; then
