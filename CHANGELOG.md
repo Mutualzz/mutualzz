@@ -1,5 +1,14 @@
 # Changelog
 
+## Mutualzz Types
+
+- Gateway: Fixed Ready payload user type (mateie)
+
 ## Mutualzz
 
-- Navigations: Added privacy policy top and bottom nav, and made it look neat ^^ (mateie)
+- App Store: Added user store (mateie)
+
+## Mutualzz API
+
+- Switched to TSDown (Azrael)
+- Backend: Added communication between servers (rest, gateway and etc) thru RabbitMQ (mateie)
