@@ -1,14 +1,17 @@
 # Changelog
 
-## Mutualzz Types
+## Mutualzz UI
 
-- Gateway: Fixed Ready payload user type (mateie)
+- IconButton: Added default padding (mateie)
 
 ## Mutualzz
 
-- App Store: Added user store (mateie)
+- Bottom Navigation: Fixed mobile responsiveness (mateie)
+- Avatar Upload: Fixed some visual bugs when the avatar is uploading (mateie)
+- Download Button: Shortened from "Download App" to "Download" (mateie)
+- Capacitor: Fixed some http problems with fetching (mateie)
+- Avatar Upload: Made Avatar upload responsive (mateie)
 
 ## Mutualzz API
 
-- Switched to TSDown (Azrael)
-- Backend: Added communication between servers (rest, gateway and etc) thru RabbitMQ (mateie)
+- Avatars: Fixed some bugs with avatar saving to the database and cloud (mateie)
