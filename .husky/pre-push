@@ -1,1 +1,3 @@
 pnpm typecheck
+cd packages/types && pnpm publish
+cd packages/ui && pnpm publish
