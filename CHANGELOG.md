@@ -1,11 +1,18 @@
 # Changelog
 
+## Mutualzz UI
+
+- Inputs/InputNumber: Fixed InputNumber sizing with the spinners buttons (Azrael)
+- Inputs: Fixed sizings and calculation of the widths (Azrael)
+- InputColor: Brought back opacity/alpha (Azrael)
+
 ## Mutualzz
 
-- Avatars: Added a way to remove previous avatars (mateie)
-- Theme Creator: Randomize colors everytime a user wants to start from scratch (mateie)
+- AvatarUpload: Made cropping optional (mateie)
+- AvatarDraw: Added a way to draw avatars :3 (mateie)
+- AvatarDraw: Added mobile responsiveness (Azrael)
+- Login/Register: Fixed Inputs not being fullWidth (Azrael)
 
 ## Mutualzz API
 
-- REST: Increased previous avatar size from 5 to 9 (mateie)
-- REST: Added a way to remove prevoius avatars (mateie)
+- REST: made so crop for the avatars is optional (mateie)
