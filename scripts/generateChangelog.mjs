@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { execSync } from "child_process";
 import fs from "fs";
+import path from "path";
 
 function run(cmd, cwd = ".") {
     try {
@@ -10,23 +11,47 @@ function run(cmd, cwd = ".") {
     }
 }
 
-function getSubName(sub) {
-    switch (sub) {
-        case "packages/ui":
-            return "Mutualzz UI";
-        case "packages/logger":
-            return "Mutualzz Logger";
-        case "packages/types":
-            return "Mutualzz Types";
-        case "apps/server":
-            return "Mutualzz API";
-        case "apps/app":
-        default:
-            return "Mutualzz";
+function getSubVersion(sub) {
+    try {
+        const pkgJSON = JSON.parse(
+            fs.readFileSync(path.resolve(process.cwd(), sub, "package.json")),
+        );
+
+        return pkgJSON.version;
+    } catch {
+        return null;
     }
 }
 
-function main() {
+function getSubName(sub) {
+    const version = getSubVersion(sub);
+
+    switch (sub) {
+        case "packages/ui": {
+            return `UI${version ? " v" + version : ""}`;
+        }
+        case "packages/types": {
+            return `Types${version ? " v" + version : ""}`;
+        }
+        case "apps/server":
+            return `API${version ? " v" + version : ""}`;
+        case "apps/app":
+        default:
+            return `App${version ? " v" + version : ""}`;
+    }
+}
+
+const priorityMap = new Map([
+    ["App", 0],
+    ["REST", 1],
+    ["API", 2],
+    ["UI", 3],
+    ["Types", 4],
+    ["Gateway", 5],
+    ["CDN", 6],
+]);
+
+async function main() {
     const afterSha = process.env.GITHUB_SHA || run("git rev-parse HEAD");
     let beforeSha = process.env.GITHUB_EVENT_BEFORE;
 
@@ -56,7 +81,7 @@ function main() {
         "packages/logger",
     ];
 
-    let submodulesMarkdown = "";
+    const sections = [];
 
     for (const sub of submodules) {
         if (
@@ -76,18 +101,90 @@ function main() {
 
         // Only include if the submodule SHA changed
         if (subBefore && subAfter && subBefore !== subAfter) {
-            const commits = run(
-                `git -C ${sub} log ${subBefore}..${subAfter} --pretty=format:"- %s (%an)"`,
-            );
-            if (commits)
-                submodulesMarkdown += `## ${getSubName(sub)}\n${commits}\n\n`;
+            if (sub === "apps/server") {
+                const subSections = [
+                    { dir: "gateway", title: "Gateway" },
+                    { dir: "cdn", title: "CDN" },
+                    { dir: "rest", title: "REST" },
+                ];
+
+                let hadAny = false;
+                for (const { dir, title } of subSections) {
+                    let version = null;
+
+                    try {
+                        version = JSON.parse(
+                            fs.readFileSync(
+                                path.resolve(
+                                    process.cwd(),
+                                    sub,
+                                    "src",
+                                    dir,
+                                    "version.json",
+                                ),
+                                "utf-8",
+                            ),
+                        ).version;
+                    } catch {
+                        // ignore
+                    }
+
+                    const commits = run(
+                        `git -C ${sub} log ${subBefore}..${subAfter} --no-merges --pretty=format:"- %s (%an)" -- src/${dir}`,
+                    );
+                    if (commits && commits.length > 0) {
+                        sections.push({
+                            key: title,
+                            content: `## ${title}${version ? " v" + version : ""}\n${commits}\n\n`,
+                        });
+                        hadAny = true;
+                    }
+                }
+
+                if (!hadAny) {
+                    const commits = run(
+                        `git -C ${sub} log ${subBefore}..${subAfter} --pretty=format:"- %s (%an)"`,
+                    );
+                    if (commits && commits.length > 0) {
+                        const name = getSubName(sub);
+                        sections.push({
+                            key: name,
+                            content: `## ${name}\n${commits}\n\n`,
+                        });
+                    }
+                }
+            } else {
+                const commits = run(
+                    `git -C ${sub} log ${subBefore}..${subAfter} --pretty=format:"- %s (%an)"`,
+                );
+                if (commits && commits.length > 0) {
+                    const name = getSubName(sub);
+                    sections.push({
+                        key: name,
+                        content: `## ${name}\n${commits}\n\n`,
+                    });
+                }
+            }
         }
     }
 
-    if (submodulesMarkdown.length === 0) {
+    if (sections.length === 0) {
         console.warn("⚠️ No changes found. Not going to write changelog.");
         return;
     }
+
+    sections.sort((a, b) => {
+        const pa = priorityMap.has(a.key)
+            ? priorityMap.get(a.key)
+            : Number.MAX_SAFE_INTEGER;
+        const pb = priorityMap.has(b.key)
+            ? priorityMap.get(b.key)
+            : Number.MAX_SAFE_INTEGER;
+        if (pa !== pb) return pa - pb;
+        return a.key.localeCompare(b.key);
+    });
+
+    const submodulesMarkdown = sections.map((s) => s.content).join("");
 
     const markdown = "# Changelog\n\n" + submodulesMarkdown;
 
