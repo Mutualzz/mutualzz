@@ -19,3 +19,6 @@
 [submodule "apps/server"]
 	path = apps/server
 	url = https://github.com/Mutualzz/server.git
+[submodule "apps/mobile"]
+	path = apps/mobile
+	url = https://github.com/Mutualzz/mobile.git
