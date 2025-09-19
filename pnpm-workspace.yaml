@@ -3,8 +3,6 @@ packages:
     - packages/*
     - tooling/*
 
-nodeLinker: hoisted
-
 onlyBuiltDependencies:
     - "@parcel/watcher"
     - "@sentry-internal/node-cpu-profiler"
