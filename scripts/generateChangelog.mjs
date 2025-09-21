@@ -43,12 +43,13 @@ function getSubName(sub) {
 
 const priorityMap = new Map([
     ["App", 0],
-    ["REST", 1],
-    ["API", 2],
-    ["UI", 3],
-    ["Types", 4],
-    ["Gateway", 5],
-    ["CDN", 6],
+    ["Mobile", 1],
+    ["REST", 2],
+    ["API", 3],
+    ["UI", 4],
+    ["Types", 5],
+    ["Gateway", 6],
+    ["CDN", 7],
 ]);
 
 async function main() {

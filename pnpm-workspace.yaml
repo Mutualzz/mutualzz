@@ -3,6 +3,9 @@ packages:
     - packages/*
     - tooling/*
 
+nodeLinker: hoisted
+shamefullyHoist: true
+
 onlyBuiltDependencies:
     - "@parcel/watcher"
     - "@sentry-internal/node-cpu-profiler"
