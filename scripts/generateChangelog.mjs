@@ -27,12 +27,12 @@ function getSubName(sub) {
     const version = getSubVersion(sub);
 
     switch (sub) {
-        case "packages/ui": {
+        case "packages/ui":
             return `UI${version ? " v" + version : ""}`;
-        }
-        case "packages/types": {
+        case "packages/types":
             return `Types${version ? " v" + version : ""}`;
-        }
+        case "apps/mobile":
+            return `Mobile${version ? " v" + version : ""}`;
         case "apps/server":
             return `API${version ? " v" + version : ""}`;
         case "apps/app":
