@@ -22,3 +22,12 @@
 [submodule "apps/mobile"]
 	path = apps/mobile
 	url = https://github.com/Mutualzz/mobile.git
+[submodule "packages/ui-core"]
+	path = packages/ui-core
+	url = https://github.com/mutualzz/ui-core.git
+[submodule "packages/ui-web"]
+	path = packages/ui-web
+	url = https://github.com/mutualzz/ui-web.git
+[submodule "packages/ui-native"]
+	path = packages/ui-native
+	url = https://github.com/mutualzz/ui-native.git
