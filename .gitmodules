@@ -1,6 +1,3 @@
-[submodule "packages/ui"]
-	path = packages/ui
-	url = https://github.com/Mutualzz/ui.git
 [submodule "packages/types"]
 	path = packages/types
 	url = https://github.com/Mutualzz/types.git
