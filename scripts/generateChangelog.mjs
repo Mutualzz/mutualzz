@@ -27,8 +27,10 @@ function getSubName(sub) {
     const version = getSubVersion(sub);
 
     switch (sub) {
-        case "packages/ui":
-            return `UI${version ? " v" + version : ""}`;
+        case "packages/ui-web":
+            return `UI Desktop${version ? " v" + version : ""}`;
+        case "packages/ui-native":
+            return `UI Mobile${version ? " v" + version : ""}`;
         case "packages/types":
             return `Types${version ? " v" + version : ""}`;
         case "apps/mobile":
@@ -46,7 +48,8 @@ const priorityMap = new Map([
     ["Mobile", 1],
     ["REST", 2],
     ["API", 3],
-    ["UI", 4],
+    ["UI Desktop", 4],
+    ["UI Mobile", 4],
     ["Types", 5],
     ["Gateway", 6],
     ["CDN", 7],
@@ -78,6 +81,7 @@ async function main() {
 
     const submodulesToSkip = [
         "packages/validators",
+        "packages/ui-core",
         "tooling/eslint-config",
         "packages/logger",
     ];
