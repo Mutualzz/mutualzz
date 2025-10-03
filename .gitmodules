@@ -28,3 +28,6 @@
 [submodule "packages/ui-native"]
 	path = packages/ui-native
 	url = https://github.com/mutualzz/ui-native.git
+[submodule "packages/color"]
+	path = packages/color
+	url = https://github.com/mutualzz/color.git
