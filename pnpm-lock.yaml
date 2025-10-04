@@ -552,6 +552,22 @@ importers:
         specifier: ^4.20.5
         version: 4.20.5
 
+  packages/color:
+    dependencies:
+      color:
+        specifier: ^5.0.2
+        version: 5.0.2
+      gradient-parser:
+        specifier: ^1.1.1
+        version: 1.1.1
+      react-native:
+        specifier: ^0.81.4
+        version: 0.81.4(@babel/core@7.28.4)(@types/react@19.1.14)(bufferutil@4.0.9)(react@19.1.1)
+    devDependencies:
+      bunchee:
+        specifier: ^6.6.0
+        version: 6.6.0(typescript@5.9.2)
+
   packages/logger:
     dependencies:
       lodash-es:
@@ -588,6 +604,9 @@ importers:
       '@emotion/react':
         specifier: ^11.14.0
         version: 11.14.0(@types/react@19.1.13)(react@19.1.1)
+      '@react-native/normalize-colors':
+        specifier: ^0.81.1
+        version: 0.81.4
       color:
         specifier: ^5.0.2
         version: 5.0.2
