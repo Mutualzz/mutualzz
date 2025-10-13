@@ -1,0 +1,7 @@
+[build]
+    base = "apps/app"
+ command = "pnpm i --frozen-lockfile && pnpm build"
+  publish = "dist/client"
+
+[build.environment]
+  NODE_VERSION = "20"
