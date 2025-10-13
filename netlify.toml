@@ -4,4 +4,4 @@
     publish = "dist/client"
 
 [functions]
-    directory = ".netlify/v1/functions"
+    directory = "apps/app/.netlify/v1/functions"
