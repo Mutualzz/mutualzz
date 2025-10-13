@@ -55,7 +55,8 @@ jobs:
 
             - name: Init public submodules
               run: |
-                  git submodule update --init packages/ui
+                  git submodule update --init packages/ui-core
+                  git submodule update --init packages/ui-web
                   git submodule update --init packages/types
 
             - name: Init private submodules
