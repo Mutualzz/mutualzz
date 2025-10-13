@@ -76,7 +76,7 @@ jobs:
 
             # Install dependencies
             - name: Install dependencies
-              run: pnpm install
+              run: pnpm install --no-frozen-lockfile
 
             - name: Install Wrangler
               run: npm install -g wrangler
