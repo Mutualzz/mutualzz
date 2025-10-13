@@ -45,11 +45,8 @@ importers:
         specifier: ^3.4.0
         version: 3.4.0
       '@mateie/react-drag-drop-files':
-        specifier: ^3.1.0
-        version: 3.1.0(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
-      '@mutualzz/ui-core':
-        specifier: workspace:*
-        version: link:../../packages/ui-core
+        specifier: ^3.1.1
+        version: 3.1.1(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@mutualzz/ui-web':
         specifier: workspace:*
         version: link:../../packages/ui-web
@@ -2337,8 +2334,8 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
-  '@mateie/react-drag-drop-files@3.1.0':
-    resolution: {integrity: sha512-4vjI4Wq2IW1IufJCS1esPZGAgWMnjOEdURVlp2BAfbWlzqFeMlATb1VVVHcmqOH9WHCi8M/F7vCfZQRRipahEg==}
+  '@mateie/react-drag-drop-files@3.1.1':
+    resolution: {integrity: sha512-hvJcq3ITi5jaN/yIdxBiBu9qgHKwGS+J4G06gLOQ3vDGXZvSE4tIjQ7Pwy6cUAbeCZb2NuStA2vjlvFFv4M9XA==}
     peerDependencies:
       react: '>=18.0.0'
       react-dom: '>=18.0.0'
@@ -13396,7 +13393,7 @@ snapshots:
       - encoding
       - supports-color
 
-  '@mateie/react-drag-drop-files@3.1.0(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
+  '@mateie/react-drag-drop-files@3.1.1(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
     dependencies:
       '@emotion/css': 11.13.5
       '@emotion/react': 11.14.0(@types/react@19.2.2)(react@19.2.0)
