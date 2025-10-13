@@ -115,6 +115,7 @@ jobs:
                   VITE_WS_URL: ${{ secrets.VITE_WS_URL }}
                   VITE_CDN_URL: ${{ secrets.VITE_CDN_URL }}
                   VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
+                  VITE_FOR_TAURI: true
               with:
                   tagName: __VERSION__
                   releaseName: "Mutualzz __VERSION__"
