@@ -59,4 +59,4 @@ jobs:
             - name: Deploy to Netlify
               env:
                   NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-              run: pnpm exec netlify deploy --prod --site=94e51d96-ca0f-4128-bda5-7f22eb07fcc5 --filter=@mutualzz/app --dir=apps/app/dist/client --message "${{ github.event.head_commit.message }}" --functions=apps/app/.netlify/v1/functions
+              run: pnpm exec netlify deploy --prod --site=94e51d96-ca0f-4128-bda5-7f22eb07fcc5 --filter=@mutualzz/app --dir=apps/app/dist/client --message "${{ github.event.head_commit.message }}"
