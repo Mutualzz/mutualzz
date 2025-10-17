@@ -766,16 +766,16 @@ importers:
   tooling/eslint-config:
     devDependencies:
       '@eslint/js':
-        specifier: ^9.32.0
+        specifier: ^9.37.0
         version: 9.37.0
       '@tanstack/eslint-plugin-query':
-        specifier: ^5.83.1
+        specifier: ^5.91.1
         version: 5.91.1(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)
       '@tanstack/eslint-plugin-router':
-        specifier: ^1.130.12
+        specifier: ^1.133.3
         version: 1.133.3(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)
       eslint:
-        specifier: ^9.32.0
+        specifier: ^9.37.0
         version: 9.37.0(jiti@2.6.1)
       eslint-config-prettier:
         specifier: ^10.1.8
@@ -784,22 +784,22 @@ importers:
         specifier: ^2.32.0
         version: 2.32.0(@typescript-eslint/parser@8.46.1(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3))(eslint@9.37.0(jiti@2.6.1))
       eslint-plugin-prettier:
-        specifier: ^5.5.3
+        specifier: ^5.5.4
         version: 5.5.4(eslint-config-prettier@10.1.8(eslint@9.37.0(jiti@2.6.1)))(eslint@9.37.0(jiti@2.6.1))(prettier@3.6.2)
       eslint-plugin-react:
         specifier: ^7.37.5
         version: 7.37.5(eslint@9.37.0(jiti@2.6.1))
       eslint-plugin-sonarjs:
-        specifier: ^3.0.4
+        specifier: ^3.0.5
         version: 3.0.5(eslint@9.37.0(jiti@2.6.1))
       eslint-plugin-turbo:
-        specifier: ^2.5.5
+        specifier: ^2.5.8
         version: 2.5.8(eslint@9.37.0(jiti@2.6.1))(turbo@2.5.8)
       globals:
-        specifier: ^16.3.0
+        specifier: ^16.4.0
         version: 16.4.0
       typescript-eslint:
-        specifier: ^8.39.0
+        specifier: ^8.46.1
         version: 8.46.1(eslint@9.37.0(jiti@2.6.1))(typescript@5.9.3)
 
 packages:
