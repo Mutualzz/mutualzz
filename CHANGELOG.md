@@ -1,25 +1,17 @@
 # Changelog
 
-## API v1.3.0
-
-- User: fixed preferrer mode typo (Azrael)
-
-## App v2.0.1
+## App v2.1.0
 
 - Window Titlebar: Fixed Layout breaking in desktop environment (Azrael)
 - ModeSwitcher: Removed deprecated usage (Azrael)
 - Modes: Added modes and layouts for the said modes (Spaces/Feed) (Azrael)
 - Theme Selector: Split it from the playground left sidebar (Azrael)
 
-## Mobile v2.0.1
-
-- App Bar: Added correct zindex for the appbar (mateie)
-
-## Types v2.0.1
+## Types v2.0.2
 
 - APIUserSettings: fixed preferrer mode typo (Azrael)
 
-## UI Desktop v4.0.0
+## UI Desktop v4.1.0
 
 - Divider: Fixed divider not expanding correctly in the parent container (Azrael)
 - Select: removed logic for reverse columns when placement is on top (Azrael)
