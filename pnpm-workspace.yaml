@@ -4,12 +4,12 @@ packages:
     - tooling/*
 
 nodeLinker: hoisted
-shamefullyHoist: true
 
 onlyBuiltDependencies:
     - "@parcel/watcher"
     - "@sentry-internal/node-cpu-profiler"
     - "@sentry/cli"
+    - "@shopify/react-native-skia"
     - "@swc/core"
     - bcrypt
     - bufferutil
@@ -19,6 +19,9 @@ onlyBuiltDependencies:
     - esbuild
     - fsevents
     - parcel-bundler
+    - protobufjs
     - sharp
     - unrs-resolver
     - zlib-sync
+
+shamefullyHoist: true
