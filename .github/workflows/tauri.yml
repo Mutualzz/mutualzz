@@ -207,3 +207,11 @@ jobs:
                   CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
                   CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
               shell: bash
+
+            - name: Discord Webhook
+              uses: tsickert/discord-webhook@v7.0.0
+              with:
+                  webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL}}
+                  username: "Changelog"
+                  avatar-url: "https://cdn.discordapp.com/icons/1332254930861424661/6bf53396c2dbc48047f69f905a3cbe2a.webp?size=1024"
+                  embed-description: ${{ steps.changelog.outputs.body }}
