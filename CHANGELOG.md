@@ -16,7 +16,7 @@
 - Modals: Further fixes (Azrael)
 - Theme Creator & User bar: Fixed how the modals are displayed (Azrael)
 
-## Types v2.0.2
+## Types v2.1.2
 
 - APITheme: Added adaptive property (Azrael)
 
