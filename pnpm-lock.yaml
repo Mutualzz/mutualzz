@@ -44,6 +44,9 @@ importers:
       '@fontsource/montserrat':
         specifier: ^5.2.8
         version: 5.2.8
+      '@fontsource/rubik':
+        specifier: ^5.2.8
+        version: 5.2.8
       '@juggle/resize-observer':
         specifier: ^3.4.0
         version: 3.4.0
@@ -2070,6 +2073,9 @@ packages:
 
   '@fontsource/montserrat@5.2.8':
     resolution: {integrity: sha512-xTjLxSbSfCycDB0pwmNsfNvdfWPaDaRQ2LC6yt/ZI7SdvXG52zHnzNYC/09mzuAuWNJyShkteutfCoDgym56hQ==}
+
+  '@fontsource/rubik@5.2.8':
+    resolution: {integrity: sha512-PIc8QR7FqWPcYhbdRiGff56vQlKqg/ytES1YqecSq1GkgxiH4TBshrFvDEOZ9JonUF9m1qQ+qXxJj7wD5zgXEw==}
 
   '@happy-dom/global-registrator@20.0.10':
     resolution: {integrity: sha512-GU0UBt9lJKhZlY/U0Bivj9ZVepDIQoAUupAAl/90THG4/urkzXNglkVYETsnt2pGBDgQ+4vBjMAbLu6XzcKcQA==}
@@ -13510,6 +13516,8 @@ snapshots:
   '@fontsource/inter@5.2.8': {}
 
   '@fontsource/montserrat@5.2.8': {}
+
+  '@fontsource/rubik@5.2.8': {}
 
   '@happy-dom/global-registrator@20.0.10':
     dependencies:
