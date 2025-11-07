@@ -45,7 +45,7 @@ jobs:
               run: corepack enable
 
             - name: Prepare pnpm
-              run: corepack prepare pnpm@10.14.0 --activate
+              run: corepack prepare pnpm@latest --activate
 
             # Install Rust
             - name: Setup Rust
@@ -146,8 +146,8 @@ jobs:
                     win_exe=$(ls "$BASE_DIR/nsis/"*.exe 2>/dev/null | head -n1)
 
                     if [[ -f "$win_exe" ]]; then
-                      mv "$win_exe" "MutualzzSetup.exe"
-                      wrangler r2 object put "mutualzz/releases/latest/MutualzzSetup.exe" --file "MutualzzSetup.exe" --remote
+                        mv "$win_exe" "MutualzzSetup.exe"
+                        wrangler r2 object put "mutualzz/releases/latest/MutualzzSetup.exe" --file "MutualzzSetup.exe" --remote
                     fi
                   fi
 
@@ -155,8 +155,8 @@ jobs:
                   if [[ "${{ matrix.platform }}" == "macos-latest" ]]; then
                     osx=$(ls "$MACOS_DIR/dmg/"*.dmg 2>/dev/null | head -n1)
                     if [[ -f "$osx" ]]; then
-                      mv "$osx" "Mutualzz.dmg"
-                      wrangler r2 object put "mutualzz/releases/latest/Mutualzz.dmg" --file "Mutualzz.dmg" --remote
+                        mv "$osx" "Mutualzz.dmg"
+                        wrangler r2 object put "mutualzz/releases/latest/Mutualzz.dmg" --file "Mutualzz.dmg" --remote
                     fi
                   fi
 
@@ -167,18 +167,18 @@ jobs:
                     linux_appimage=$(ls "$BASE_DIR/appimage/"*.AppImage 2>/dev/null | head -n1)
 
                     if [[ -f "$linux_debian" ]]; then
-                      mv "$linux_debian" "Mutualzz.deb"
-                      wrangler r2 object put "mutualzz/releases/latest/Mutualzz.deb" --file "Mutualzz.deb" --remote
+                        mv "$linux_debian" "Mutualzz.deb"
+                        wrangler r2 object put "mutualzz/releases/latest/Mutualzz.deb" --file "Mutualzz.deb" --remote
                     fi
 
                     if [[ -f "$linux_rpm" ]]; then
-                      mv "$linux_rpm" "Mutualzz.rpm"
-                      wrangler r2 object put "mutualzz/releases/latest/Mutualzz.rpm" --file "Mutualzz.rpm"  --remote
+                        mv "$linux_rpm" "Mutualzz.rpm"
+                        wrangler r2 object put "mutualzz/releases/latest/Mutualzz.rpm" --file "Mutualzz.rpm"  --remote
                     fi
 
                     if [[ -f "$linux_appimage" ]]; then
-                      mv "$linux_appimage" "Mutualzz.AppImage"
-                      wrangler r2 object put "mutualzz/releases/latest/Mutualzz.AppImage" --file "Mutualzz.AppImage" --remote
+                        mv "$linux_appimage" "Mutualzz.AppImage"
+                        wrangler r2 object put "mutualzz/releases/latest/Mutualzz.AppImage" --file "Mutualzz.AppImage" --remote
                     fi
                   fi
 
@@ -207,11 +207,3 @@ jobs:
                   CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
                   CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
               shell: bash
-
-            - name: Discord Webhook
-              uses: tsickert/discord-webhook@v7.0.0
-              with:
-                  webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL}}
-                  username: "Changelog"
-                  avatar-url: "https://cdn.discordapp.com/icons/1332254930861424661/6bf53396c2dbc48047f69f905a3cbe2a.webp?size=1024"
-                  embed-description: ${{ steps.changelog.outputs.body }}
