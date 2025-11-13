@@ -8,17 +8,12 @@ nodeLinker: hoisted
 onlyBuiltDependencies:
     - "@parcel/watcher"
     - "@sentry-internal/node-cpu-profiler"
-    - "@sentry/cli"
     - "@shopify/react-native-skia"
     - "@swc/core"
+    - "@yukikaze-bot/erlpack"
     - bcrypt
     - bufferutil
-    - core-js
-    - core-js-pure
-    - deasync
     - esbuild
-    - fsevents
-    - parcel-bundler
     - protobufjs
     - sharp
     - unrs-resolver
