@@ -48,8 +48,8 @@ jobs:
             - name: Install all dependencies (just in case)
               run: pnpm i
 
-            - name: Build types
-              run: pnpm turbo run build --filter="./packages/types"
+            - name: Build primitives
+              run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/color-picker"
 
             - name: Build dependencies
               run: pnpm turbo run build --filter="./packages/ui-core" --filter="./packages/ui-web" --filter="./packages/validators"

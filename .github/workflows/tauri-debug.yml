@@ -88,6 +88,9 @@ jobs:
               working-directory: apps/app
               run: pnpm run ci:prebuild
 
+            - name: Build primitives
+              run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/color-picker"
+
             - id: changelog
               run: |
                   if [ -f CHANGELOG.md ]; then
