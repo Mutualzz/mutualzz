@@ -80,5 +80,5 @@ jobs:
               with:
                   webhook-url: ${{ secrets.DISCORD_WEBHOOK_URL}}
                   username: "Changelog"
-                  avatar-url: "https://cdn.discordapp.com/icons/1332254930861424661/6bf53396c2dbc48047f69f905a3cbe2a.webp?size=1024"
+                  avatar-url: "https://cdn.discordapp.com/icons/1332254930861424661/16973fc3f9cd083e03004d946172173c.webp?size=1024"
                   embed-description: ${{ steps.changelog.outputs.body }}
