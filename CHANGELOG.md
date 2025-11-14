@@ -1,28 +1,24 @@
 # Changelog
 
-## REST v2.1.0
+## REST v2.1.1
 
-- Misc: Migrated to PostgresSQL (Azrael)
-- Spaces: Properly implemented (still needs icon processing)
-- User Settings: Implemented but only used for space positioning
+- Added some safety headers (Azrael)
 
-## Gateway v2.1.0
+## Gateway v2.1.1
 
-- Database: Migrated to PostgresSQL (Azrael)
-- Encoding: Introduced data encoding with etf or json
-- Compression: Introduced data compression using zlib
+- Fixed payloads having broken properties (such as Date) (Azrael)
 
-## App v2.3.0
+## CDN v2.1.0
 
-- App: Fixed bugs, better performance, introduced gateway encoding, compression, added adaptive icons (adapt with theme) (Azrael)
-- Animated: Create shared animated components with motion that can be used anywhere (so we dont recreate it) (Azrael)
-- TopNavigation: Fixed some styling and made it cleaner (Azrael)
-- AvatarUpload: Added animations to make it look cool :3 (Azrael)
-- Avatars: Added animations to make it look cool :3 (Azrael)
-- AvatarDraw: Added animation to make it look nice (Azrael)
-- formatting fix (Azrael)
-- Icons: Added adaptive icons and improved Desktop experience (Azrael)
-- Added icons to tauri (Azrael)
-- its not neded to export appStore instance without useAppStore (Azrael)
-- Logo/Icon: Optimized adaptive icon (Azrael)
-- Icon: Added adaptive logo and icon (Azrael)
+- Spaces: Added (Azrael)
+- Default Avatar: Added a check to make sure that user doesnt request non-existent avatar (Azrael)
+- Made Sharp setup caches and concurrency once (Azrael)
+
+## App v2.3.1
+
+- Objects: Fixed Date parsing for the stores (Azrael)
+- Themes: Fixed themes resetting incorrectly upon logout (Azrael)
+- Settings: Adjusted some height (Azrael)
+- Appearance Settings: Adjusted some padding (Azrael)
+- Top Navigation: Adjusted some padding (Azrael)
+- Settings: Adjusted the panel height (Azrael)
