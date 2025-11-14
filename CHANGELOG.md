@@ -12,7 +12,7 @@
 - Encoding: Introduced data encoding with etf or json
 - Compression: Introduced data compression using zlib
 
-## App v2.2.0
+## App v2.3.0
 
 - App: Fixed bugs, better performance, introduced gateway encoding, compression, added adaptive icons (adapt with theme) (Azrael)
 - Animated: Create shared animated components with motion that can be used anywhere (so we dont recreate it) (Azrael)
