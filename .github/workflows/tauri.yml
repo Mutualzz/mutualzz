@@ -60,6 +60,7 @@ jobs:
                   git submodule update --init packages/color-picker
                   git submodule update --init packages/types
                   git submodule update --init packages/logger
+                  git submodule update --init packages/contexify
                   git submodule update --init apps/app
 
             - name: Init private submodules
