@@ -91,7 +91,7 @@ jobs:
               run: pnpm run ci:prebuild
 
             - name: Build primitives
-              run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/color-picker"
+              run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/color-picker" --filter="./packages/contexify"
 
             - id: changelog
               run: |
