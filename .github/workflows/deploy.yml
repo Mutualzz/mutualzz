@@ -33,6 +33,7 @@ jobs:
                   git submodule update --init packages/types
                   git submodule update --init packages/logger
                   git submodule update --init packages/contexify
+                  git submodule update --init tooling/eslint-config
                   git submodule update --init apps/app
 
             - name: Init private submodules
