@@ -173,9 +173,9 @@ importers:
       mobx-persist-store:
         specifier: ^1.1.8
         version: 1.1.8(mobx@6.15.0)
-      mobx-react:
-        specifier: ^9.2.1
-        version: 9.2.1(mobx@6.15.0)(react-dom@19.2.3(react@19.2.3))(react-native@0.83.0(@babel/core@7.28.5)(@types/react@19.2.7)(bufferutil@4.0.9)(react@19.2.3))(react@19.2.3)
+      mobx-react-lite:
+        specifier: ^4.1.1
+        version: 4.1.1(mobx@6.15.0)(react-dom@19.2.3(react@19.2.3))(react-native@0.83.0(@babel/core@7.28.5)(@types/react@19.2.7)(bufferutil@4.0.9)(react@19.2.3))(react@19.2.3)
       motion:
         specifier: ^12.23.26
         version: 12.23.26(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
