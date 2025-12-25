@@ -5,18 +5,4 @@ packages:
 
 nodeLinker: hoisted
 
-onlyBuiltDependencies:
-    - "@parcel/watcher"
-    - "@sentry-internal/node-cpu-profiler"
-    - "@shopify/react-native-skia"
-    - "@swc/core"
-    - "@yukikaze-bot/erlpack"
-    - bcrypt
-    - bufferutil
-    - esbuild
-    - protobufjs
-    - sharp
-    - unrs-resolver
-    - zlib-sync
-
 shamefullyHoist: true
