@@ -36,11 +36,8 @@ jobs:
                   git submodule update --init packages/contexify
                   git submodule update --init tooling/eslint-config
                   git submodule update --init apps/app
-
-            - name: Init private submodules
-              run: |
-                  git config --global url."https://${GH_PAT}:@github.com/".insteadOf "https://github.com/"
                   git submodule update --init packages/validators
+
               env:
                   GH_PAT: ${{ secrets.GH_PAT }}
               shell: bash
