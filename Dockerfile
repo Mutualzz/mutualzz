@@ -18,4 +18,5 @@ copy --from=build /api /api
 
 workdir /api
 expose 3000 3001 4000
-cmd ["pnpm", "start"]
+cmd ["sh", "-lc", "pnpm --filter @mutualzz/server db:migrate && exec pnpm --filter @mutualzz/server start"]
+
