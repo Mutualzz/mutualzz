@@ -13,7 +13,7 @@ jobs:
         steps:
             - uses: actions/checkout@v4
               with:
-                  submodules: false
+                  submodules: true
 
             - name: Setup Node
               uses: actions/setup-node@v4
@@ -25,18 +25,6 @@ jobs:
 
             - name: Prepare pnpm
               run: corepack prepare pnpm@latest --activate
-
-            - name: Init public submodules
-              run: |
-                  git submodule update --init packages/ui-core
-                  git submodule update --init packages/ui-web
-                  git submodule update --init packages/color-picker
-                  git submodule update --init packages/types
-                  git submodule update --init packages/logger
-                  git submodule update --init packages/contexify
-                  git submodule update --init tooling/eslint-config
-                  git submodule update --init apps/app
-                  git submodule update --init packages/validators
 
               env:
                   GH_PAT: ${{ secrets.GH_PAT }}
