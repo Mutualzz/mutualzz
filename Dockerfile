@@ -6,6 +6,7 @@ run corepack prepare pnpm@latest --activate
 
 from base as build
 workdir /api
+run git clone --recurse-submodules https://github.com/mutualzz/mutualzz.git .
 run --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 env NODE_ENV=production
 run pnpm build:server
