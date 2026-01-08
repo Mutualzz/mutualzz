@@ -11,7 +11,6 @@
         "build:server": "turbo run build --filter=\"./apps/server\"",
         "build:packages": "turbo run build --filter=\"./packages/logger\" --filter=\"./packages/validators\" --filter=\"./packages/types\" --filter=\"./packages/ui-core\"",
         "build:ui": "turbo run build --filter=\"./packages/ui-web\" --filter=\"./packages/ui-native\"",
-        "start": "pm2 start ./pm2.config.cjs",
         "gen-changelog": "node scripts/generateChangelog.mjs",
         "prepare": "husky",
         "dev:frontend": "turbo run dev --filter=\"./apps/app\" --filter=\"./packages/ui\"",
