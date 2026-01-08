@@ -1,0 +1,255 @@
+name: Release (Tauri + Netlify)
+
+on:
+    workflow_dispatch:
+    push:
+        branches:
+            - release
+
+jobs:
+    deploy-web:
+        name: Deploy Web version to Netlify
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  submodules: false
+
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: lts/*
+
+            - name: Enable Corepack (for pnpm)
+              run: corepack enable
+
+            - name: Prepare pnpm
+              run: corepack prepare pnpm@latest --activate
+
+            - name: Init public submodules
+              run: |
+                  git submodule update --init packages/ui-core
+                  git submodule update --init packages/ui-web
+                  git submodule update --init packages/color-picker
+                  git submodule update --init packages/types
+                  git submodule update --init packages/logger
+                  git submodule update --init packages/contexify
+                  git submodule update --init tooling/eslint-config
+                  git submodule update --init apps/app
+
+            - name: Init private submodules
+              run: |
+                  git config --global url."https://${GH_PAT}:@github.com/".insteadOf "https://github.com/"
+                  git submodule update --init packages/validators
+              env:
+                  GH_PAT: ${{ secrets.GH_PAT }}
+              shell: bash
+
+            - name: Install netlify-cli
+              run: pnpm install -w -D netlify-cli
+
+            - name: Install dependencies
+              run: pnpm i
+
+            - name: Build primitives
+              run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/color-picker" --filter="./packages/contexify"
+
+            - name: Build dependencies
+              run: pnpm turbo run build --filter="./packages/ui-core" --filter="./packages/ui-web" --filter="./packages/validators"
+
+            - name: Build the app
+              working-directory: apps/app
+              run: pnpm vite:build
+
+            - name: Deploy to Netlify
+              env:
+                  NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+              run: pnpm exec netlify deploy --prod --site=94e51d96-ca0f-4128-bda5-7f22eb07fcc5 --dir=apps/app/dist/client --message "${{ github.event.head_commit.message }}"
+
+    deploy-bin:
+        name: BUild & Release Binaries (${{ matrix.platform }})
+        needs: deploy-web
+        permissions:
+            contents: write
+
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - platform: "macos-latest"
+                      args: "--target universal-apple-darwin"
+                    - platform: "ubuntu-22.04"
+                      args: ""
+                    - platform: "windows-latest"
+                      args: ""
+
+        runs-on: ${{ matrix.platform }}
+
+        steps:
+            - uses: actions/checkout@v4
+            - name: Install dependencies (Linux only)
+              if: matrix.platform == 'ubuntu-22.04'
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: lts/*
+
+            - name: Enable Corepack (for pnpm)
+              run: corepack enable
+
+            - name: Prepare pnpm
+              run: corepack prepare pnpm@latest --activate
+
+            - name: Setup Rust
+              uses: dtolnay/rust-toolchain@stable
+              with:
+                  targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+            - name: Init public submodules
+              run: |
+                  git submodule update --init packages/ui-core
+                      git submodule update --init packages/ui-web
+                      git submodule update --init packages/color-picker
+                      git submodule update --init packages/types
+                      git submodule update --init packages/logger
+                      git submodule update --init packages/contexify
+                      git submodule update --init tooling/eslint-config
+                      git submodule update --init apps/app
+
+            - name: Init private submodules
+              run: |
+                  git config --global url."https://${GH_PAT}:@github.com/".insteadOf "https://github.com/"
+                  git submodule update --init packages/validators
+                  env:
+                  GH_PAT: ${{ secrets.GH_PAT }}
+                  shell: bash
+
+            - name: Rust cache
+              uses: swatinem/rust-cache@v2
+              with:
+                  workspaces: "apps/app/src-tauri -> target"
+
+            - name: Install dependencies
+              run: pnpm install --no-frozen-lockfile
+
+            - name: Install Wrangler
+              run: npm install -g wrangler
+
+            - name: Run pre-build tasks
+              working-directory: apps/app
+              run: pnpm run ci:prebuild
+
+            - name: Build primitives
+              run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/color-picker" --filter="./packages/contexify"
+
+            - id: changelog
+              run: |
+                  if [ -f CHANGELOG.md ]; then
+                      echo "body<<EOF" >> $GITHUB_OUTPUT
+                      cat CHANGELOG.md >> $GITHUB_OUTPUT
+                      echo "EOF" >> $GITHUB_OUTPUT
+                  else
+                      echo "body=" >> $GITHUB_OUTPUT
+                  fi
+                  shell: bash
+
+            - uses: tauri-apps/tauri-action@v0
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+                  APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+                  APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+                  APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+                  APPLE_ID: ${{ secrets.APPLE_ID }}
+                  APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+                  APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+                  VITE_API_URL: ${{ secrets.VITE_API_URL }}
+                  VITE_WS_URL: ${{ secrets.VITE_WS_URL }}
+                  VITE_CDN_URL: ${{ secrets.VITE_CDN_URL }}
+                  VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
+                  VITE_FOR_TAURI: true
+              with:
+                  tagName: __VERSION__
+                  releaseName: "Mutualzz __VERSION__"
+                  releaseBody: ${{ steps.changelog.outputs.body }}
+                  releaseDraft: false
+                  prerelease: false
+                  includeRelease: true
+                  includeUpdaterJson: true
+                  args: ${{ matrix.args }}
+
+            - name: Upload binaries & generate latest.json
+              run: |
+                  echo "Uploading binaries for ${{ matrix.platform }}"
+
+                  BASE_DIR="./apps/app/src-tauri/target/release/bundle"
+                  MACOS_DIR="./apps/app/src-tauri/target/universal-apple-darwin/release/bundle"
+
+                  win_exe=""
+                  osx=""
+                  linux_debian=""
+                  linux_rpm=""
+                  linux_appimage=""
+
+                  if [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
+                      win_exe=$(ls "$BASE_DIR/nsis/"*.exe 2>/dev/null | head -n1)
+                      if [[ -f "$win_exe" ]]; then
+                      mv "$win_exe" "MutualzzSetup.exe"
+                      wrangler r2 object put "mutualzz/releases/latest/MutualzzSetup.exe" --file "MutualzzSetup.exe" --remote
+                      fi
+                  fi
+
+                  if [[ "${{ matrix.platform }}" == "macos-latest" ]]; then
+                      osx=$(ls "$MACOS_DIR/dmg/"*.dmg 2>/dev/null | head -n1)
+                      if [[ -f "$osx" ]]; then
+                      mv "$osx" "Mutualzz.dmg"
+                      wrangler r2 object put "mutualzz/releases/latest/Mutualzz.dmg" --file "Mutualzz.dmg" --remote
+                      fi
+                  fi
+
+                  if [[ "${{ matrix.platform }}" == "ubuntu-22.04" ]]; then
+                      linux_debian=$(ls "$BASE_DIR/deb/"*.deb 2>/dev/null | head -n1)
+                      linux_rpm=$(ls "$BASE_DIR/rpm/"*.rpm 2>/dev/null | head -n1)
+                      linux_appimage=$(ls "$BASE_DIR/appimage/"*.AppImage 2>/dev/null | head -n1)
+
+                      if [[ -f "$linux_debian" ]]; then
+                      mv "$linux_debian" "Mutualzz.deb"
+                      wrangler r2 object put "mutualzz/releases/latest/Mutualzz.deb" --file "Mutualzz.deb" --remote
+                      fi
+
+                      if [[ -f "$linux_rpm" ]]; then
+                      mv "$linux_rpm" "Mutualzz.rpm"
+                      wrangler r2 object put "mutualzz/releases/latest/Mutualzz.rpm" --file "Mutualzz.rpm" --remote
+                      fi
+
+                      if [[ -f "$linux_appimage" ]]; then
+                      mv "$linux_appimage" "Mutualzz.AppImage"
+                      wrangler r2 object put "mutualzz/releases/latest/Mutualzz.AppImage" --file "Mutualzz.AppImage" --remote
+                      fi
+                  fi
+
+                  BASE_URL="https://proxy.mutualzz.com/releases/latest"
+                  cat <<EOF > latest.json
+                  {
+                      "win": "$BASE_URL/MutualzzSetup.exe",
+                      "osx": "$BASE_URL/Mutualzz.dmg",
+                      "linux": {
+                      "debian": "$BASE_URL/Mutualzz.deb",
+                      "rpm": "$BASE_URL/Mutualzz.rpm",
+                      "appimage": "$BASE_URL/Mutualzz.AppImage"
+                      }
+                  }
+                  EOF
+
+                  wrangler r2 object put "mutualzz/releases/latest/latest.json" --file latest.json --remote
+                  echo "Upload and latest.json generation complete"
+                  env:
+                  R2_BUCKET: mutualzz
+                  CLOUDFLARE_ENDPOINT: ${{ secrets.CLOUDFLARE_ENDPOINT }}
+                  CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+                  CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+                  shell: bash
