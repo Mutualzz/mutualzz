@@ -16,7 +16,9 @@ env NODE_ENV=production
 workdir /api
 copy --from=build /api /api
 
-workdir /api
+ENTRYPOINT []
+
 expose 3000 3001 4000
-cmd ["sh", "-lc", "pnpm --filter @mutualzz/server db:migrate && exec pnpm --filter @mutualzz/server start"]
+cmd ["sh", "-lc", "pnpm -w --filter @mutualzz/server db:migrate && exec pnpm -w --filter @mutualzz/server start"]
+
 
