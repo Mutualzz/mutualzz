@@ -17,5 +17,5 @@ workdir /api
 copy --from=build /api /api
 
 expose 3000 3001 4000
-ENTRYPOINT []
-CMD ["pnpm", "start"]
+entrypoint []
+cmd ["pnpm", "start"]
