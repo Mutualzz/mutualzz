@@ -16,6 +16,7 @@ env NODE_ENV=production
 workdir /api
 copy --from=build /api /api
 
+workdir /api/apps/server
 expose 3000 3001 4000
 entrypoint []
 cmd ["pnpm", "start"]
