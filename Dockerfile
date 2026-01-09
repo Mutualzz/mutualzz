@@ -14,7 +14,7 @@ run pnpm build:server
 from base as deploy
 env NODE_ENV=production
 workdir /api
-copy --from=build /api .
+copy --from=build /api /api
 
 expose 3000 3001 4000
 cmd ["pnpm", "start"]
