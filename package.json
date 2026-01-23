@@ -37,6 +37,7 @@
             "@shopify/react-native-skia": "2.2.12"
         },
         "onlyBuiltDependencies": [
+            "@discordjs/opus",
             "@parcel/watcher",
             "@sentry-internal/node-cpu-profiler",
             "@shopify/react-native-skia",
