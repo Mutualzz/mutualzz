@@ -34,7 +34,7 @@ jobs:
         run: pnpm i
 
       - name: Install netlify-cli
-        run: pnpm add -D netlify-cli
+        run: pnpm add -w -D netlify-cli
 
       - name: Build peer dependencies
         run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/color-picker" --filter="./packages/contexify"
