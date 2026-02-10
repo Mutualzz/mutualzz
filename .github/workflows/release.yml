@@ -30,11 +30,11 @@ jobs:
           GH_PAT: ${{ secrets.GH_PAT }}
         shell: bash
 
-      - name: Install netlify-cli
-        run: pnpm install -w -D netlify-cli
-
       - name: Install dependencies
         run: pnpm i
+
+      - name: Install netlify-cli
+        run: pnpm add -D netlify-cli
 
       - name: Build peer dependencies
         run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/color-picker" --filter="./packages/contexify"
@@ -47,6 +47,7 @@ jobs:
         run: pnpm vite:build
 
       - name: Deploy to Netlify
+        working-directory: apps/app
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
         run: pnpm exec netlify deploy --prod --site=94e51d96-ca0f-4128-bda5-7f22eb07fcc5 --dir=apps/app/dist/client --message "${{ github.event.head_commit.message }}"
@@ -109,7 +110,7 @@ jobs:
         run: |
           git config --global url."https://${GH_PAT}:@github.com/".insteadOf "https://github.com/"
           git submodule update --init packages/validators
-          env:
+        env:
           GH_PAT: ${{ secrets.GH_PAT }}
           shell: bash
 
