@@ -24,11 +24,10 @@ jobs:
         run: corepack enable
 
       - name: Prepare pnpm
-        run: corepack prepare pnpm@latest --activate
-
+        shell: bash
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
-        shell: bash
+        run: corepack prepare pnpm@latest --activate
 
       - name: Install dependencies
         run: pnpm i
@@ -50,7 +49,7 @@ jobs:
         working-directory: apps/app
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-        run: pnpm exec netlify deploy --prod --site=94e51d96-ca0f-4128-bda5-7f22eb07fcc5 --dir=apps/app/dist/client --message "${{ github.event.head_commit.message }}"
+        run: pnpm exec netlify deploy --prod --site=94e51d96-ca0f-4128-bda5-7f22eb07fcc5 --dir=dist/client --message "${{ github.event.head_commit.message }}"
 
   deploy-bin:
     name: Build & Release Binaries (${{ matrix.platform }})
@@ -98,21 +97,21 @@ jobs:
       - name: Init public submodules
         run: |
           git submodule update --init packages/ui-core
-              git submodule update --init packages/ui-web
-              git submodule update --init packages/color-picker
-              git submodule update --init packages/types
-              git submodule update --init packages/logger
-              git submodule update --init packages/contexify
-              git submodule update --init tooling/eslint-config
-              git submodule update --init apps/app
+          git submodule update --init packages/ui-web
+          git submodule update --init packages/color-picker
+          git submodule update --init packages/types
+          git submodule update --init packages/logger
+          git submodule update --init packages/contexify
+          git submodule update --init tooling/eslint-config
+          git submodule update --init apps/app
 
       - name: Init private submodules
+        shell: bash
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
         run: |
           git config --global url."https://${GH_PAT}:@github.com/".insteadOf "https://github.com/"
           git submodule update --init packages/validators
-        env:
-          GH_PAT: ${{ secrets.GH_PAT }}
-          shell: bash
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2
@@ -133,6 +132,7 @@ jobs:
         run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/color-picker" --filter="./packages/contexify"
 
       - id: changelog
+        shell: bash
         run: |
           if [ -f CHANGELOG.md ]; then
               echo "body<<EOF" >> $GITHUB_OUTPUT
@@ -141,7 +141,6 @@ jobs:
           else
               echo "body=" >> $GITHUB_OUTPUT
           fi
-          shell: bash
 
       - uses: tauri-apps/tauri-action@v0
         env:
@@ -169,6 +168,12 @@ jobs:
           args: ${{ matrix.args }}
 
       - name: Upload binaries & generate latest.json
+        shell: bash
+        env:
+          R2_BUCKET: mutualzz
+          CLOUDFLARE_ENDPOINT: ${{ secrets.CLOUDFLARE_ENDPOINT }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
         run: |
           echo "Uploading binaries for ${{ matrix.platform }}"
 
@@ -233,9 +238,3 @@ jobs:
 
           wrangler r2 object put "mutualzz/releases/latest/latest.json" --file latest.json --remote
           echo "Upload and latest.json generation complete"
-          env:
-          R2_BUCKET: mutualzz
-          CLOUDFLARE_ENDPOINT: ${{ secrets.CLOUDFLARE_ENDPOINT }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
-          shell: bash
