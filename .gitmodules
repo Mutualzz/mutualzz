@@ -37,3 +37,6 @@
 [submodule "packages/contexify"]
 	path = packages/contexify
 	url = https://github.com/Mutualzz/contexify.git
+[submodule "packages/permissions"]
+	path = packages/permissions
+	url = https://github.com/Mutualzz/permissions.git
