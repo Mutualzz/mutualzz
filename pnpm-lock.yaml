@@ -172,6 +172,9 @@ importers:
       idb:
         specifier: ^8.0.3
         version: 8.0.3
+      imurmurhash:
+        specifier: ^0.1.4
+        version: 0.1.4
       is-hotkey:
         specifier: ^0.2.0
         version: 0.2.0
@@ -287,6 +290,9 @@ importers:
       '@types/hast':
         specifier: ^3.0.4
         version: 3.0.4
+      '@types/imurmurhash':
+        specifier: ^0.1.4
+        version: 0.1.4
       '@types/is-hotkey':
         specifier: ^0.1.10
         version: 0.1.10
@@ -642,6 +648,9 @@ importers:
       helmet:
         specifier: ^8.1.0
         version: 8.1.0
+      imurmurhash:
+        specifier: ^0.1.4
+        version: 0.1.4
       ioredis:
         specifier: ^5.9.3
         version: 5.9.3
@@ -724,6 +733,9 @@ importers:
       '@types/express':
         specifier: ^5.0.6
         version: 5.0.6
+      '@types/imurmurhash':
+        specifier: ^0.1.4
+        version: 0.1.4
       '@types/json-bigint':
         specifier: ^1.0.4
         version: 1.0.4
@@ -5619,6 +5631,9 @@ packages:
 
   '@types/http-errors@2.0.5':
     resolution: {integrity: sha512-r8Tayk8HJnX0FztbZN7oVqGccWgw98T/0neJphO91KkmOzug1KkofZURD4UaD5uH8AqcFLfdPErnBod0u71/qg==}
+
+  '@types/imurmurhash@0.1.4':
+    resolution: {integrity: sha512-Zo/QlTiAvOP3pd9nuPOw33k0l/QssLOBrriShWzUE4qhIZByIF3rCoyF8ZTxdyFTUM2mYljYLqMUeLvA3NJUmQ==}
 
   '@types/is-hotkey@0.1.10':
     resolution: {integrity: sha512-RvC8KMw5BCac1NvRRyaHgMMEtBaZ6wh0pyPTBu7izn4Sj/AX9Y4aXU5c7rX8PnM/knsuUpC1IeoBkANtxBypsQ==}
@@ -18323,6 +18338,8 @@ snapshots:
       '@types/unist': 3.0.3
 
   '@types/http-errors@2.0.5': {}
+
+  '@types/imurmurhash@0.1.4': {}
 
   '@types/is-hotkey@0.1.10': {}
 
