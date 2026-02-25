@@ -46,6 +46,7 @@
             "bcrypt",
             "bufferutil",
             "esbuild",
+            "mediasoup",
             "sharp",
             "unrs-resolver",
             "zlib-sync"
