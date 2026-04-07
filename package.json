@@ -22,7 +22,7 @@
         "husky": "^9.1.7",
         "prettier": "^3.8.1",
         "prettier-plugin-organize-imports": "^4.3.0",
-        "turbo": "^2.9.3",
+        "turbo": "^2.9.4",
         "typescript": "6.0.2",
         "node-addon-api": "^8.7.0",
         "node-gyp": "^12.2.0"
