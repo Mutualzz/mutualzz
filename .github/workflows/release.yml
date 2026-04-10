@@ -110,8 +110,11 @@ jobs:
         working-directory: apps/app
         run: pnpm run ci:prebuild
 
-      - name: Build primitives
+      - name: Build peer dependencies
         run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/color-picker" --filter="./packages/contexify"
+
+      - name: Build dependencies
+        run: pnpm turbo run build --filter="./packages/ui-core" --filter="./packages/ui-web" --filter="./packages/validators"
 
       - id: changelog
         shell: bash
