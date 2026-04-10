@@ -71,9 +71,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Install dependencies (Linux only)
         with:
           submodules: true
+
+      - name: Install dependencies (Linux only)
         if: matrix.platform == 'ubuntu-22.04'
         run: |
           sudo apt-get update
@@ -94,20 +95,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
-
-      - name: Init public submodules
-        run: |
-          git submodule update --init packages/ui-core
-          git submodule update --init packages/ui-web
-          git submodule update --init packages/color-picker
-          git submodule update --init packages/types
-          git submodule update --init packages/logger
-          git submodule update --init packages/contexify
-          git submodule update --init tooling/eslint-config
-          git submodule update --init packages/validators
-          git submodule update --init apps/app
-
-
+          
       - name: Rust cache
         uses: swatinem/rust-cache@v2
         with:
