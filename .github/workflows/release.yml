@@ -71,9 +71,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Install dependencies (Linux only)
         with:
           submodules: true
+
+      - name: Install dependencies (Linux only)
         if: matrix.platform == 'ubuntu-22.04'
         run: |
           sudo apt-get update
@@ -94,7 +95,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
-
+          
       - name: Rust cache
         uses: swatinem/rust-cache@v2
         with:
