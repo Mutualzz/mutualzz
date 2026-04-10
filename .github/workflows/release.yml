@@ -73,6 +73,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install dependencies (Linux only)
         if: matrix.platform == 'ubuntu-22.04'
+        with:
+          submodules: true
         run: |
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
@@ -92,25 +94,6 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
-
-      - name: Init public submodules
-        run: |
-          git submodule update --init packages/ui-core
-          git submodule update --init packages/ui-web
-          git submodule update --init packages/color-picker
-          git submodule update --init packages/types
-          git submodule update --init packages/logger
-          git submodule update --init packages/contexify
-          git submodule update --init tooling/eslint-config
-          git submodule update --init apps/app
-
-      - name: Init private submodules
-        shell: bash
-        env:
-          GH_PAT: ${{ secrets.GH_PAT }}
-        run: |
-          git config --global url."https://${GH_PAT}:@github.com/".insteadOf "https://github.com/"
-          git submodule update --init packages/validators
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2
