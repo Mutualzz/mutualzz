@@ -39,7 +39,7 @@ jobs:
         run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/color-picker" --filter="./packages/contexify"
 
       - name: Build dependencies
-        run: pnpm turbo run build --filter="./packages/ui-core" --filter="./packages/ui-web" --filter="./packages/validators" --filter="./packagess/permissions"
+        run: pnpm turbo run build --filter="./packages/ui-core" --filter="./packages/ui-web" --filter="./packages/validators" --filter="./packages/permissions"
 
       - name: Build the app
         working-directory: apps/app
@@ -115,7 +115,7 @@ jobs:
         run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/color-picker" --filter="./packages/contexify"
 
       - name: Build dependencies
-        run: pnpm turbo run build --filter="./packages/ui-core" --filter="./packages/ui-web" --filter="./packages/validators" --filter="./packagess/permissions"
+        run: pnpm turbo run build --filter="./packages/ui-core" --filter="./packages/ui-web" --filter="./packages/validators" --filter="./packages/permissions"
 
       - id: changelog
         shell: bash
