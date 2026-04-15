@@ -81,6 +81,9 @@ importers:
       '@mateie/react-drag-drop-files':
         specifier: ^3.1.1
         version: 3.1.1(@types/react@19.2.10)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      '@mutualzz/bitfield':
+        specifier: workspace:*
+        version: link:../../packages/bitfield
       '@mutualzz/color-picker':
         specifier: workspace:*
         version: link:../../packages/color-picker
@@ -90,9 +93,6 @@ importers:
       '@mutualzz/logger':
         specifier: workspace:*
         version: link:../../packages/logger
-      '@mutualzz/permissions':
-        specifier: workspace:*
-        version: link:../../packages/permissions
       '@mutualzz/ui-core':
         specifier: workspace:*
         version: link:../../packages/ui-core
@@ -406,12 +406,12 @@ importers:
       '@expo/vector-icons':
         specifier: ^15.1.1
         version: 15.1.1(expo-font@55.0.6)(react-native@0.83.2(@babel/core@7.29.0)(@react-native/metro-config@0.85.0(@babel/core@7.29.0)(bufferutil@4.1.0))(@types/react@19.2.10)(bufferutil@4.1.0)(react@19.2.0))(react@19.2.0)
+      '@mutualzz/bitfield':
+        specifier: workspace:*
+        version: link:../../packages/bitfield
       '@mutualzz/logger':
         specifier: workspace:*
         version: link:../../packages/logger
-      '@mutualzz/permissions':
-        specifier: workspace:*
-        version: link:../../packages/permissions
       '@mutualzz/ui-core':
         specifier: workspace:*
         version: link:../../packages/ui-core
@@ -569,12 +569,12 @@ importers:
       '@faker-js/faker':
         specifier: ^10.4.0
         version: 10.4.0
+      '@mutualzz/bitfield':
+        specifier: workspace:*
+        version: link:../../packages/bitfield
       '@mutualzz/logger':
         specifier: workspace:*
         version: link:../../packages/logger
-      '@mutualzz/permissions':
-        specifier: workspace:*
-        version: link:../../packages/permissions
       '@mutualzz/validators':
         specifier: workspace:*
         version: link:../../packages/validators
@@ -811,6 +811,15 @@ importers:
         specifier: ^4.21.0
         version: 4.21.0
 
+  packages/bitfield:
+    devDependencies:
+      '@types/node':
+        specifier: ^25.5.2
+        version: 25.5.2
+      bunchee:
+        specifier: ^6.10.0
+        version: 6.10.0(typescript@6.0.2)
+
   packages/color-picker:
     dependencies:
       '@emotion/react':
@@ -878,15 +887,6 @@ importers:
 
   packages/logger:
     devDependencies:
-      bunchee:
-        specifier: ^6.10.0
-        version: 6.10.0(typescript@6.0.2)
-
-  packages/permissions:
-    devDependencies:
-      '@types/node':
-        specifier: ^25.5.2
-        version: 25.5.2
       bunchee:
         specifier: ^6.10.0
         version: 6.10.0(typescript@6.0.2)
