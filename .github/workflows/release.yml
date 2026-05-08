@@ -22,6 +22,7 @@ jobs:
 
       - name: Init only needed submodules
         run: |
+          git submodule update --init ./apps/app
           git submodule update --init ./packages/types
           git submodule update --init ./packages/logger
           git submodule update --init ./packages/color-picker
@@ -96,6 +97,7 @@ jobs:
 
       - name: Init only needed submodules
         run: |
+          git submodule update --init ./apps/app
           git submodule update --init ./packages/types
           git submodule update --init ./packages/logger
           git submodule update --init ./packages/color-picker
