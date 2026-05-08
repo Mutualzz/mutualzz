@@ -1,8 +1,8 @@
 [build]
-    base = "apps/app"
-    command = "vite build"
-    publish = "dist/client"
+base = "apps/app"
+command = "vite build"
+publish = "dist"
 
 [functions]
-    directory = ".netlify/v1/functions"
-    node_bundler = "esbuild"
+directory = ".netlify/v1/functions"
+node_bundler = "esbuild"
