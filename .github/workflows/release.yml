@@ -13,12 +13,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: true
+          submodules: false
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
+
+      - name: Init only needed submodules
+        run: |
+          git submodule update --init ./packages/types
+          git submodule update --init ./packages/logger
+          git submodule update --init ./packages/color-picker
+          git submodule update --init ./packages/contexify
+          git submodule update --init ./packages/ui-core
+          git submodule update --init ./packages/ui-web
+          git submodule update --init ./packages/validators
+          git submodule update --init ./packages/bitfield
 
       - name: Enable Corepack (for pnpm)
         run: corepack enable
@@ -30,13 +41,13 @@ jobs:
         run: corepack prepare pnpm@latest --activate
 
       - name: Install dependencies
-        run: pnpm i --filter="./packages/types" --filter="./packages/logger" --filter="./packages/color-picker" --filter="./packages/contexify" --filter="./packages/ui-core" --filter="./packages/ui-web" --filter="./packages/validators" --filter="./packages/bitfield" --filter="./apps/app" --no-frozen-lockfile
+        run: pnpm i --no-frozen-lockfile
 
       - name: Build peer dependencies
-        run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/color-picker" --filter="./packages/contexify"
+        run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/color-picker" --filter="./packages/contexify"  --filter="./packages/ui-core"
 
       - name: Build dependencies
-        run: pnpm turbo run build --filter="./packages/ui-core" --filter="./packages/ui-web" --filter="./packages/validators" --filter="./packages/bitfield"
+        run: pnpm turbo run build --filter="./packages/ui-web" --filter="./packages/validators" --filter="./packages/bitfield"
 
       - name: Build the app
         working-directory: apps/app
@@ -69,7 +80,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: true
+          submodules: false
 
       - name: Install dependencies (Linux only)
         if: matrix.platform == 'ubuntu-22.04'
@@ -81,6 +92,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
+
+      - name: Init only needed submodules
+        run: |
+          git submodule update --init ./packages/types
+          git submodule update --init ./packages/logger
+          git submodule update --init ./packages/color-picker
+          git submodule update --init ./packages/contexify
+          git submodule update --init ./packages/ui-core
+          git submodule update --init ./packages/ui-web
+          git submodule update --init ./packages/validators
+          git submodule update --init ./packages/bitfield   
 
       - name: Enable Corepack (for pnpm)
         run: corepack enable
@@ -98,21 +120,12 @@ jobs:
         with:
           workspaces: "apps/app/src-tauri -> target"
 
-      - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile --filter="./packages/types"  --filter="./packages/logger"  --filter="./packages/color-picker"  --filter="./packages/contexify"  --filter="./packages/ui-core"  --filter="./packages/ui-web"  --filter="./packages/validators"  --filter="./packages/bitfield"  --filter="./apps/app"
-
       - name: Install Wrangler
         run: npm install -g wrangler
 
       - name: Run pre-build tasks
         working-directory: apps/app
         run: pnpm run ci:prebuild
-
-      - name: Build peer dependencies
-        run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/color-picker" --filter="./packages/contexify"
-
-      - name: Build dependencies
-        run: pnpm turbo run build --filter="./packages/ui-core" --filter="./packages/ui-web" --filter="./packages/validators" --filter="./packages/bitfield"
 
       - id: changelog
         shell: bash
@@ -129,7 +142,7 @@ jobs:
             echo "body=" >> "$GITHUB_OUTPUT"
           fi
 
-      - uses: tauri-apps/tauri-action@v0
+      - uses: tauri-apps/tauri-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
