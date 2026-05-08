@@ -1,10 +1,20 @@
 # Changelog
 
-## REST v5.0.1
+## CDN v3.0.0
 
-- Permissions: Added new permissions and made ReadMessageHistory functional (Azrael)
+- Added cameras, fixed voice channel inconsistencies, moved on from tanstack start, fixed some markdown bugs (Azrael)
+- Fixed routes not loading properly (Azrael)
 
-## App v5.0.1
+## App v5.1.0
 
-- Permissions: Added new permissions and made ReadMessageHistory functional (Azrael)
+- Markdown: Fixed some bugs (Azrael)
+- Cameras: Added
+- Misc: Moved on from TanStack Start (Azrael)
+- Emojis: Fixed deleted emojis showing empty text (Azrael)
+- Emojis Tab: added a tooltip to show what the trash button does (Azrael)
+- Emoji usage: Fixed wrong emoji usage (Azrael)
 
+# Voice 1.1.0
+
+- Cameras: Added (Azrael)
+- Fixed voice channel inconsistencies (Azrael)
