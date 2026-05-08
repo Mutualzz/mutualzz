@@ -42,7 +42,7 @@ jobs:
         run: corepack prepare pnpm@latest --activate
 
       - name: Install dependencies
-        run: pnpm i --no-frozen-lockfile
+        run: pnpm i
 
       - name: Build peer dependencies
         run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/color-picker" --filter="./packages/contexify"  --filter="./packages/ui-core"
