@@ -52,7 +52,7 @@ jobs:
 
       - name: Build the app
         working-directory: apps/app
-        run: pnpm vite:build
+        run: pnpm build
 
       - name: Deploy to Netlify
         env:
