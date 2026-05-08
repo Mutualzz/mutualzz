@@ -16,7 +16,7 @@
         "dev:frontend": "turbo run dev --filter=\"./apps/app\" --filter=\"./packages/ui\"",
         "release": "git checkout release && git merge master && git push origin release && git checkout master",
         "init-submodules": "git submodule update --init --recursive && git submodule foreach git checkout master",
-        "pull": "git pull origin master && git submodule foreach git pull origin master",   
+        "pull": "git pull origin master && git submodule foreach git pull origin master",
         "delete-all-node-modules": "rm -rfv node_modules && git submodule foreach rm -rfv node_modules"
     },
     "devDependencies": {
@@ -41,22 +41,7 @@
             "react-native-svg": "15.15.3",
             "@shopify/react-native-skia": "2.4.18",
             "sharp": "0.34.5"
-        },
-        "onlyBuiltDependencies": [
-            "@discordjs/opus",
-            "@parcel/watcher",
-            "@sentry-internal/node-cpu-profiler",
-            "@shopify/react-native-skia",
-            "@swc/core",
-            "@yukikaze-bot/erlpack",
-            "bcrypt",
-            "bufferutil",
-            "esbuild",
-            "mediasoup",
-            "sharp",
-            "unrs-resolver",
-            "zlib-sync"
-        ]
+        }
     },
     "engines": {
         "node": ">=22"
