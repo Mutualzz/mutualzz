@@ -131,6 +131,10 @@ jobs:
         working-directory: apps/app
         run: pnpm run ci:prebuild
 
+      - name: Install dependencies
+        working-directory: apps/app
+        run: pnpm i
+
       - id: changelog
         shell: bash
         run: |
