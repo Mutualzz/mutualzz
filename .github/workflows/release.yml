@@ -18,7 +18,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '22.x'
+          node-version: lts/*
 
       - name: Enable Corepack (for pnpm)
         run: corepack enable
@@ -30,10 +30,7 @@ jobs:
         run: corepack prepare pnpm@latest --activate
 
       - name: Install dependencies
-        run: pnpm i
-
-      - name: Install netlify-cli
-        run: pnpm add -w -D netlify-cli
+        run: pnpm i --filter="./packages/types" --filter="./packages/logger" --filter="./packages/color-picker" --filter="./packages/contexify" --filter="./packages/ui-core" --filter="./packages/ui-web" --filter="./packages/validators" --filter="./packages/bitfield" --filter="./apps/app" --no-frozen-lockfile
 
       - name: Build peer dependencies
         run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/color-picker" --filter="./packages/contexify"
@@ -48,7 +45,7 @@ jobs:
       - name: Deploy to Netlify
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-        run: pnpm exec netlify deploy --cwd apps/app --prod --site=94e51d96-ca0f-4128-bda5-7f22eb07fcc5 --message "${{ github.event.head_commit.message }}"
+        run: pnpx netlify deploy --cwd apps/app --prod --site=94e51d96-ca0f-4128-bda5-7f22eb07fcc5 --message "${{ github.event.head_commit.message }}"
 
   deploy-bin:
     name: Build & Release Binaries (${{ matrix.platform }})
@@ -83,7 +80,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '22.x'
+          node-version: lts/*
 
       - name: Enable Corepack (for pnpm)
         run: corepack enable
@@ -102,7 +99,7 @@ jobs:
           workspaces: "apps/app/src-tauri -> target"
 
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --no-frozen-lockfile --filter="./packages/types"  --filter="./packages/logger"  --filter="./packages/color-picker"  --filter="./packages/contexify"  --filter="./packages/ui-core"  --filter="./packages/ui-web"  --filter="./packages/validators"  --filter="./packages/bitfield"  --filter="./apps/app"
 
       - name: Install Wrangler
         run: npm install -g wrangler
