@@ -1,7 +1,22 @@
 packages:
-    - apps/*
-    - packages/*
-    - tooling/*
+  - apps/*
+  - packages/*
+  - tooling/*
+
+allowBuilds:
+  '@discordjs/opus': true
+  '@parcel/watcher': true
+  '@sentry-internal/node-cpu-profiler': true
+  '@shopify/react-native-skia': true
+  '@swc/core': true
+  '@yukikaze-bot/erlpack': true
+  bcrypt: true
+  bufferutil: true
+  esbuild: true
+  mediasoup: true
+  sharp: true
+  unrs-resolver: true
+  zlib-sync: true
 
 nodeLinker: hoisted
 
