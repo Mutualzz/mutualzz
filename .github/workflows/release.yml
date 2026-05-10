@@ -43,7 +43,7 @@ jobs:
         run: corepack prepare pnpm@latest --activate
 
       - name: Install dependencies
-        run: pnpm i
+        run: pnpm i --ignore-scripts
 
       - name: Build peer dependencies
         run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/color-picker" --filter="./packages/contexify"  --filter="./packages/ui-core"
@@ -134,7 +134,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: apps/app
-        run: pnpm i
+        run: pnpm i --ignore-scripts
 
       - id: changelog
         shell: bash
