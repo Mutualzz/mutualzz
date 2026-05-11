@@ -19,5 +19,4 @@ allowBuilds:
   zlib-sync: true
 
 nodeLinker: hoisted
-
 shamefullyHoist: true
