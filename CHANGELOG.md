@@ -1,20 +1,15 @@
 # Changelog
 
-## CDN v3.0.0
+## Voice v1.1.1
 
-- Added cameras, fixed voice channel inconsistencies, moved on from tanstack start, fixed some markdown bugs (Azrael)
-- Fixed routes not loading properly (Azrael)
+- Voice: Added Cloudflare turn servers (Azrael)
 
-## App v5.1.0
+## App v5.1.2
 
-- Markdown: Fixed some bugs (Azrael)
-- Cameras: Added
-- Misc: Moved on from TanStack Start (Azrael)
-- Emojis: Fixed deleted emojis showing empty text (Azrael)
-- Emojis Tab: added a tooltip to show what the trash button does (Azrael)
-- Emoji usage: Fixed wrong emoji usage (Azrael)
+- Expressions: Fixed spammy api calls (Azrael)
+- Custom Emoji Preview: Adjusted Space Icon size (Azrael)
+- App Mode: Fixed redirection issues (Azrael)
+- MemberList: Added scrollable member list and infinite scroll functionality (Azrael)
+- Voice: Only ask for microphone when joining or when going to settings (Azrael)
+- Voice: Requesting microphone only when joining voice channel (Azrael)
 
-# Voice 1.1.0
-
-- Cameras: Added (Azrael)
-- Fixed voice channel inconsistencies (Azrael)
