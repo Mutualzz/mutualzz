@@ -1,6 +1,6 @@
 [build]
-base = "apps/app"
-command = "pnpm exec vite build --root src/renderer"
+base = "apps/app/src/renderer"
+command = "vite build"
 publish = "dist"
 
 [functions]
