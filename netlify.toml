@@ -1,12 +1,11 @@
 [build]
 base = "apps/app"
-command = "vite build"
+command = "pnpm exec vite build --root src/renderer"
 publish = "dist"
 
 [functions]
 directory = ".netlify/v1/functions"
 node_bundler = "esbuild"
-
 
 [[redirects]]
 from = "/*"
