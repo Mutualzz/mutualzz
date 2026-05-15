@@ -19,7 +19,7 @@ jobs:
             -   name: Setup Node
                 uses: actions/setup-node@v4
                 with:
-                    node-version: lts/*
+                    node-version: '24.11.1'
 
             -   name: Enable Corepack
                 run: corepack enable
@@ -94,7 +94,7 @@ jobs:
             -   name: Setup Node
                 uses: actions/setup-node@v4
                 with:
-                    node-version: lts/*
+                    node-version: '24.11.1'
 
             -   name: Enable Corepack
                 run: corepack enable
@@ -135,6 +135,10 @@ jobs:
                 working-directory: apps/app
                 run: pnpm rebuild keytar erlpack
 
+            -   name: Fix app-builder permissions
+                if: matrix.platform == 'ubuntu-22.04'
+                run: chmod +x ./node_modules/app-builder-bin/linux/x64/app-builder
+
             -   name: Read app version
                 id: version
                 shell: bash
@@ -146,6 +150,7 @@ jobs:
                 working-directory: apps/app
                 run: pnpm ${{ matrix.build_script }}
                 env:
+                    UV_THREADPOOL_SIZE: 64
                     APPLE_ID: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_ID || '' }}
                     APPLE_PASSWORD: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_PASSWORD || '' }}
                     APPLE_TEAM_ID: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_TEAM_ID || '' }}
