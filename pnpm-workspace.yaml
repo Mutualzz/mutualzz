@@ -12,7 +12,11 @@ allowBuilds:
   '@yukikaze-bot/erlpack': true
   bcrypt: true
   bufferutil: true
+  electron: true
+  electron-winstaller: true
+  erlpack: true
   esbuild: true
+  keytar: true
   mediasoup: true
   sharp: true
   unrs-resolver: true
