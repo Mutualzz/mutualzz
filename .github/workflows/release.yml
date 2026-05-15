@@ -20,6 +20,13 @@ jobs:
                 uses: actions/setup-node@v4
                 with:
                     node-version: lts/*
+                    cache: pnpm
+
+            -   name: Setup pnpm
+                uses: pnpm/action-setup@v4
+                with:
+                    version: 11.0.9
+                    run_install: false
 
             -   name: Init only needed submodules
                 run: |
@@ -33,12 +40,6 @@ jobs:
                     git submodule update --init ./packages/validators
                     git submodule update --init ./packages/bitfield
                     git submodule update --init ./tooling/eslint-config
-
-            -   name: Enable Corepack (for pnpm)
-                run: corepack enable
-
-            -   name: Prepare pnpm
-                run: corepack prepare pnpm@latest --activate
 
             -   name: Install dependencies
                 run: pnpm i
@@ -92,6 +93,13 @@ jobs:
                 uses: actions/setup-node@v4
                 with:
                     node-version: lts/*
+                    cache: pnpm
+
+            -   name: Setup pnpm
+                uses: pnpm/action-setup@v4
+                with:
+                    version: 11.0.9
+                    run_install: false
 
             -   name: Init only needed submodules
                 run: |
@@ -106,16 +114,10 @@ jobs:
                     git submodule update --init ./packages/bitfield
                     git submodule update --init ./tooling/eslint-config
 
-            -   name: Enable Corepack (for pnpm)
-                run: corepack enable
-
-            -   name: Prepare pnpm
-                run: corepack prepare pnpm@latest --activate
-
-            -   name: Install dependencies
+            -   name: Install dependencies (scripts enabled for Electron native deps)
                 run: pnpm i
 
-            -   name: Rebuild native modules
+            -   name: Rebuild native modules against Electron ABI
                 working-directory: apps/app
                 run: pnpm rebuild
 
@@ -135,6 +137,15 @@ jobs:
             -   name: Build app package
                 working-directory: apps/app
                 run: pnpm ${{ matrix.build_script }}
+                env:
+                    APPLE_ID: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_ID || '' }}
+                    APPLE_PASSWORD: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_PASSWORD || '' }}
+                    APPLE_TEAM_ID: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_TEAM_ID || '' }}
+                    APPLE_CERTIFICATE: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_CERTIFICATE || '' }}
+                    APPLE_CERTIFICATE_PASSWORD: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_CERTIFICATE_PASSWORD || '' }}
+                    APPLE_SIGNING_IDENTITY: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_SIGNING_IDENTITY || '' }}
+                    CSC_LINK: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_CERTIFICATE || '' }}
+                    CSC_KEY_PASSWORD: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_CERTIFICATE_PASSWORD || '' }}
 
             -   name: Rename artifacts for release
                 shell: bash

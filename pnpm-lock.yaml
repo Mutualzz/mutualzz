@@ -559,9 +559,6 @@ importers:
       '@yujinakayama/apple-music':
         specifier: ^0.4.1
         version: 0.4.1
-      '@yukikaze-bot/erlpack':
-        specifier: ^1.0.1
-        version: 1.0.1
       amqplib:
         specifier: ^1.2.0
         version: 1.2.0
@@ -610,6 +607,9 @@ importers:
       emojibase-regex:
         specifier: ^17.0.0
         version: 17.0.0
+      erlpack:
+        specifier: ^0.1.4
+        version: 0.1.4
       express:
         specifier: ^5.2.1
         version: 5.2.1
@@ -3105,10 +3105,6 @@ packages:
     resolution: {integrity: sha512-9QOtNffcOF/c1seMCDnjckb3R9WHcG34tky+FHpNKKCW0wc/scYLwMtO+ptyGUfMW0/b/n4qRiALlaFHc9Oj7Q==}
     engines: {node: '>= 10.0.0'}
 
-  '@mapbox/node-pre-gyp@1.0.11':
-    resolution: {integrity: sha512-Yhlar6v9WQgUp/He7BdgzOz8lqMQ8sU+jkCq7Wx8Myc5YFJLbEe7lgui/V7G1qB1DJykHSGwreceSaD60Y0PUQ==}
-    hasBin: true
-
   '@mateie/react-drag-drop-files@3.1.1':
     resolution: {integrity: sha512-hvJcq3ITi5jaN/yIdxBiBu9qgHKwGS+J4G06gLOQ3vDGXZvSE4tIjQ7Pwy6cUAbeCZb2NuStA2vjlvFFv4M9XA==}
     peerDependencies:
@@ -5522,9 +5518,6 @@ packages:
 
   '@yujinakayama/apple-music@0.4.1':
     resolution: {integrity: sha512-PnjTz5nXrUo6N/UJdwPPw9fscY5qlGpJxl0jLTldEs8hBKlV+3eSNnzullRCsMON7zy/01vxJBSbN5to8zM1gQ==}
-
-  '@yukikaze-bot/erlpack@1.0.1':
-    resolution: {integrity: sha512-PCJ2lGCf8DsQtrE411PY+NTsolK48l4InNn1kcBo0iUllKZYGLqeqXEWGA/INrmwanKcoYkU4pBySqUFLQDEoA==}
 
   abbrev@1.1.1:
     resolution: {integrity: sha512-nne9/IiQ/hzIhY6pdDnbBtz7DjPTKrY00P/zvPSm5pOFkl6xuGrGnXn/VtTNNfNtAfZ9/1RtehkszU9qcTii0Q==}
@@ -14132,21 +14125,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@mapbox/node-pre-gyp@1.0.11':
-    dependencies:
-      detect-libc: 2.1.2
-      https-proxy-agent: 5.0.1
-      make-dir: 3.1.0
-      node-fetch: 2.7.0
-      nopt: 5.0.0
-      npmlog: 5.0.1
-      rimraf: 3.0.2
-      semver: 7.8.0
-      tar: 6.2.1
-    transitivePeerDependencies:
-      - encoding
-      - supports-color
-
   '@mateie/react-drag-drop-files@3.1.1(@types/react@19.2.10)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
     dependencies:
       '@emotion/css': 11.13.5
@@ -16533,14 +16511,6 @@ snapshots:
       axios: 0.21.4
     transitivePeerDependencies:
       - debug
-
-  '@yukikaze-bot/erlpack@1.0.1':
-    dependencies:
-      '@mapbox/node-pre-gyp': 1.0.11
-      node-addon-api: 4.3.0
-    transitivePeerDependencies:
-      - encoding
-      - supports-color
 
   abbrev@1.1.1: {}
 
