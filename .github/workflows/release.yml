@@ -1,4 +1,4 @@
-name: Release (Tauri + Netlify)
+name: Release (Electron + Netlify)
 
 on:
   workflow_dispatch:
@@ -10,6 +10,7 @@ jobs:
   deploy-web:
     name: Deploy Web version to Netlify
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -37,16 +38,13 @@ jobs:
         run: corepack enable
 
       - name: Prepare pnpm
-        shell: bash
-        env:
-          GH_PAT: ${{ secrets.GH_PAT }}
         run: corepack prepare pnpm@latest --activate
 
       - name: Install dependencies
         run: pnpm i --ignore-scripts
 
       - name: Build peer dependencies
-        run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/color-picker" --filter="./packages/contexify"  --filter="./packages/ui-core"
+        run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/color-picker" --filter="./packages/contexify" --filter="./packages/ui-core"
 
       - name: Build dependencies
         run: pnpm turbo run build --filter="./packages/ui-web" --filter="./packages/validators" --filter="./packages/bitfield"
@@ -70,12 +68,15 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - platform: "macos-latest"
-            args: "--target universal-apple-darwin"
-          - platform: "ubuntu-22.04"
-            args: ""
-          - platform: "windows-latest"
-            args: ""
+          - platform: macos-latest
+            build_script: build:mac
+            artifact_glob: "*.dmg"
+          - platform: ubuntu-22.04
+            build_script: build:linux
+            artifact_glob: "*.{deb,rpm,AppImage}"
+          - platform: windows-latest
+            build_script: build:win
+            artifact_glob: "*.exe"
 
     runs-on: ${{ matrix.platform }}
 
@@ -84,12 +85,11 @@ jobs:
         with:
           submodules: false
 
-      - name: Install dependencies (Linux only)
+      - name: Install Linux system dependencies
         if: matrix.platform == 'ubuntu-22.04'
         run: |
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
-
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -106,7 +106,7 @@ jobs:
           git submodule update --init ./packages/ui-core
           git submodule update --init ./packages/ui-web
           git submodule update --init ./packages/validators
-          git submodule update --init ./packages/bitfield   
+          git submodule update --init ./packages/bitfield
           git submodule update --init ./tooling/eslint-config
 
       - name: Enable Corepack (for pnpm)
@@ -115,26 +115,62 @@ jobs:
       - name: Prepare pnpm
         run: corepack prepare pnpm@latest --activate
 
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
-
-      - name: Rust cache
-        uses: swatinem/rust-cache@v2
-        with:
-          workspaces: "apps/app/src-tauri -> target"
-
-      - name: Install Wrangler
-        run: npm install -g wrangler
-
-      - name: Run pre-build tasks
-        working-directory: apps/app
-        run: pnpm run ci:prebuild
-
       - name: Install dependencies
-        working-directory: apps/app
         run: pnpm i --ignore-scripts
+
+      - name: Build peer dependencies
+        run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/color-picker" --filter="./packages/contexify" --filter="./packages/ui-core"
+
+      - name: Build dependencies
+        run: pnpm turbo run build --filter="./packages/ui-web" --filter="./packages/validators" --filter="./packages/bitfield"
+
+      - name: Read app version
+        id: version
+        shell: bash
+        run: |
+          VERSION=$(node -p "require('./apps/app/package.json').version")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Build app package
+        working-directory: apps/app
+        run: pnpm ${{ matrix.build_script }}
+
+      - name: Rename artifacts for release
+        shell: bash
+        run: |
+          mkdir -p release
+
+          if [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
+            EXE=$(ls ./apps/app/dist/*.exe 2>/dev/null | head -n1)
+            if [[ -f "$EXE" ]]; then
+              cp "$EXE" ./release/MutualzzSetup.exe
+            fi
+          fi
+
+          if [[ "${{ matrix.platform }}" == "macos-latest" ]]; then
+            DMG=$(ls ./apps/app/dist/*.dmg 2>/dev/null | head -n1)
+            if [[ -f "$DMG" ]]; then
+              cp "$DMG" ./release/Mutualzz.dmg
+            fi
+          fi
+
+          if [[ "${{ matrix.platform }}" == "ubuntu-22.04" ]]; then
+            DEB=$(ls ./apps/app/dist/*.deb 2>/dev/null | head -n1)
+            RPM=$(ls ./apps/app/dist/*.rpm 2>/dev/null | head -n1)
+            APPIMAGE=$(ls ./apps/app/dist/*.AppImage 2>/dev/null | head -n1)
+
+            if [[ -f "$DEB" ]]; then
+              cp "$DEB" ./release/Mutualzz.deb
+            fi
+
+            if [[ -f "$RPM" ]]; then
+              cp "$RPM" ./release/Mutualzz.rpm
+            fi
+
+            if [[ -f "$APPIMAGE" ]]; then
+              cp "$APPIMAGE" ./release/Mutualzz.AppImage
+            fi
+          fi
 
       - id: changelog
         shell: bash
@@ -151,32 +187,27 @@ jobs:
             echo "body=" >> "$GITHUB_OUTPUT"
           fi
 
-      - uses: tauri-apps/tauri-action@v0
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.version.outputs.version }}
+          name: Mutualzz v${{ steps.version.outputs.version }}
+          body: ${{ steps.changelog.outputs.body }}
+          draft: false
+          prerelease: false
+          files: |
+            release/MutualzzSetup.exe
+            release/Mutualzz.dmg
+            release/Mutualzz.deb
+            release/Mutualzz.rpm
+            release/Mutualzz.AppImage
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
-          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
-          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
-          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          VITE_API_URL: ${{ secrets.VITE_API_URL }}
-          VITE_WS_URL: ${{ secrets.VITE_WS_URL }}
-          VITE_CDN_URL: ${{ secrets.VITE_CDN_URL }}
-          VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
-          VITE_FOR_TAURI: true
-        with:
-          tagName: __VERSION__
-          releaseName: "Mutualzz __VERSION__"
-          releaseBody: ${{ steps.changelog.outputs.body }}
-          releaseDraft: false
-          prerelease: false
-          includeRelease: true
-          includeUpdaterJson: true
-          args: ${{ matrix.args }}
 
-      - name: Upload binaries & generate latest.json
+      - name: Install Wrangler
+        run: npm install -g wrangler
+
+      - name: Upload binaries to R2
         shell: bash
         env:
           R2_BUCKET: mutualzz
@@ -184,66 +215,46 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
         run: |
-          echo "Uploading binaries for ${{ matrix.platform }}"
+          echo "Uploading release artifacts for ${{ matrix.platform }}"
 
-          BASE_DIR="./apps/app/src-tauri/target/release/bundle"
-          MACOS_DIR="./apps/app/src-tauri/target/universal-apple-darwin/release/bundle"
+          BASE_URL="https://proxy.mutualzz.com/releases/latest"
 
-          win_exe=""
-          osx=""
-          linux_debian=""
-          linux_rpm=""
-          linux_appimage=""
-
-          if [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
-              win_exe=$(ls "$BASE_DIR/nsis/"*.exe 2>/dev/null | head -n1)
-              if [[ -f "$win_exe" ]]; then
-              mv "$win_exe" "MutualzzSetup.exe"
-              wrangler r2 object put "mutualzz/releases/latest/MutualzzSetup.exe" --file "MutualzzSetup.exe" --remote
-              fi
+          if [[ "${{ matrix.platform }}" == "windows-latest" && -f "./release/MutualzzSetup.exe" ]]; then
+            wrangler r2 object put "mutualzz/releases/latest/MutualzzSetup.exe" --file "./release/MutualzzSetup.exe" --remote
           fi
 
-          if [[ "${{ matrix.platform }}" == "macos-latest" ]]; then
-              osx=$(ls "$MACOS_DIR/dmg/"*.dmg 2>/dev/null | head -n1)
-              if [[ -f "$osx" ]]; then
-              mv "$osx" "Mutualzz.dmg"
-              wrangler r2 object put "mutualzz/releases/latest/Mutualzz.dmg" --file "Mutualzz.dmg" --remote
-              fi
+          if [[ "${{ matrix.platform }}" == "macos-latest" && -f "./release/Mutualzz.dmg" ]]; then
+            wrangler r2 object put "mutualzz/releases/latest/Mutualzz.dmg" --file "./release/Mutualzz.dmg" --remote
           fi
 
           if [[ "${{ matrix.platform }}" == "ubuntu-22.04" ]]; then
-              linux_debian=$(ls "$BASE_DIR/deb/"*.deb 2>/dev/null | head -n1)
-              linux_rpm=$(ls "$BASE_DIR/rpm/"*.rpm 2>/dev/null | head -n1)
-              linux_appimage=$(ls "$BASE_DIR/appimage/"*.AppImage 2>/dev/null | head -n1)
+            if [[ -f "./release/Mutualzz.deb" ]]; then
+              wrangler r2 object put "mutualzz/releases/latest/Mutualzz.deb" --file "./release/Mutualzz.deb" --remote
+            fi
 
-              if [[ -f "$linux_debian" ]]; then
-              mv "$linux_debian" "Mutualzz.deb"
-              wrangler r2 object put "mutualzz/releases/latest/Mutualzz.deb" --file "Mutualzz.deb" --remote
-              fi
+            if [[ -f "./release/Mutualzz.rpm" ]]; then
+              wrangler r2 object put "mutualzz/releases/latest/Mutualzz.rpm" --file "./release/Mutualzz.rpm" --remote
+            fi
 
-              if [[ -f "$linux_rpm" ]]; then
-              mv "$linux_rpm" "Mutualzz.rpm"
-              wrangler r2 object put "mutualzz/releases/latest/Mutualzz.rpm" --file "Mutualzz.rpm" --remote
-              fi
-
-              if [[ -f "$linux_appimage" ]]; then
-              mv "$linux_appimage" "Mutualzz.AppImage"
-              wrangler r2 object put "mutualzz/releases/latest/Mutualzz.AppImage" --file "Mutualzz.AppImage" --remote
-              fi
+            if [[ -f "./release/Mutualzz.AppImage" ]]; then
+              wrangler r2 object put "mutualzz/releases/latest/Mutualzz.AppImage" --file "./release/Mutualzz.AppImage" --remote
+            fi
           fi
 
-          BASE_URL="https://proxy.mutualzz.com/releases/latest"
+      - name: Generate latest.json
+        shell: bash
+        run: |
           cat <<EOF > latest.json
           {
-              "win": "$BASE_URL/MutualzzSetup.exe",
-              "osx": "$BASE_URL/Mutualzz.dmg",
-              "linux": {
-              "debian": "$BASE_URL/Mutualzz.deb",
-              "rpm": "$BASE_URL/Mutualzz.rpm",
-              "appimage": "$BASE_URL/Mutualzz.AppImage"
-              }
+            "win": "https://proxy.mutualzz.com/releases/latest/MutualzzSetup.exe",
+            "osx": "https://proxy.mutualzz.com/releases/latest/Mutualzz.dmg",
+            "linux": {
+              "debian": "https://proxy.mutualzz.com/releases/latest/Mutualzz.deb",
+              "rpm": "https://proxy.mutualzz.com/releases/latest/Mutualzz.rpm",
+              "appimage": "https://proxy.mutualzz.com/releases/latest/Mutualzz.AppImage"
+            }
           }
           EOF
 
           wrangler r2 object put "mutualzz/releases/latest/latest.json" --file latest.json --remote
-          echo "Upload and latest.json generation complete"
+          echo "latest.json uploaded"
