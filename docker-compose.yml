@@ -1,0 +1,11 @@
+services:
+    app-backend:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        network_mode: host
+        restart: unless-stopped
+        environment:
+            - NODE_ENV=production
+            - ANNOUNCED_IP=${ANNOUNCED_IP}
+            - VOICE_PORT=3030
