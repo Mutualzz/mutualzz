@@ -759,6 +759,40 @@ importers:
         specifier: ^4.21.0
         version: 4.22.0
 
+  apps/voice:
+    dependencies:
+      '@mutualzz/logger':
+        specifier: workspace:*
+        version: link:../../packages/logger
+      mediasoup:
+        specifier: ^3.19.22
+        version: 3.19.22
+      ws:
+        specifier: ^8.20.0
+        version: 8.20.1(bufferutil@4.1.0)
+    devDependencies:
+      '@mutualzz/eslint-config':
+        specifier: workspace:*
+        version: link:../../tooling/eslint-config
+      '@mutualzz/types':
+        specifier: workspace:*
+        version: link:../../packages/types
+      '@types/ws':
+        specifier: ^8.18.1
+        version: 8.18.1
+      cross-env:
+        specifier: 10.1.0
+        version: 10.1.0
+      dotenv:
+        specifier: ^17.4.2
+        version: 17.4.2
+      tsdown:
+        specifier: ^0.22.0
+        version: 0.22.0(tsx@4.22.0)(typescript@6.0.3)
+      tsx:
+        specifier: ^4.21.0
+        version: 4.22.0
+
   packages/bitfield:
     devDependencies:
       '@types/node':
@@ -18800,7 +18834,7 @@ snapshots:
       es6-error: 4.1.1
       matcher: 3.0.0
       roarr: 2.15.4
-      semver: 7.7.4
+      semver: 7.8.0
       serialize-error: 7.0.1
     optional: true
 
@@ -20567,7 +20601,7 @@ snapshots:
 
   node-abi@4.31.0:
     dependencies:
-      semver: 7.7.4
+      semver: 7.8.0
 
   node-addon-api@1.7.2:
     optional: true
@@ -20578,7 +20612,7 @@ snapshots:
 
   node-api-version@0.2.1:
     dependencies:
-      semver: 7.7.4
+      semver: 7.8.0
 
   node-cloudflare-r2@0.5.1:
     dependencies:
@@ -21678,6 +21712,22 @@ snapshots:
     transitivePeerDependencies:
       - oxc-resolver
 
+  rolldown-plugin-dts@0.25.0(rolldown@1.0.1)(typescript@6.0.3):
+    dependencies:
+      '@babel/generator': 8.0.0-rc.4
+      '@babel/helper-validator-identifier': 8.0.0-rc.4
+      '@babel/parser': 8.0.0-rc.4
+      ast-kit: 3.0.0-beta.1
+      birpc: 4.0.0
+      dts-resolver: 3.0.0
+      get-tsconfig: 5.0.0-beta.5
+      obug: 2.1.1
+      rolldown: 1.0.1
+    optionalDependencies:
+      typescript: 6.0.3
+    transitivePeerDependencies:
+      - oxc-resolver
+
   rolldown@1.0.1:
     dependencies:
       '@oxc-project/types': 0.130.0
@@ -22542,6 +22592,32 @@ snapshots:
     optionalDependencies:
       tsx: 4.22.0
       typescript: 5.9.3
+    transitivePeerDependencies:
+      - '@ts-macro/tsc'
+      - '@typescript/native-preview'
+      - oxc-resolver
+      - vue-tsc
+
+  tsdown@0.22.0(tsx@4.22.0)(typescript@6.0.3):
+    dependencies:
+      ansis: 4.3.0
+      cac: 7.0.0
+      defu: 6.1.7
+      empathic: 2.0.1
+      hookable: 6.1.1
+      import-without-cache: 0.4.0
+      obug: 2.1.1
+      picomatch: 4.0.4
+      rolldown: 1.0.1
+      rolldown-plugin-dts: 0.25.0(rolldown@1.0.1)(typescript@6.0.3)
+      semver: 7.8.0
+      tinyexec: 1.1.2
+      tinyglobby: 0.2.16
+      tree-kill: 1.2.2
+      unconfig-core: 7.5.0
+    optionalDependencies:
+      tsx: 4.22.0
+      typescript: 6.0.3
     transitivePeerDependencies:
       - '@ts-macro/tsc'
       - '@typescript/native-preview'
