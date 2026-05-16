@@ -48,7 +48,7 @@ jobs:
                     git submodule update --init ./tooling/eslint-config
 
             -   name: Install dependencies (we ignore scripts, because web doesn't have native deps)
-                run: pnpm i --ignore scripts
+                run: pnpm i --ignore-scripts
 
             -   name: Build peer dependencies
                 run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/color-picker" --filter="./packages/contexify" --filter="./packages/ui-core"
