@@ -47,8 +47,8 @@ jobs:
                     git submodule update --init ./packages/bitfield
                     git submodule update --init ./tooling/eslint-config
 
-            -   name: Install dependencies (we ignore scripts, because web doesn't have native deps)
-                run: pnpm i --ignore scripts
+            -   name: Install dependencies (scripts disabled for faster install since we don't need Electron native deps here)
+                run: pnpm i --ignore-scripts
 
             -   name: Build peer dependencies
                 run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/color-picker" --filter="./packages/contexify" --filter="./packages/ui-core"
