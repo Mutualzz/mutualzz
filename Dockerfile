@@ -17,6 +17,6 @@ workdir /api
 copy --from=build /api /api
 
 workdir /api/apps/server
-expose 3000 3001 4000 3030 3478/tcp 3478/udp 5349/tcp 443/tcp 40000-49999/udp
+expose 3000 3001 4000 3030 3478/tcp 3478/udp 5349/tcp 443/tcp 40000-49999/tcp 40000-49999/udp
 entrypoint []
 cmd ["pnpm", "start"]
