@@ -5,7 +5,5 @@ services:
             dockerfile: Dockerfile
         network_mode: host
         restart: unless-stopped
-        environment:
-            - NODE_ENV=production
-            - ANNOUNCED_IP=${ANNOUNCED_IP}
-            - VOICE_PORT=3030
+        env_file:
+            - .env
