@@ -131,10 +131,6 @@ jobs:
             -   name: Build dependencies
                 run: pnpm turbo run build --filter="./packages/ui-web" --filter="./packages/validators" --filter="./packages/bitfield"
 
-            -   name: Rebuild only Electron-native modules needed by app
-                working-directory: apps/app
-                run: pnpm rebuild keytar erlpack
-
             -   name: Fix app-builder permissions
                 if: matrix.platform == 'ubuntu-22.04'
                 run: chmod +x ./node_modules/app-builder-bin/linux/x64/app-builder
