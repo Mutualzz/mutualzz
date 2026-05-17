@@ -92,7 +92,7 @@ jobs:
                 if: matrix.platform == 'ubuntu-22.04'
                 run: |
                     sudo apt-get update
-                    sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf snapd
+                    sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
 
             -   name: Setup Node
                 uses: actions/setup-node@v4
@@ -138,23 +138,45 @@ jobs:
                 if: matrix.platform == 'ubuntu-22.04'
                 run: chmod +x ./node_modules/app-builder-bin/linux/x64/app-builder
 
-            -   name: Build app package
+            # macOS: raise the open-file-descriptor limit before electron-builder
+            # runs its pnpm node module collector — EMFILE means it hit the default
+            # limit of 256 while scanning the monorepo. ulimit -n is per-shell so
+            # it must be set in the same step that invokes the build.
+            -   name: Build app package (macOS)
+                if: matrix.platform == 'macos-latest'
                 working-directory: apps/app
-                # --publish never prevents electron-builder from auto-publishing
-                # based on CI env detection (deprecated in v27, be explicit now)
+                run: |
+                    ulimit -n 10240
+                    pnpm ${{ matrix.build_script }} -- --publish never
+                env:
+                    APPLE_ID: ${{ secrets.APPLE_ID }}
+                    APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+                    APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+                    APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+                    APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+                    APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+                    CSC_LINK: ${{ secrets.APPLE_CERTIFICATE }}
+                    CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+
+            # Windows: electron-builder fails to detect the pnpm workspace root
+            # (logs show: resolved=undefined) because it looks for the pnpm lockfile
+            # relative to the project dir rather than walking up. Setting
+            # ELECTRON_BUILDER_CACHE explicitly and pointing it to the repo root
+            # via the packageManager env var workaround fixes workspace resolution.
+            -   name: Build app package (Windows)
+                if: matrix.platform == 'windows-latest'
+                working-directory: apps/app
+                shell: bash
                 run: pnpm ${{ matrix.build_script }} -- --publish never
                 env:
-                    # Raises the libuv thread pool — mitigates EMFILE on macOS/Windows
-                    # when electron-builder's pnpm node module collector opens many files
-                    UV_THREADPOOL_SIZE: 128
-                    APPLE_ID: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_ID || '' }}
-                    APPLE_PASSWORD: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_PASSWORD || '' }}
-                    APPLE_TEAM_ID: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_TEAM_ID || '' }}
-                    APPLE_CERTIFICATE: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_CERTIFICATE || '' }}
-                    APPLE_CERTIFICATE_PASSWORD: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_CERTIFICATE_PASSWORD || '' }}
-                    APPLE_SIGNING_IDENTITY: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_SIGNING_IDENTITY || '' }}
-                    CSC_LINK: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_CERTIFICATE || '' }}
-                    CSC_KEY_PASSWORD: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_CERTIFICATE_PASSWORD || '' }}
+                    # Force electron-builder to use the repo root as workspace root
+                    npm_config_prefix: ${{ github.workspace }}
+                    ELECTRON_BUILDER_CACHE: ${{ github.workspace }}/.cache/electron-builder
+
+            -   name: Build app package (Linux)
+                if: matrix.platform == 'ubuntu-22.04'
+                working-directory: apps/app
+                run: pnpm ${{ matrix.build_script }} -- --publish never
 
             -   name: Collect artifacts
                 shell: bash
