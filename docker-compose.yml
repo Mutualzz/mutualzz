@@ -1,8 +1,0 @@
-services:
-    voice:
-        build:
-            context: .
-            dockerfile: apps/voice/Dockerfile
-        env_file: .env
-        network_mode: host
-        restart: unless-stopped
