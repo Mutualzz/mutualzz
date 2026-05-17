@@ -19,7 +19,7 @@ jobs:
             -   name: Setup Node
                 uses: actions/setup-node@v4
                 with:
-                    node-version: '24.11.1'
+                    node-version: '24'
 
             -   name: Enable Corepack
                 run: corepack enable
@@ -47,7 +47,7 @@ jobs:
                     git submodule update --init ./packages/bitfield
                     git submodule update --init ./tooling/eslint-config
 
-            -   name: Install dependencies (scripts disabled for faster install since we don't need Electron native deps here)
+            -   name: Install dependencies
                 run: pnpm i --ignore-scripts
 
             -   name: Build peer dependencies
@@ -61,8 +61,8 @@ jobs:
                     NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
                 run: pnpx netlify deploy --cwd apps/app --prod --site=94e51d96-ca0f-4128-bda5-7f22eb07fcc5 --message "${{ github.event.head_commit.message }}"
 
-    deploy-bin:
-        name: Build & Release Binaries (${{ matrix.platform }})
+    build-binaries:
+        name: Build Binaries (${{ matrix.platform }})
         needs: deploy-web
         permissions:
             contents: write
@@ -73,10 +73,13 @@ jobs:
                 include:
                     -   platform: macos-latest
                         build_script: build:mac
+                        artifact_name: macos
                     -   platform: ubuntu-22.04
                         build_script: build:linux
+                        artifact_name: linux
                     -   platform: windows-latest
                         build_script: build:win
+                        artifact_name: windows
 
         runs-on: ${{ matrix.platform }}
 
@@ -89,12 +92,12 @@ jobs:
                 if: matrix.platform == 'ubuntu-22.04'
                 run: |
                     sudo apt-get update
-                    sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+                    sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf snapd
 
             -   name: Setup Node
                 uses: actions/setup-node@v4
                 with:
-                    node-version: '24.11.1'
+                    node-version: '24'
 
             -   name: Enable Corepack
                 run: corepack enable
@@ -122,7 +125,7 @@ jobs:
                     git submodule update --init ./packages/bitfield
                     git submodule update --init ./tooling/eslint-config
 
-            -   name: Install dependencies (scripts enabled for Electron native deps)
+            -   name: Install dependencies
                 run: pnpm i
 
             -   name: Build peer dependencies
@@ -131,22 +134,19 @@ jobs:
             -   name: Build dependencies
                 run: pnpm turbo run build --filter="./packages/ui-web" --filter="./packages/validators" --filter="./packages/bitfield"
 
-            -   name: Fix app-builder permissions
+            -   name: Fix app-builder permissions (Linux)
                 if: matrix.platform == 'ubuntu-22.04'
                 run: chmod +x ./node_modules/app-builder-bin/linux/x64/app-builder
 
-            -   name: Read app version
-                id: version
-                shell: bash
-                run: |
-                    VERSION=$(node -p "require('./apps/app/package.json').version")
-                    echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-
             -   name: Build app package
                 working-directory: apps/app
-                run: pnpm ${{ matrix.build_script }}
+                # --publish never prevents electron-builder from auto-publishing
+                # based on CI env detection (deprecated in v27, be explicit now)
+                run: pnpm ${{ matrix.build_script }} -- --publish never
                 env:
-                    UV_THREADPOOL_SIZE: 64
+                    # Raises the libuv thread pool — mitigates EMFILE on macOS/Windows
+                    # when electron-builder's pnpm node module collector opens many files
+                    UV_THREADPOOL_SIZE: 128
                     APPLE_ID: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_ID || '' }}
                     APPLE_PASSWORD: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_PASSWORD || '' }}
                     APPLE_TEAM_ID: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_TEAM_ID || '' }}
@@ -156,45 +156,76 @@ jobs:
                     CSC_LINK: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_CERTIFICATE || '' }}
                     CSC_KEY_PASSWORD: ${{ matrix.platform == 'macos-latest' && secrets.APPLE_CERTIFICATE_PASSWORD || '' }}
 
-            -   name: Rename artifacts for release
+            -   name: Collect artifacts
                 shell: bash
                 run: |
                     mkdir -p release
 
                     if [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
                       EXE=$(ls ./apps/app/dist/*.exe 2>/dev/null | head -n1)
-                      if [[ -f "$EXE" ]]; then
-                        cp "$EXE" ./release/MutualzzSetup.exe
-                      fi
+                      [[ -f "$EXE" ]] && cp "$EXE" ./release/MutualzzSetup.exe
                     fi
 
                     if [[ "${{ matrix.platform }}" == "macos-latest" ]]; then
                       DMG=$(ls ./apps/app/dist/*.dmg 2>/dev/null | head -n1)
-                      if [[ -f "$DMG" ]]; then
-                        cp "$DMG" ./release/Mutualzz.dmg
-                      fi
+                      [[ -f "$DMG" ]] && cp "$DMG" ./release/Mutualzz.dmg
                     fi
 
                     if [[ "${{ matrix.platform }}" == "ubuntu-22.04" ]]; then
                       DEB=$(ls ./apps/app/dist/*.deb 2>/dev/null | head -n1)
                       RPM=$(ls ./apps/app/dist/*.rpm 2>/dev/null | head -n1)
                       APPIMAGE=$(ls ./apps/app/dist/*.AppImage 2>/dev/null | head -n1)
-
-                      if [[ -f "$DEB" ]]; then
-                        cp "$DEB" ./release/Mutualzz.deb
-                      fi
-
-                      if [[ -f "$RPM" ]]; then
-                        cp "$RPM" ./release/Mutualzz.rpm
-                      fi
-
-                      if [[ -f "$APPIMAGE" ]]; then
-                        cp "$APPIMAGE" ./release/Mutualzz.AppImage
-                      fi
+                      [[ -f "$DEB" ]]      && cp "$DEB"      ./release/Mutualzz.deb
+                      [[ -f "$RPM" ]]      && cp "$RPM"      ./release/Mutualzz.rpm
+                      [[ -f "$APPIMAGE" ]] && cp "$APPIMAGE" ./release/Mutualzz.AppImage
                     fi
 
-            -   id: changelog
-                if: matrix.platform == 'ubuntu-22.04'
+            # Upload each platform's artifacts so the release job can gather them all.
+            # Each platform uploads only what it built — the release job downloads all three.
+            -   name: Upload artifacts
+                uses: actions/upload-artifact@v4
+                with:
+                    name: release-${{ matrix.artifact_name }}
+                    path: release/
+                    if-no-files-found: warn
+                    retention-days: 1
+
+    release:
+        name: Publish Release
+        needs: build-binaries
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+
+        steps:
+            -   uses: actions/checkout@v4
+                with:
+                    submodules: false
+
+            -   name: Setup Node
+                uses: actions/setup-node@v4
+                with:
+                    node-version: '24'
+
+            # Download artifacts from all three platform builds into one directory
+            -   name: Download all artifacts
+                uses: actions/download-artifact@v4
+                with:
+                    pattern: release-*
+                    path: release/
+                    merge-multiple: true
+
+            -   name: List collected artifacts
+                run: ls -lah release/
+
+            -   name: Read app version
+                id: version
+                run: |
+                    VERSION=$(node -p "require('./apps/app/package.json').version")
+                    echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+            -   name: Read changelog
+                id: changelog
                 shell: bash
                 run: |
                     if [ -f CHANGELOG.md ]; then
@@ -210,7 +241,6 @@ jobs:
                     fi
 
             -   name: Create GitHub release
-                if: matrix.platform == 'ubuntu-22.04'
                 uses: softprops/action-gh-release@v2
                 with:
                     tag_name: v${{ steps.version.outputs.version }}
@@ -239,36 +269,31 @@ jobs:
                     CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
                     CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
                 run: |
-                    echo "Uploading release artifacts for ${{ matrix.platform }}"
-
-                    if [[ "${{ matrix.platform }}" == "windows-latest" && -f "./release/MutualzzSetup.exe" ]]; then
-                      wrangler r2 object put "mutualzz/releases/latest/MutualzzSetup.exe" --file "./release/MutualzzSetup.exe" --remote
-                    fi
-
-                    if [[ "${{ matrix.platform }}" == "macos-latest" && -f "./release/Mutualzz.dmg" ]]; then
-                      wrangler r2 object put "mutualzz/releases/latest/Mutualzz.dmg" --file "./release/Mutualzz.dmg" --remote
-                    fi
-
-                    if [[ "${{ matrix.platform }}" == "ubuntu-22.04" ]]; then
-                      if [[ -f "./release/Mutualzz.deb" ]]; then
-                        wrangler r2 object put "mutualzz/releases/latest/Mutualzz.deb" --file "./release/Mutualzz.deb" --remote
+                    upload() {
+                      local src="$1" dest="$2"
+                      if [[ -f "$src" ]]; then
+                        echo "Uploading $src → $dest"
+                        wrangler r2 object put "$dest" --file "$src" --remote
+                      else
+                        echo "Skipping $dest (file not found)"
                       fi
+                    }
 
-                      if [[ -f "./release/Mutualzz.rpm" ]]; then
-                        wrangler r2 object put "mutualzz/releases/latest/Mutualzz.rpm" --file "./release/Mutualzz.rpm" --remote
-                      fi
+                    upload "release/MutualzzSetup.exe"   "mutualzz/releases/latest/MutualzzSetup.exe"
+                    upload "release/Mutualzz.dmg"        "mutualzz/releases/latest/Mutualzz.dmg"
+                    upload "release/Mutualzz.deb"        "mutualzz/releases/latest/Mutualzz.deb"
+                    upload "release/Mutualzz.rpm"        "mutualzz/releases/latest/Mutualzz.rpm"
+                    upload "release/Mutualzz.AppImage"   "mutualzz/releases/latest/Mutualzz.AppImage"
 
-                      if [[ -f "./release/Mutualzz.AppImage" ]]; then
-                        wrangler r2 object put "mutualzz/releases/latest/Mutualzz.AppImage" --file "./release/Mutualzz.AppImage" --remote
-                      fi
-                    fi
-
-            -   name: Generate latest.json
-                if: matrix.platform == 'ubuntu-22.04'
+            -   name: Generate and upload latest.json
                 shell: bash
+                env:
+                    CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+                    CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
                 run: |
                     cat <<EOF > latest.json
                     {
+                      "version": "${{ steps.version.outputs.version }}",
                       "win": "https://proxy.mutualzz.com/releases/latest/MutualzzSetup.exe",
                       "osx": "https://proxy.mutualzz.com/releases/latest/Mutualzz.dmg",
                       "linux": {
