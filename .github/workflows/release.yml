@@ -126,14 +126,15 @@ jobs:
                 run: pnpm i
 
             -   name: Build peer dependencies
-                run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/color-picker" --filter="./packages/contexify" --filter="./packages/ui-core"
+                run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/ui-core"
 
             -   name: Build dependencies
-                run: pnpm turbo run build --filter="./packages/ui-web" --filter="./packages/validators" --filter="./packages/bitfield"
+                run: pnpm turbo run build --filter="./packages/ui-web" --filter="./packages/validators" --filter="./packages/bitfield" --filter="./packages/color-picker" --filter="./packages/contexify"
 
             -   name: Build app (electron-vite)
                 working-directory: apps/app
                 run: pnpm exec electron-vite build
+
 
             -   name: Flatten with pnpm deploy
                 shell: bash
