@@ -199,7 +199,7 @@ importers:
         version: 7.2.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       react-sketch-canvas:
         specifier: ^7.0.0-next.5
-        version: 7.0.0-next.5(react@19.2.0)
+        version: 7.0.0-next.7(react@19.2.0)
       react-toastify:
         specifier: ^11.1.0
         version: 11.1.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -6293,6 +6293,9 @@ packages:
   core-util-is@1.0.2:
     resolution: {integrity: sha512-3lqz5YjWTYnW6dlDa5TLaTCcShfar1e40rmcJVwCBJC6mWlFuj0eCHIElmG1g5kyuJ/GD+8Wn4FFCcz4gJPfaQ==}
 
+  core-util-is@1.0.3:
+    resolution: {integrity: sha512-ZQBvi1DcpJ4GDqanjucZ2Hj3wEO5pZDS89BWbkcrvdxksJorwUDDZamX9ldFkp9aw2lmBDLgkObEA4DWNJ9FYQ==}
+
   cors@2.8.6:
     resolution: {integrity: sha512-tJtZBBHA6vjIAaF6EnIaq6laBBP9aq/Y3ouVJjEfoHbRBcHBAHYcMh/w8LDrk2PvIMMq8gmopa5D4V8RmbrxGw==}
     engines: {node: '>= 0.10'}
@@ -6765,8 +6768,8 @@ packages:
   electron-publish@26.10.0:
     resolution: {integrity: sha512-YlSPcW8NzQMnjvJsmxJNBKcu7LbkztbnsME49Rnj6uefQLkmeyr6KDw56i16sjPAOQmMjvrQvl26QhNIx03waQ==}
 
-  electron-to-chromium@1.5.356:
-    resolution: {integrity: sha512-9NgFd7m5t5MCJ5rUSjJITUXAH9mEGlrlofnMf4YEr+pz6JlP7cWmTAH+JFmbPnaSW8koVTkuW7pacORWAnA5Yw==}
+  electron-to-chromium@1.5.357:
+    resolution: {integrity: sha512-NHlTIQDK8fmVwHwuIzmXYEJ1Ewq3D9wDNc0cWXxDGysP6Pb21giwGNkxiTifyKy/4SoPuN5l6GLP1W9Sv7zB2g==}
 
   electron-updater@6.8.3:
     resolution: {integrity: sha512-Z6sgw3jgbikWKXei1ENdqFOxBP0WlXg3TtKfz0rgw2vIZFJUyI4pD7ZN7jrkm7EoMK+tcm/qTnPUdqfZukBlBQ==}
@@ -10004,8 +10007,8 @@ packages:
       '@types/react':
         optional: true
 
-  react-sketch-canvas@7.0.0-next.5:
-    resolution: {integrity: sha512-a6yISdoTiOTyz54EqTOT9xtPKEx53JXU/MHfykboBYhKbuRWUnZCwngWIvjrb2BCwZlyWdG1Jfh5oF4k/iSaaA==}
+  react-sketch-canvas@7.0.0-next.7:
+    resolution: {integrity: sha512-hcwFlDNJ88ZDY0hCZ0iWO5AG6DXbi/2tzGSL3HHQkJpZzrcY6FlhQYdMt2MrZdDQ5ev6VOq2MFBtHzO77FkggA==}
     engines: {node: '>=10'}
     peerDependencies:
       react: '>=16.8'
@@ -12810,7 +12813,7 @@ snapshots:
       fs-extra: 10.1.0
       isbinaryfile: 4.0.10
       minimist: 1.2.8
-      plist: 3.1.1
+      plist: 3.1.0
     transitivePeerDependencies:
       - supports-color
 
@@ -12826,7 +12829,7 @@ snapshots:
       node-gyp: 11.5.0
       ora: 5.4.1
       read-binary-file-arch: 1.0.6
-      semver: 7.8.0
+      semver: 7.7.4
       tar: 7.5.15
       yargs: 17.7.2
     transitivePeerDependencies:
@@ -12840,7 +12843,7 @@ snapshots:
       dir-compare: 4.2.0
       fs-extra: 11.3.5
       minimatch: 9.0.9
-      plist: 3.1.1
+      plist: 3.1.0
     transitivePeerDependencies:
       - supports-color
 
@@ -14217,7 +14220,7 @@ snapshots:
 
   '@npmcli/fs@4.0.0':
     dependencies:
-      semver: 7.8.0
+      semver: 7.7.4
 
   '@opentelemetry/api-logs@0.207.0':
     dependencies:
@@ -16901,7 +16904,7 @@ snapshots:
     dependencies:
       baseline-browser-mapping: 2.10.29
       caniuse-lite: 1.0.30001792
-      electron-to-chromium: 1.5.356
+      electron-to-chromium: 1.5.357
       node-releases: 2.0.44
       update-browserslist-db: 1.2.3(browserslist@4.28.2)
 
@@ -17336,7 +17339,10 @@ snapshots:
     dependencies:
       browserslist: 4.28.2
 
-  core-util-is@1.0.2: {}
+  core-util-is@1.0.2:
+    optional: true
+
+  core-util-is@1.0.3: {}
 
   cors@2.8.6:
     dependencies:
@@ -17812,7 +17818,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  electron-to-chromium@1.5.356: {}
+  electron-to-chromium@1.5.357: {}
 
   electron-updater@6.8.3:
     dependencies:
@@ -19027,7 +19033,7 @@ snapshots:
       es6-error: 4.1.1
       matcher: 3.0.0
       roarr: 2.15.4
-      semver: 7.8.0
+      semver: 7.7.4
       serialize-error: 7.0.1
     optional: true
 
@@ -20848,7 +20854,7 @@ snapshots:
 
   node-abi@4.31.0:
     dependencies:
-      semver: 7.8.0
+      semver: 7.7.4
 
   node-addon-api@1.7.2:
     optional: true
@@ -20859,7 +20865,7 @@ snapshots:
 
   node-api-version@0.2.1:
     dependencies:
-      semver: 7.8.0
+      semver: 7.7.4
 
   node-cloudflare-r2@0.5.1:
     dependencies:
@@ -20900,7 +20906,7 @@ snapshots:
       make-fetch-happen: 14.0.3
       nopt: 8.1.0
       proc-log: 5.0.0
-      semver: 7.8.0
+      semver: 7.7.4
       tar: 7.5.15
       tinyglobby: 0.2.16
       which: 5.0.0
@@ -21777,7 +21783,7 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.2.10
 
-  react-sketch-canvas@7.0.0-next.5(react@19.2.0):
+  react-sketch-canvas@7.0.0-next.7(react@19.2.0):
     dependencies:
       react: 19.2.0
 
@@ -21810,7 +21816,7 @@ snapshots:
 
   readable-stream@2.3.8:
     dependencies:
-      core-util-is: 1.0.2
+      core-util-is: 1.0.3
       inherits: 2.0.4
       isarray: 1.0.0
       process-nextick-args: 2.0.1
