@@ -72,13 +72,10 @@ jobs:
             matrix:
                 include:
                     -   platform: macos-latest
-                        build_script: build:mac
                         artifact_name: macos
                     -   platform: ubuntu-22.04
-                        build_script: build:linux
                         artifact_name: linux
                     -   platform: windows-latest
-                        build_script: build:win
                         artifact_name: windows
 
         runs-on: ${{ matrix.platform }}
@@ -134,16 +131,36 @@ jobs:
             -   name: Build dependencies
                 run: pnpm turbo run build --filter="./packages/ui-web" --filter="./packages/validators" --filter="./packages/bitfield"
 
+            -   name: Build app (electron-vite)
+                working-directory: apps/app
+                run: pnpm exec electron-vite build
+
+            -   name: Flatten with pnpm deploy
+                shell: bash
+                run: pnpm deploy --filter=@mutualzz/app --prod ./deploy/app
+
+            -   name: Copy build output into deploy directory
+                shell: bash
+                run: |
+                    cp -r apps/app/out            ./deploy/app/out
+                    cp    apps/app/electron-builder.yml ./deploy/app/electron-builder.yml
+                    if [ -d apps/app/resources ]; then
+                      cp -r apps/app/resources    ./deploy/app/resources
+                    fi
+                    if [ -d apps/app/build ]; then
+                      cp -r apps/app/build        ./deploy/app/build
+                    fi
+
             -   name: Fix app-builder permissions (Linux)
                 if: matrix.platform == 'ubuntu-22.04'
-                run: chmod +x ./node_modules/app-builder-bin/linux/x64/app-builder
+                run: chmod +x ./deploy/app/node_modules/app-builder-bin/linux/x64/app-builder
 
             -   name: Build app package (macOS)
                 if: matrix.platform == 'macos-latest'
-                working-directory: apps/app
+                working-directory: deploy/app
                 run: |
                     ulimit -n 10240
-                    pnpm ${{ matrix.build_script }} -- --publish never
+                    pnpm exec electron-builder --mac --publish never
                 env:
                     APPLE_ID: ${{ secrets.APPLE_ID }}
                     APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
@@ -156,17 +173,14 @@ jobs:
 
             -   name: Build app package (Windows)
                 if: matrix.platform == 'windows-latest'
-                working-directory: apps/app
+                working-directory: deploy/app
                 shell: bash
-                run: pnpm ${{ matrix.build_script }} -- --publish never
-                env:
-                    npm_config_prefix: ${{ github.workspace }}
-                    ELECTRON_BUILDER_CACHE: ${{ github.workspace }}/.cache/electron-builder
+                run: pnpm exec electron-builder --win --publish never
 
             -   name: Build app package (Linux)
                 if: matrix.platform == 'ubuntu-22.04'
-                working-directory: apps/app
-                run: pnpm ${{ matrix.build_script }} -- --publish never
+                working-directory: deploy/app
+                run: pnpm exec electron-builder --linux --publish never
 
             -   name: Collect artifacts
                 shell: bash
@@ -174,21 +188,19 @@ jobs:
                     mkdir -p release
 
                     if [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
-                      EXE=$(ls ./apps/app/dist/*.exe 2>/dev/null | head -n1)
+                      EXE=$(ls ./deploy/app/dist/*.exe 2>/dev/null | head -n1)
                       [[ -f "$EXE" ]] && cp "$EXE" ./release/MutualzzSetup.exe
                     fi
 
                     if [[ "${{ matrix.platform }}" == "macos-latest" ]]; then
-                      DMG=$(ls ./apps/app/dist/*.dmg 2>/dev/null | head -n1)
+                      DMG=$(ls ./deploy/app/dist/*.dmg 2>/dev/null | head -n1)
                       [[ -f "$DMG" ]] && cp "$DMG" ./release/Mutualzz.dmg
                     fi
 
                     if [[ "${{ matrix.platform }}" == "ubuntu-22.04" ]]; then
-                      DEB=$(ls ./apps/app/dist/*.deb 2>/dev/null | head -n1)
-                      RPM=$(ls ./apps/app/dist/*.rpm 2>/dev/null | head -n1)
-                      APPIMAGE=$(ls ./apps/app/dist/*.AppImage 2>/dev/null | head -n1)
+                      DEB=$(ls ./deploy/app/dist/*.deb 2>/dev/null | head -n1)
+                      APPIMAGE=$(ls ./deploy/app/dist/*.AppImage 2>/dev/null | head -n1)
                       [[ -f "$DEB" ]]      && cp "$DEB"      ./release/Mutualzz.deb
-                      [[ -f "$RPM" ]]      && cp "$RPM"      ./release/Mutualzz.rpm
                       [[ -f "$APPIMAGE" ]] && cp "$APPIMAGE" ./release/Mutualzz.AppImage
                     fi
 
@@ -262,7 +274,6 @@ jobs:
                         release/MutualzzSetup.exe
                         release/Mutualzz.dmg
                         release/Mutualzz.deb
-                        release/Mutualzz.rpm
                         release/Mutualzz.AppImage
                 env:
                     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -273,8 +284,6 @@ jobs:
             -   name: Upload binaries to R2
                 shell: bash
                 env:
-                    R2_BUCKET: mutualzz
-                    CLOUDFLARE_ENDPOINT: ${{ secrets.CLOUDFLARE_ENDPOINT }}
                     CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
                     CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
                 run: |
@@ -288,11 +297,10 @@ jobs:
                       fi
                     }
 
-                    upload "release/MutualzzSetup.exe"   "mutualzz/releases/latest/MutualzzSetup.exe"
-                    upload "release/Mutualzz.dmg"        "mutualzz/releases/latest/Mutualzz.dmg"
-                    upload "release/Mutualzz.deb"        "mutualzz/releases/latest/Mutualzz.deb"
-                    upload "release/Mutualzz.rpm"        "mutualzz/releases/latest/Mutualzz.rpm"
-                    upload "release/Mutualzz.AppImage"   "mutualzz/releases/latest/Mutualzz.AppImage"
+                    upload "release/MutualzzSetup.exe"  "mutualzz/releases/latest/MutualzzSetup.exe"
+                    upload "release/Mutualzz.dmg"       "mutualzz/releases/latest/Mutualzz.dmg"
+                    upload "release/Mutualzz.deb"       "mutualzz/releases/latest/Mutualzz.deb"
+                    upload "release/Mutualzz.AppImage"  "mutualzz/releases/latest/Mutualzz.AppImage"
 
             -   name: Generate and upload latest.json
                 shell: bash
@@ -307,7 +315,6 @@ jobs:
                       "osx": "https://proxy.mutualzz.com/releases/latest/Mutualzz.dmg",
                       "linux": {
                         "debian": "https://proxy.mutualzz.com/releases/latest/Mutualzz.deb",
-                        "rpm": "https://proxy.mutualzz.com/releases/latest/Mutualzz.rpm",
                         "appimage": "https://proxy.mutualzz.com/releases/latest/Mutualzz.AppImage"
                       }
                     }

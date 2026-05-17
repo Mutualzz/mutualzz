@@ -1,25 +1,26 @@
 packages:
-  - apps/*
-  - packages/*
-  - tooling/*
+    - apps/*
+    - packages/*
+    - tooling/*
 
 allowBuilds:
-  '@discordjs/opus': true
-  '@parcel/watcher': true
-  '@sentry-internal/node-cpu-profiler': true
-  '@shopify/react-native-skia': true
-  '@swc/core': true
-  bcrypt: true
-  bufferutil: true
-  electron: true
-  electron-winstaller: true
-  erlpack: set this to true or false
-  esbuild: true
-  keytar: true
-  mediasoup: true
-  sharp: true
-  unrs-resolver: true
-  zlib-sync: true
+    '@discordjs/opus': true
+    '@parcel/watcher': true
+    '@sentry-internal/node-cpu-profiler': true
+    '@shopify/react-native-skia': true
+    '@swc/core': true
+    bcrypt: true
+    bufferutil: true
+    electron: true
+    electron-winstaller: true
+    erlpack: set this to true or false
+    esbuild: true
+    keytar: true
+    mediasoup: true
+    sharp: true
+    unrs-resolver: true
+    zlib-sync: true
 
 nodeLinker: hoisted
 shamefullyHoist: true
+injectWorkspacePackages: true
