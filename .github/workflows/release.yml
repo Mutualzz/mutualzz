@@ -138,10 +138,6 @@ jobs:
                 if: matrix.platform == 'ubuntu-22.04'
                 run: chmod +x ./node_modules/app-builder-bin/linux/x64/app-builder
 
-            # macOS: raise the open-file-descriptor limit before electron-builder
-            # runs its pnpm node module collector — EMFILE means it hit the default
-            # limit of 256 while scanning the monorepo. ulimit -n is per-shell so
-            # it must be set in the same step that invokes the build.
             -   name: Build app package (macOS)
                 if: matrix.platform == 'macos-latest'
                 working-directory: apps/app
@@ -158,18 +154,12 @@ jobs:
                     CSC_LINK: ${{ secrets.APPLE_CERTIFICATE }}
                     CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
 
-            # Windows: electron-builder fails to detect the pnpm workspace root
-            # (logs show: resolved=undefined) because it looks for the pnpm lockfile
-            # relative to the project dir rather than walking up. Setting
-            # ELECTRON_BUILDER_CACHE explicitly and pointing it to the repo root
-            # via the packageManager env var workaround fixes workspace resolution.
             -   name: Build app package (Windows)
                 if: matrix.platform == 'windows-latest'
                 working-directory: apps/app
                 shell: bash
                 run: pnpm ${{ matrix.build_script }} -- --publish never
                 env:
-                    # Force electron-builder to use the repo root as workspace root
                     npm_config_prefix: ${{ github.workspace }}
                     ELECTRON_BUILDER_CACHE: ${{ github.workspace }}/.cache/electron-builder
 
@@ -202,8 +192,6 @@ jobs:
                       [[ -f "$APPIMAGE" ]] && cp "$APPIMAGE" ./release/Mutualzz.AppImage
                     fi
 
-            # Upload each platform's artifacts so the release job can gather them all.
-            # Each platform uploads only what it built — the release job downloads all three.
             -   name: Upload artifacts
                 uses: actions/upload-artifact@v4
                 with:
@@ -229,7 +217,6 @@ jobs:
                 with:
                     node-version: '24'
 
-            # Download artifacts from all three platform builds into one directory
             -   name: Download all artifacts
                 uses: actions/download-artifact@v4
                 with:
