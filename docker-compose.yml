@@ -1,9 +1,8 @@
 services:
-    app-backend:
+    voice:
         build:
             context: .
-            dockerfile: Dockerfile
+            dockerfile: apps/voice/Dockerfile
+        env_file: .env
         network_mode: host
         restart: unless-stopped
-        env_file:
-            - .env
