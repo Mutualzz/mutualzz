@@ -40,3 +40,6 @@
 [submodule "packages/bitfield"]
 	path = packages/bitfield
 	url = https://github.com/Mutualzz/bitfield.git
+[submodule "apps/voice"]
+	path = apps/voice
+	url = https://github.com/Mutualzz/voice.git
