@@ -3,7 +3,6 @@ lockfileVersion: '9.0'
 settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
-  injectWorkspacePackages: true
 
 importers:
 
@@ -83,16 +82,16 @@ importers:
         version: link:../../packages/color-picker
       '@mutualzz/contexify':
         specifier: workspace:*
-        version: file:packages/contexify(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@types/react@19.2.10)(react@19.2.0))(@floating-ui/react@0.27.19(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@types/react@19.2.10)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        version: link:../../packages/contexify
       '@mutualzz/logger':
         specifier: workspace:*
         version: link:../../packages/logger
       '@mutualzz/ui-core':
         specifier: workspace:*
-        version: file:packages/ui-core(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@types/react@19.2.10)(react@19.2.0))(react@19.2.0)
+        version: link:../../packages/ui-core
       '@mutualzz/ui-web':
         specifier: workspace:*
-        version: file:packages/ui-web(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@types/react@19.2.10)(react@19.2.0))(@floating-ui/react@0.27.19(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@types/react@19.2.10)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        version: link:../../packages/ui-web
       '@mutualzz/validators':
         specifier: workspace:*
         version: link:../../packages/validators
@@ -366,10 +365,10 @@ importers:
         version: link:../../packages/logger
       '@mutualzz/ui-core':
         specifier: workspace:*
-        version: file:packages/ui-core(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@types/react@19.2.10)(react@19.2.0))(react@19.2.0)
+        version: link:../../packages/ui-core
       '@mutualzz/ui-native':
         specifier: workspace:*
-        version: file:packages/ui-native(c85d21f44059ccc5a4b5ae77660c31f3)
+        version: link:../../packages/ui-native
       '@mutualzz/validators':
         specifier: workspace:*
         version: link:../../packages/validators
@@ -831,7 +830,7 @@ importers:
         version: 11.14.1(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@types/react@19.2.10)(react@19.2.0)
       '@mutualzz/ui-core':
         specifier: workspace:*
-        version: file:packages/ui-core(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@types/react@19.2.10)(react@19.2.0))(react@19.2.0)
+        version: link:../ui-core
       '@types/react':
         specifier: 19.2.10
         version: 19.2.10
@@ -859,7 +858,7 @@ importers:
         version: 11.14.1(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@types/react@19.2.10)(react@19.2.0)
       '@mutualzz/ui-core':
         specifier: workspace:*
-        version: file:packages/ui-core(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@types/react@19.2.10)(react@19.2.0))(react@19.2.0)
+        version: link:../ui-core
       '@mutualzz/ui-web':
         specifier: workspace:*
         version: link:../ui-web
@@ -936,7 +935,7 @@ importers:
         version: 11.14.0(@types/react@19.2.10)(react@19.2.0)
       '@mutualzz/ui-core':
         specifier: workspace:*
-        version: file:packages/ui-core(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@types/react@19.2.10)(react@19.2.0))(react@19.2.0)
+        version: link:../ui-core
       '@shopify/react-native-skia':
         specifier: 2.2.12
         version: 2.2.12(react-native-reanimated@4.1.7(react-native-worklets@0.7.4(@babel/core@7.29.0)(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.10)(bufferutil@4.1.0)(react@19.2.0))(react@19.2.0))(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.10)(bufferutil@4.1.0)(react@19.2.0))(react@19.2.0))(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.10)(bufferutil@4.1.0)(react@19.2.0))(react@19.2.0)
@@ -988,7 +987,7 @@ importers:
         version: link:../color-picker
       '@mutualzz/ui-core':
         specifier: workspace:*
-        version: file:packages/ui-core(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@types/react@19.2.10)(react@19.2.0))(react@19.2.0)
+        version: link:../ui-core
       color:
         specifier: ^5.0.3
         version: 5.0.3
@@ -3283,54 +3282,6 @@ packages:
     peerDependencies:
       react: '>=18.0.0'
       react-dom: '>=18.0.0'
-
-  '@mutualzz/color-picker@file:packages/color-picker':
-    resolution: {directory: packages/color-picker, type: directory}
-    peerDependencies:
-      '@emotion/react': 11.14.0
-      '@emotion/styled': 11.14.1
-      '@types/react': 19.2.10
-      react: 19.2.0
-
-  '@mutualzz/contexify@file:packages/contexify':
-    resolution: {directory: packages/contexify, type: directory}
-    peerDependencies:
-      '@emotion/react': 11.14.0
-      '@emotion/styled': 11.14.1
-      '@types/react': 19.2.10
-      react: 19.2.0
-      react-dom: 19.2.0
-
-  '@mutualzz/ui-core@file:packages/ui-core':
-    resolution: {directory: packages/ui-core, type: directory}
-    peerDependencies:
-      '@emotion/react': 11.14.0
-      '@emotion/styled': 11.14.1
-      react: 19.2.0
-
-  '@mutualzz/ui-native@file:packages/ui-native':
-    resolution: {directory: packages/ui-native, type: directory}
-    peerDependencies:
-      '@emotion/native': 11.11.0
-      '@emotion/react': 11.14.0
-      '@shopify/react-native-skia': 2.2.12
-      '@types/react': 19.2.10
-      react: 19.2.0
-      react-native: 0.83.2
-      react-native-gesture-handler: ~2.28.0
-      react-native-reanimated: ~4.1.1
-      react-native-safe-area-context: 5.6.2
-      react-native-svg: 15.12.1
-
-  '@mutualzz/ui-web@file:packages/ui-web':
-    resolution: {directory: packages/ui-web, type: directory}
-    peerDependencies:
-      '@emotion/react': 11.14.0
-      '@emotion/styled': 11.14.1
-      '@floating-ui/react': 0.27.16
-      '@types/react': 19.2.10
-      react: 19.2.0
-      react-dom: 19.2.0
 
   '@napi-rs/wasm-runtime@0.2.12':
     resolution: {integrity: sha512-ZVWUcfwY4E/yPitQJl481FjFo3K22D6qF0DuFH6Y/nbnE11GY5uguDxZMGXPQ8WQ0128MXQD7TnfHyK4oWoIJQ==}
@@ -14239,66 +14190,6 @@ snapshots:
     transitivePeerDependencies:
       - '@types/react'
       - supports-color
-
-  '@mutualzz/color-picker@file:packages/color-picker(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@types/react@19.2.10)(react@19.2.0))(@types/react@19.2.10)(react@19.2.0)':
-    dependencies:
-      '@emotion/react': 11.14.0(@types/react@19.2.10)(react@19.2.0)
-      '@emotion/styled': 11.14.1(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@types/react@19.2.10)(react@19.2.0)
-      '@mutualzz/ui-core': file:packages/ui-core(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@types/react@19.2.10)(react@19.2.0))(react@19.2.0)
-      '@types/react': 19.2.10
-      color: 5.0.3
-      react: 19.2.0
-
-  '@mutualzz/contexify@file:packages/contexify(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@types/react@19.2.10)(react@19.2.0))(@floating-ui/react@0.27.19(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@types/react@19.2.10)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
-    dependencies:
-      '@emotion/react': 11.14.0(@types/react@19.2.10)(react@19.2.0)
-      '@emotion/styled': 11.14.1(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@types/react@19.2.10)(react@19.2.0)
-      '@mutualzz/ui-core': file:packages/ui-core(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@types/react@19.2.10)(react@19.2.0))(react@19.2.0)
-      '@mutualzz/ui-web': file:packages/ui-web(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@types/react@19.2.10)(react@19.2.0))(@floating-ui/react@0.27.19(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@types/react@19.2.10)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
-      '@types/react': 19.2.10
-      react: 19.2.0
-      react-dom: 19.2.0(react@19.2.0)
-    transitivePeerDependencies:
-      - '@floating-ui/react'
-
-  '@mutualzz/ui-core@file:packages/ui-core(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@types/react@19.2.10)(react@19.2.0))(react@19.2.0)':
-    dependencies:
-      '@emotion/react': 11.14.0(@types/react@19.2.10)(react@19.2.0)
-      '@emotion/styled': 11.14.1(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@types/react@19.2.10)(react@19.2.0)
-      color: 5.0.3
-      gradient-parser: 1.2.0
-      react: 19.2.0
-
-  '@mutualzz/ui-native@file:packages/ui-native(c85d21f44059ccc5a4b5ae77660c31f3)':
-    dependencies:
-      '@emotion/native': 11.11.0(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(react-native@0.83.6(@babel/core@7.29.0)(@types/react@19.2.10)(bufferutil@4.1.0)(react@19.2.0))(react@19.2.0)
-      '@emotion/react': 11.14.0(@types/react@19.2.10)(react@19.2.0)
-      '@mutualzz/ui-core': file:packages/ui-core(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@types/react@19.2.10)(react@19.2.0))(react@19.2.0)
-      '@shopify/react-native-skia': 2.4.18(react-native-reanimated@4.2.3(react-native-worklets@0.7.4(@babel/core@7.29.0)(react-native@0.83.6(@babel/core@7.29.0)(@types/react@19.2.10)(bufferutil@4.1.0)(react@19.2.0))(react@19.2.0))(react-native@0.83.6(@babel/core@7.29.0)(@types/react@19.2.10)(bufferutil@4.1.0)(react@19.2.0))(react@19.2.0))(react-native@0.83.6(@babel/core@7.29.0)(@types/react@19.2.10)(bufferutil@4.1.0)(react@19.2.0))(react@19.2.0)
-      '@types/react': 19.2.10
-      color: 5.0.3
-      react: 19.2.0
-      react-native: 0.83.6(@babel/core@7.29.0)(@types/react@19.2.10)(bufferutil@4.1.0)(react@19.2.0)
-      react-native-gesture-handler: 2.30.1(react-native@0.83.6(@babel/core@7.29.0)(@types/react@19.2.10)(bufferutil@4.1.0)(react@19.2.0))(react@19.2.0)
-      react-native-reanimated: 4.2.3(react-native-worklets@0.7.4(@babel/core@7.29.0)(react-native@0.83.6(@babel/core@7.29.0)(@types/react@19.2.10)(bufferutil@4.1.0)(react@19.2.0))(react@19.2.0))(react-native@0.83.6(@babel/core@7.29.0)(@types/react@19.2.10)(bufferutil@4.1.0)(react@19.2.0))(react@19.2.0)
-      react-native-safe-area-context: 5.6.2(react-native@0.83.6(@babel/core@7.29.0)(@types/react@19.2.10)(bufferutil@4.1.0)(react@19.2.0))(react@19.2.0)
-      react-native-svg: 15.15.3(react-native@0.83.6(@babel/core@7.29.0)(@types/react@19.2.10)(bufferutil@4.1.0)(react@19.2.0))(react@19.2.0)
-    transitivePeerDependencies:
-      - '@emotion/styled'
-
-  '@mutualzz/ui-web@file:packages/ui-web(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@types/react@19.2.10)(react@19.2.0))(@floating-ui/react@0.27.19(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@types/react@19.2.10)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
-    dependencies:
-      '@emotion/react': 11.14.0(@types/react@19.2.10)(react@19.2.0)
-      '@emotion/styled': 11.14.1(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@types/react@19.2.10)(react@19.2.0)
-      '@floating-ui/react': 0.27.19(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
-      '@mutualzz/color-picker': file:packages/color-picker(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@types/react@19.2.10)(react@19.2.0))(@types/react@19.2.10)(react@19.2.0)
-      '@mutualzz/ui-core': file:packages/ui-core(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.10)(react@19.2.0))(@types/react@19.2.10)(react@19.2.0))(react@19.2.0)
-      '@types/react': 19.2.10
-      color: 5.0.3
-      react: 19.2.0
-      react-best-gradient-color-picker: 3.0.14(@types/react@19.2.10)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
-      react-dom: 19.2.0(react@19.2.0)
-      react-icons: 5.6.0(react@19.2.0)
 
   '@napi-rs/wasm-runtime@0.2.12':
     dependencies:
