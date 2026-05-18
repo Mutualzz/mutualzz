@@ -131,7 +131,6 @@ jobs:
 
             -   name: Build app package (macOS)
                 if: matrix.platform == 'macos-latest'
-                working-directory: apps/app
                 run: |
                     ulimit -n 10240
                     pnpm exec electron-builder --mac --publish never
@@ -147,13 +146,11 @@ jobs:
 
             -   name: Build app package (Windows)
                 if: matrix.platform == 'windows-latest'
-                working-directory: apps/app
                 shell: bash
                 run: pnpm exec electron-builder --win --publish never
 
             -   name: Build app package (Linux)
                 if: matrix.platform == 'ubuntu-22.04'
-                working-directory: apps/app
                 run: pnpm exec electron-builder --linux --publish never
 
             -   name: Collect artifacts
