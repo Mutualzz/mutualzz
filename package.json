@@ -1,6 +1,9 @@
 {
     "name": "mutualzz",
     "private": true,
+    "description": "Social media app for everyone, especially alternative people",
+    "version": "6.0.0",
+    "author": "Mutualzz",
     "scripts": {
         "build": "turbo run build",
         "dev": "turbo run dev",
