@@ -127,6 +127,11 @@ jobs:
 
             -   name: Build app (electron-vite)
                 working-directory: apps/app
+                env:
+                    VITE_API_URL: ${{ secrets.VITE_API_URL }}
+                    VITE_WS_URL: ${{ secrets.VITE_WS_URL }}
+                    VITE_CDN_URL: ${{ secrets.VITE_CDN_URL }}
+                    VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
                 run: pnpm exec electron-vite build
 
             -   name: Build app package (macOS)
