@@ -253,6 +253,7 @@ jobs:
                         release/Mutualzz.dmg
                         release/Mutualzz.deb
                         release/Mutualzz.AppImage
+                        apps/app/dist/latest.yml
                 env:
                     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
