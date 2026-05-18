@@ -165,11 +165,13 @@ jobs:
                     if [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
                       EXE=$(ls ./apps/app/dist/*.exe 2>/dev/null | head -n1)
                       [[ -f "$EXE" ]] && cp "$EXE" ./release/MutualzzSetup.exe
+                      [[ -f "./apps/app/dist/latest.yml" ]] && cp "./apps/app/dist/latest.yml" ./release/latest-win.yml
                     fi
 
                     if [[ "${{ matrix.platform }}" == "macos-latest" ]]; then
                       DMG=$(ls ./apps/app/dist/*.dmg 2>/dev/null | head -n1)
                       [[ -f "$DMG" ]] && cp "$DMG" ./release/Mutualzz.dmg
+                      [[ -f "./apps/app/dist/latest-mac.yml" ]] && cp "./apps/app/dist/latest-mac.yml" ./release/latest-mac.yml
                     fi
 
                     if [[ "${{ matrix.platform }}" == "ubuntu-22.04" ]]; then
@@ -177,6 +179,7 @@ jobs:
                       APPIMAGE=$(ls ./apps/app/dist/*.AppImage 2>/dev/null | head -n1)
                       [[ -f "$DEB" ]]      && cp "$DEB"      ./release/Mutualzz.deb
                       [[ -f "$APPIMAGE" ]] && cp "$APPIMAGE" ./release/Mutualzz.AppImage
+                      [[ -f "./apps/app/dist/latest-linux.yml" ]] && cp "./apps/app/dist/latest-linux.yml" ./release/latest-linux.yml
                     fi
 
             -   name: Upload artifacts
@@ -239,6 +242,11 @@ jobs:
                       echo "body=" >> "$GITHUB_OUTPUT"
                     fi
 
+            -   name: Rename updater ymls to expected filenames
+                shell: bash
+                run: |
+                    [[ -f release/latest-win.yml ]] && mv release/latest-win.yml release/latest.yml
+
             -   name: Create GitHub release
                 uses: softprops/action-gh-release@v2
                 with:
@@ -253,7 +261,9 @@ jobs:
                         release/Mutualzz.dmg
                         release/Mutualzz.deb
                         release/Mutualzz.AppImage
-                        apps/app/dist/latest.yml
+                        release/latest.yml
+                        release/latest-mac.yml
+                        release/latest-linux.yml
                 env:
                     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
