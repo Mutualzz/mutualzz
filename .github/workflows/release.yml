@@ -142,6 +142,7 @@ jobs:
                     APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
                     APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
                     APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+                    APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
                     CSC_LINK: ${{ secrets.APPLE_CERTIFICATE }}
                     CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
 
