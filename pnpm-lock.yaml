@@ -773,6 +773,9 @@ importers:
       '@mutualzz/logger':
         specifier: workspace:*
         version: link:../../packages/logger
+      '@mutualzz/server':
+        specifier: workspace:*
+        version: link:../server
       ioredis:
         specifier: ^5.10.1
         version: 5.10.1
