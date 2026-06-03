@@ -27,27 +27,10 @@
         "husky": "^9.1.7",
         "prettier": "^3.8.3",
         "prettier-plugin-organize-imports": "^4.3.0",
-        "turbo": "^2.9.14",
+        "turbo": "^2.9.16",
         "typescript": "~6.0.3",
-        "node-addon-api": "^8.7.0",
+        "node-addon-api": "^8.8.0",
         "node-gyp": "^12.3.0"
-    },
-    "pnpm": {
-        "overrides": {
-            "react": "19.2.0",
-            "react-dom": "19.2.0",
-            "react-native": "0.83.2",
-            "@types/react": "19.2.10",
-            "@types/react-dom": "19.2.3",
-            "@emotion/react": "11.14.0",
-            "@emotion/styled": "11.14.1",
-            "@emotion/native": "11.11.0",
-            "react-native-svg": "15.15.3",
-            "@shopify/react-native-skia": "2.4.18",
-            "sharp": "0.34.5"
-        },
-        "dedupe": true,
-        "dedupePeerDependents": true
     },
     "engines": {
         "node": ">=22"
@@ -57,5 +40,5 @@
         "packages/*",
         "tooling/*"
     ],
-    "packageManager": "pnpm@11.1.2"
+    "packageManager": "pnpm@11.5.0"
 }
