@@ -1,6 +1,6 @@
 # Changelog
 
-## App v6.3.0
+## Version v6.3.0
 
 - Mentions: Added way to mention friends, roles and @here, and @everyone. (Azrael)
 - Group DMs: Added but still needs some work with managing it (Azrael)
