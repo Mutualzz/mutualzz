@@ -533,16 +533,13 @@ importers:
         version: 1.14.1
       '@discordjs/opus':
         specifier: ^0.10.0
-        version: 0.10.0(encoding@0.1.13)
+        version: 0.10.0
       '@discordjs/voice':
         specifier: ^0.19.2
         version: 0.19.2(@discordjs/opus@0.10.0)(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(bufferutil@4.1.0)
       '@faker-js/faker':
         specifier: ^10.4.0
         version: 10.4.0
-      '@giphy/js-fetch-api':
-        specifier: ^5.8.0
-        version: 5.8.0
       '@giphy/js-types':
         specifier: ^5.1.0
         version: 5.1.0
@@ -620,13 +617,13 @@ importers:
         version: 2.2.1
       discord-player:
         specifier: ^7.2.0
-        version: 7.2.0(@discord-player/extractor@7.2.0)(@swc/core@1.15.33)(jiti@2.7.0)(mediaplex@1.0.0)(postcss@8.5.15)(tsx@4.22.1)(yaml@2.9.0)
+        version: 7.2.0(@discord-player/extractor@7.2.0)(mediaplex@1.0.0)(tsx@4.22.1)
       discord-player-spotify:
         specifier: ^1.1.9
         version: 1.1.9
       discord-player-youtubei:
         specifier: ^2.0.0
-        version: 2.0.0(bufferutil@4.1.0)(canvas@3.2.3)
+        version: 2.0.0(bufferutil@4.1.0)
       discord.js:
         specifier: ^14.26.4
         version: 14.26.4(bufferutil@4.1.0)
@@ -713,7 +710,7 @@ importers:
         version: 0.34.5
       url-metadata:
         specifier: ^5.4.4
-        version: 5.4.4(encoding@0.1.13)
+        version: 5.4.4
       ws:
         specifier: ^8.21.0
         version: 8.21.0(bufferutil@4.1.0)
@@ -783,13 +780,13 @@ importers:
         version: 0.31.10
       eslint:
         specifier: ^10.4.1
-        version: 10.4.1(jiti@2.7.0)
+        version: 10.4.1
       nodemon:
         specifier: ^3.1.14
         version: 3.1.14
       ts-node:
         specifier: ^10.9.2
-        version: 10.9.2(@swc/core@1.15.33)(@types/node@25.9.1)(typescript@6.0.3)
+        version: 10.9.2(@types/node@25.9.1)(typescript@6.0.3)
       tsconfig-paths:
         specifier: ^4.2.0
         version: 4.2.0
@@ -3044,14 +3041,8 @@ packages:
   '@gar/promisify@1.1.3':
     resolution: {integrity: sha512-k2Ty1JcVojjJFwrg/ThKi2ujJ7XNLYaFGNB/bWT9wGR+oSMJHMa5w+CUq6p/pVrKeNNgA7pCqEcjSnHVoqJQFw==}
 
-  '@giphy/js-fetch-api@5.8.0':
-    resolution: {integrity: sha512-DWdNauYaBSLPeAe/O+uzXtPIoUvmSnYV8Q49p+cPjEQ7Ncj1mDg1fuSKyl0OmPxCm6fzGJ4kuJjsWzyWn9ubbA==}
-
   '@giphy/js-types@5.1.0':
     resolution: {integrity: sha512-BZYCDtYNRR7cUWkbDLB4wmm3qmWMsVCQdUiBNOfmZ3yAazCgygKJoDI/5Rq4CK5MBaOc5LVdF8viC2WtoBdaPA==}
-
-  '@giphy/js-util@5.2.0':
-    resolution: {integrity: sha512-Qt7pGh2cqiNmXLeWAgb459wK8+BuMLtIxTfg4ZksnPHPsLthiHT9hhzs2QhqUh7Pp/HOq+Cbv2etGDfnq+xiKA==}
 
   '@humanfs/core@0.19.2':
     resolution: {integrity: sha512-UhXNm+CFMWcbChXywFwkmhqjs3PRCmcSa/hfBgLIb7oQ5HNb1wS0icWsGtSAUNgefHeI+eBrA8I1fxmbHsGdvA==}
@@ -11354,11 +11345,6 @@ packages:
     deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
     hasBin: true
 
-  uuid@9.0.1:
-    resolution: {integrity: sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==}
-    deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
-    hasBin: true
-
   v8-compile-cache-lib@3.0.1:
     resolution: {integrity: sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==}
 
@@ -12888,12 +12874,12 @@ snapshots:
 
   '@discord-player/equalizer@7.2.0': {}
 
-  '@discord-player/extractor@7.2.0(encoding@0.1.13)':
+  '@discord-player/extractor@7.2.0':
     dependencies:
       file-type: 16.5.4
       isomorphic-unfetch: 4.0.2
       node-html-parser: 7.1.0
-      reverbnation-scraper: 2.0.0(encoding@0.1.13)
+      reverbnation-scraper: 2.0.0
       soundcloud.ts: 0.5.5
       spotify-url-info: 3.3.0
     transitivePeerDependencies:
@@ -12925,12 +12911,12 @@ snapshots:
     dependencies:
       discord-api-types: 0.38.47
 
-  '@discordjs/node-pre-gyp@0.4.5(encoding@0.1.13)':
+  '@discordjs/node-pre-gyp@0.4.5':
     dependencies:
       detect-libc: 2.1.2
       https-proxy-agent: 5.0.1
       make-dir: 3.1.0
-      node-fetch: 2.7.0(encoding@0.1.13)
+      node-fetch: 2.7.0
       nopt: 5.0.0
       npmlog: 5.0.1
       rimraf: 3.0.2
@@ -12940,9 +12926,9 @@ snapshots:
       - encoding
       - supports-color
 
-  '@discordjs/opus@0.10.0(encoding@0.1.13)':
+  '@discordjs/opus@0.10.0':
     dependencies:
-      '@discordjs/node-pre-gyp': 0.4.5(encoding@0.1.13)
+      '@discordjs/node-pre-gyp': 0.4.5
       node-addon-api: 8.7.0
     transitivePeerDependencies:
       - encoding
@@ -13584,7 +13570,7 @@ snapshots:
 
   '@eslint-community/eslint-utils@4.9.1(eslint@10.4.1)':
     dependencies:
-      eslint: 10.4.1(jiti@2.7.0)
+      eslint: 10.4.1
       eslint-visitor-keys: 3.4.3
 
   '@eslint-community/regexpp@4.12.2': {}
@@ -13592,7 +13578,7 @@ snapshots:
   '@eslint/config-array@0.23.5':
     dependencies:
       '@eslint/object-schema': 3.0.5
-      debug: 4.4.3(supports-color@10.2.2)
+      debug: 4.4.3
       minimatch: 10.2.5
     transitivePeerDependencies:
       - supports-color
@@ -14019,17 +14005,7 @@ snapshots:
 
   '@gar/promisify@1.1.3': {}
 
-  '@giphy/js-fetch-api@5.8.0':
-    dependencies:
-      '@giphy/js-types': 5.1.0
-      '@giphy/js-util': 5.2.0
-
   '@giphy/js-types@5.1.0': {}
-
-  '@giphy/js-util@5.2.0':
-    dependencies:
-      '@giphy/js-types': 5.1.0
-      uuid: 9.0.1
 
   '@humanfs/core@0.19.2':
     dependencies:
@@ -16562,7 +16538,7 @@ snapshots:
 
   agent-base@6.0.2:
     dependencies:
-      debug: 4.4.3(supports-color@10.2.2)
+      debug: 4.4.3
     transitivePeerDependencies:
       - supports-color
 
@@ -17077,7 +17053,7 @@ snapshots:
     dependencies:
       bytes: 3.1.2
       content-type: 1.0.5
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.4.3
       http-errors: 2.0.1
       iconv-lite: 0.7.2
       on-finished: 2.4.1
@@ -17743,6 +17719,10 @@ snapshots:
     dependencies:
       ms: 2.1.3
 
+  debug@4.4.3:
+    dependencies:
+      ms: 2.1.3
+
   debug@4.4.3(supports-color@10.2.2):
     dependencies:
       ms: 2.1.3
@@ -17845,10 +17825,10 @@ snapshots:
       node-html-parser: 7.1.0
       otpauth: 9.5.1
 
-  discord-player-youtubei@2.0.0(bufferutil@4.1.0)(canvas@3.2.3):
+  discord-player-youtubei@2.0.0(bufferutil@4.1.0):
     dependencies:
       bgutils-js: 3.2.0
-      jsdom: 26.1.0(bufferutil@4.1.0)(canvas@3.2.3)
+      jsdom: 26.1.0(bufferutil@4.1.0)
       tiny-typed-emitter: 2.1.0
       undici: 7.25.0
       youtubei.js: 16.0.1
@@ -17858,14 +17838,14 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  discord-player@7.2.0(@discord-player/extractor@7.2.0)(@swc/core@1.15.33)(jiti@2.7.0)(mediaplex@1.0.0)(postcss@8.5.15)(tsx@4.22.1)(yaml@2.9.0):
+  discord-player@7.2.0(@discord-player/extractor@7.2.0)(mediaplex@1.0.0)(tsx@4.22.1):
     dependencies:
       '@discord-player/equalizer': 7.2.0
-      '@discord-player/extractor': 7.2.0(encoding@0.1.13)
+      '@discord-player/extractor': 7.2.0
       '@discord-player/ffmpeg': 7.2.0
       '@discord-player/utils': 7.2.0
       '@web-scrobbler/metadata-filter': 3.2.0
-      discord-voip: 7.2.0(@swc/core@1.15.33)(jiti@2.7.0)(postcss@8.5.15)(tsx@4.22.1)(yaml@2.9.0)
+      discord-voip: 7.2.0(tsx@4.22.1)
       libsodium-wrappers: 0.7.16
       mediaplex: 1.0.0
     transitivePeerDependencies:
@@ -17877,13 +17857,13 @@ snapshots:
       - tsx
       - yaml
 
-  discord-voip@7.2.0(@swc/core@1.15.33)(jiti@2.7.0)(postcss@8.5.15)(tsx@4.22.1)(yaml@2.9.0):
+  discord-voip@7.2.0(tsx@4.22.1):
     dependencies:
       '@discord-player/ffmpeg': 7.2.0
       '@discord-player/opus': 7.2.0
       '@discord-player/utils': 7.2.0
       '@types/ws': 8.18.1
-      tsup: 8.5.1(@swc/core@1.15.33)(jiti@2.7.0)(postcss@8.5.15)(tsx@4.22.1)(typescript@5.9.3)(yaml@2.9.0)
+      tsup: 8.5.1(tsx@4.22.1)(typescript@5.9.3)
       typescript: 5.9.3
     transitivePeerDependencies:
       - '@microsoft/api-extractor'
@@ -18588,6 +18568,41 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  eslint@10.4.1:
+    dependencies:
+      '@eslint-community/eslint-utils': 4.9.1(eslint@10.4.1)
+      '@eslint-community/regexpp': 4.12.2
+      '@eslint/config-array': 0.23.5
+      '@eslint/config-helpers': 0.6.0
+      '@eslint/core': 1.2.1
+      '@eslint/plugin-kit': 0.7.2
+      '@humanfs/node': 0.16.8
+      '@humanwhocodes/module-importer': 1.0.1
+      '@humanwhocodes/retry': 0.4.3
+      '@types/estree': 1.0.9
+      ajv: 6.15.0
+      cross-spawn: 7.0.6
+      debug: 4.4.3
+      escape-string-regexp: 4.0.0
+      eslint-scope: 9.1.2
+      eslint-visitor-keys: 5.0.1
+      espree: 11.2.0
+      esquery: 1.7.0
+      esutils: 2.0.3
+      fast-deep-equal: 3.1.3
+      file-entry-cache: 8.0.0
+      find-up: 5.0.0
+      glob-parent: 6.0.2
+      ignore: 5.3.2
+      imurmurhash: 0.1.4
+      is-glob: 4.0.3
+      json-stable-stringify-without-jsonify: 1.0.1
+      minimatch: 10.2.5
+      natural-compare: 1.4.0
+      optionator: 0.9.4
+    transitivePeerDependencies:
+      - supports-color
+
   eslint@10.4.1(jiti@2.7.0):
     dependencies:
       '@eslint-community/eslint-utils': 4.9.1(eslint@10.4.1)
@@ -18957,7 +18972,7 @@ snapshots:
       content-type: 1.0.5
       cookie: 0.7.2
       cookie-signature: 1.2.2
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.4.3
       depd: 2.0.0
       encodeurl: 2.0.0
       escape-html: 1.0.3
@@ -19090,7 +19105,7 @@ snapshots:
 
   finalhandler@2.1.1:
     dependencies:
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.4.3
       encodeurl: 2.0.0
       escape-html: 1.0.3
       on-finished: 2.4.1
@@ -19543,7 +19558,7 @@ snapshots:
   http-proxy-agent@7.0.2:
     dependencies:
       agent-base: 7.1.4
-      debug: 4.4.3(supports-color@10.2.2)
+      debug: 4.4.3
     transitivePeerDependencies:
       - supports-color
 
@@ -19555,14 +19570,14 @@ snapshots:
   https-proxy-agent@5.0.1:
     dependencies:
       agent-base: 6.0.2
-      debug: 4.4.3(supports-color@10.2.2)
+      debug: 4.4.3
     transitivePeerDependencies:
       - supports-color
 
   https-proxy-agent@7.0.6:
     dependencies:
       agent-base: 7.1.4
-      debug: 4.4.3(supports-color@10.2.2)
+      debug: 4.4.3
     transitivePeerDependencies:
       - supports-color
 
@@ -19658,7 +19673,7 @@ snapshots:
     dependencies:
       '@ioredis/commands': 1.10.0
       cluster-key-slot: 1.1.1
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.4.3
       denque: 2.1.0
       redis-errors: 1.2.0
       redis-parser: 3.0.0
@@ -20310,7 +20325,7 @@ snapshots:
 
   jsc-safe-url@0.2.4: {}
 
-  jsdom@26.1.0(bufferutil@4.1.0)(canvas@3.2.3):
+  jsdom@26.1.0(bufferutil@4.1.0):
     dependencies:
       cssstyle: 4.6.0
       data-urls: 5.0.0
@@ -20332,8 +20347,6 @@ snapshots:
       whatwg-url: 14.2.0
       ws: 8.20.1(bufferutil@4.1.0)
       xml-name-validator: 5.0.0
-    optionalDependencies:
-      canvas: 3.2.3
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -21216,11 +21229,9 @@ snapshots:
       object.entries: 1.1.9
       semver: 6.3.1
 
-  node-fetch@2.7.0(encoding@0.1.13):
+  node-fetch@2.7.0:
     dependencies:
       whatwg-url: 5.0.0
-    optionalDependencies:
-      encoding: 0.1.13
 
   node-fetch@3.3.2:
     dependencies:
@@ -21627,14 +21638,11 @@ snapshots:
 
   possible-typed-array-names@1.1.0: {}
 
-  postcss-load-config@6.0.1(jiti@2.7.0)(postcss@8.5.15)(tsx@4.22.1)(yaml@2.9.0):
+  postcss-load-config@6.0.1(tsx@4.22.1):
     dependencies:
       lilconfig: 3.1.3
     optionalDependencies:
-      jiti: 2.7.0
-      postcss: 8.5.15
       tsx: 4.22.1
-      yaml: 2.9.0
 
   postcss-value-parser@4.2.0: {}
 
@@ -21714,7 +21722,7 @@ snapshots:
 
   prism-media@1.3.5(@discordjs/opus@0.10.0):
     optionalDependencies:
-      '@discordjs/opus': 0.10.0(encoding@0.1.13)
+      '@discordjs/opus': 0.10.0
 
   proc-log@4.2.0: {}
 
@@ -22195,7 +22203,7 @@ snapshots:
 
   require-in-the-middle@8.0.1:
     dependencies:
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.4.3
       module-details-from-path: 1.0.4
     transitivePeerDependencies:
       - supports-color
@@ -22252,9 +22260,9 @@ snapshots:
 
   reusify@1.1.0: {}
 
-  reverbnation-scraper@2.0.0(encoding@0.1.13):
+  reverbnation-scraper@2.0.0:
     dependencies:
-      node-fetch: 2.7.0(encoding@0.1.13)
+      node-fetch: 2.7.0
     transitivePeerDependencies:
       - encoding
 
@@ -22378,7 +22386,7 @@ snapshots:
 
   router@2.2.0:
     dependencies:
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.4.3
       depd: 2.0.0
       is-promise: 4.0.0
       parseurl: 1.3.3
@@ -22473,7 +22481,7 @@ snapshots:
 
   send@1.2.1:
     dependencies:
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.4.3
       encodeurl: 2.0.0
       escape-html: 1.0.3
       etag: 1.8.1
@@ -23146,6 +23154,24 @@ snapshots:
     optionalDependencies:
       '@swc/core': 1.15.33(@swc/helpers@0.5.21)
 
+  ts-node@10.9.2(@types/node@25.9.1)(typescript@6.0.3):
+    dependencies:
+      '@cspotcode/source-map-support': 0.8.1
+      '@tsconfig/node10': 1.0.12
+      '@tsconfig/node12': 1.0.11
+      '@tsconfig/node14': 1.0.3
+      '@tsconfig/node16': 1.0.4
+      '@types/node': 25.9.1
+      acorn: 8.16.0
+      acorn-walk: 8.3.5
+      arg: 4.1.3
+      create-require: 1.1.1
+      diff: 4.0.4
+      make-error: 1.3.6
+      typescript: 6.0.3
+      v8-compile-cache-lib: 3.0.1
+      yn: 3.1.1
+
   tsc-alias@1.8.17:
     dependencies:
       chokidar: 3.6.0
@@ -23197,18 +23223,18 @@ snapshots:
 
   tslib@2.8.1: {}
 
-  tsup@8.5.1(@swc/core@1.15.33)(jiti@2.7.0)(postcss@8.5.15)(tsx@4.22.1)(typescript@5.9.3)(yaml@2.9.0):
+  tsup@8.5.1(tsx@4.22.1)(typescript@5.9.3):
     dependencies:
       bundle-require: 5.1.0(esbuild@0.27.7)
       cac: 6.7.14
       chokidar: 4.0.3
       consola: 3.4.2
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.4.3
       esbuild: 0.27.7
       fix-dts-default-cjs-exports: 1.0.1
       joycon: 3.1.1
       picocolors: 1.1.1
-      postcss-load-config: 6.0.1(jiti@2.7.0)(postcss@8.5.15)(tsx@4.22.1)(yaml@2.9.0)
+      postcss-load-config: 6.0.1(tsx@4.22.1)
       resolve-from: 5.0.0
       rollup: 4.60.4
       source-map: 0.7.6
@@ -23217,8 +23243,6 @@ snapshots:
       tinyglobby: 0.2.16
       tree-kill: 1.2.2
     optionalDependencies:
-      '@swc/core': 1.15.33(@swc/helpers@0.5.21)
-      postcss: 8.5.15
       typescript: 5.9.3
     transitivePeerDependencies:
       - jiti
@@ -23450,10 +23474,10 @@ snapshots:
     dependencies:
       punycode: 2.3.1
 
-  url-metadata@5.4.4(encoding@0.1.13):
+  url-metadata@5.4.4:
     dependencies:
       cheerio: 1.2.0
-      node-fetch: 2.7.0(encoding@0.1.13)
+      node-fetch: 2.7.0
       request-filtering-agent: 2.0.1
     transitivePeerDependencies:
       - encoding
@@ -23498,8 +23522,6 @@ snapshots:
       base64-arraybuffer: 1.0.2
 
   uuid@7.0.3: {}
-
-  uuid@9.0.1: {}
 
   v8-compile-cache-lib@3.0.1: {}
 
