@@ -119,8 +119,12 @@ jobs:
           git submodule update --init ./packages/bitfield
           git submodule update --init ./tooling/eslint-config
 
+      - name: Install macOS build dependencies
+        if: matrix.platform == 'macos-latest'
+        run: brew install pkg-config cairo pango libpng jpeg giflib librsvg pixman
+
       - name: Install dependencies
-        run: pnpm i
+        run: pnpm i --filter="./apps/app" --filter="./packages/types" --filter="./packages/logger" --filter="./packages/ui-core" --filter="./packages/ui-web" --filter="./packages/validators" --filter="./packages/bitfield" --filter="./packages/color-picker" --filter="./packages/contexify" --filter="./tooling/eslint-config"
 
       - name: Build all packages
         run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/ui-core" --filter="./packages/ui-web" --filter="./packages/validators" --filter="./packages/bitfield" --filter="./packages/color-picker" --filter="./packages/contexify"
