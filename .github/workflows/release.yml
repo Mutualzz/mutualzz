@@ -98,7 +98,7 @@ jobs:
         if: matrix.platform == 'macos-latest'
         run: |
           brew install pkg-config cairo pango libpng jpeg giflib librsvg pixman
-          pip3 install setuptools
+          pip3 install setuptools --break-system-packages
 
       - name: Setup Node
         uses: actions/setup-node@v4
