@@ -332,32 +332,8 @@ jobs:
       - name: Install Wrangler
         run: npm install -g wrangler
 
-      - name: Upload binaries to R2
+      - name: Generate latest.json
         shell: bash
-        env:
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
-        run: |
-          upload() {
-            local src="$1" dest="$2"
-            if [[ -f "$src" ]]; then
-              echo "Uploading $src → $dest"
-              wrangler r2 object put "$dest" --file "$src" --remote
-            else
-              echo "Skipping $dest (file not found)"
-            fi
-          }
-
-          upload "release/MutualzzSetup.exe"  "mutualzz/releases/latest/MutualzzSetup.exe"
-          upload "release/Mutualzz.dmg"       "mutualzz/releases/latest/Mutualzz.dmg"
-          upload "release/Mutualzz.deb"       "mutualzz/releases/latest/Mutualzz.deb"
-          upload "release/Mutualzz.AppImage"  "mutualzz/releases/latest/Mutualzz.AppImage"
-
-      - name: Generate and upload latest.json
-        shell: bash
-        env:
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
         run: |
           cat <<EOF > latest.json
           {
@@ -386,9 +362,30 @@ jobs:
             }
           }
           EOF
+          echo "latest.json generated"
 
-          wrangler r2 object put "mutualzz/releases/latest/latest.json" --file latest.json --remote
-          echo "latest.json uploaded"
+      - name: Upload to R2
+        shell: bash
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: |
+          upload() {
+            local src="$1" dest="$2"
+            if [[ -f "$src" ]]; then
+              echo "Uploading $src → $dest"
+              wrangler r2 object put "$dest" --file "$src" --remote
+            else
+              echo "Skipping $dest (file not found)"
+            fi
+          }
+
+          upload "release/MutualzzSetup.exe"  "mutualzz/releases/latest/MutualzzSetup.exe"
+          upload "release/Mutualzz.dmg"       "mutualzz/releases/latest/Mutualzz.dmg"
+          upload "release/Mutualzz.deb"       "mutualzz/releases/latest/Mutualzz.deb"
+          upload "release/Mutualzz.AppImage"  "mutualzz/releases/latest/Mutualzz.AppImage"
+
+          upload "latest.json"                "mutualzz/releases/latest/latest.json"
 
   github-release:
     name: Create GitHub Release
