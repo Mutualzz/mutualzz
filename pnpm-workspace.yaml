@@ -5,7 +5,9 @@ packages:
 
 allowBuilds:
   '@discordjs/opus': true
+  '@sentry-internal/node-cpu-profiler': true
   '@shopify/react-native-skia': true
+  '@swc/core': true
   bcrypt: true
   bufferutil: true
   canvas: true
