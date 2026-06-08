@@ -374,7 +374,7 @@ jobs:
             local src="$1" dest="$2"
             if [[ -f "$src" ]]; then
               echo "Uploading $src → $dest"
-              wrangler r2 object put "$dest" --file "$src" --remote --force
+              wrangler r2 object put "$dest" --file "$src" --remote
             else
               echo "Skipping $dest (file not found)"
             fi
