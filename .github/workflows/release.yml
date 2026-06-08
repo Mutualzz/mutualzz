@@ -181,6 +181,30 @@ jobs:
             chmod +x apps/app/resources/updater
           fi
 
+      - name: Setup macOS keychain
+        if: matrix.platform == 'macos-latest'
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+        run: |
+          echo "$APPLE_CERTIFICATE" | base64 --decode > /tmp/certificate.p12
+          security create-keychain -p "build-keychain-password" build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "build-keychain-password" build.keychain
+          security set-keychain-settings -t 21600 build.keychain
+          security import /tmp/certificate.p12 \
+            -k build.keychain \
+            -P "$APPLE_CERTIFICATE_PASSWORD" \
+            -T /usr/bin/codesign \
+            -T /usr/bin/security
+          security set-key-partition-list \
+            -S apple-tool:,apple:,codesign: \
+            -s -k "build-keychain-password" \
+            build.keychain
+          security list-keychains -d user -s build.keychain $(security list-keychains -d user | tr -d '"')
+          security unlock-keychain -p "build-keychain-password" build.keychain
+          rm /tmp/certificate.p12
+
       - name: Build app package (macOS)
         if: matrix.platform == 'macos-latest'
         working-directory: apps/app
