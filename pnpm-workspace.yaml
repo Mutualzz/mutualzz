@@ -5,16 +5,11 @@ packages:
 
 allowBuilds:
   '@discordjs/opus': true
-  '@parcel/watcher': true
-  '@sentry-internal/node-cpu-profiler': true
   '@shopify/react-native-skia': true
-  '@swc/core': true
   bcrypt: true
   bufferutil: true
   canvas: true
   electron: true
-  electron-winstaller: true
-  erlpack: set this to true or false
   esbuild: true
   keytar: true
   mediasoup: true
