@@ -68,9 +68,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Pinned to macos-13 (Intel) so electron-builder can cross-compile
-          # both x64 and arm64 targets reliably for universal DMG
-          - platform: macos-13
+          - platform: macos-latest
             artifact_name: macos
           - platform: ubuntu-22.04
             artifact_name: linux
@@ -143,7 +141,7 @@ jobs:
         run: |
           mkdir -p apps/app/resources
 
-          if [[ "${{ matrix.platform }}" == "macos-13" ]]; then
+          if [[ "${{ matrix.platform }}" == "macos-latest" ]]; then
               # Download both arches for universal build
               gh release download --repo mutualzz/updater \
                 --pattern "updater-macos-x64" \
@@ -179,7 +177,7 @@ jobs:
             fi
 
       - name: Build app package (macOS)
-        if: matrix.platform == 'macos-13'
+        if: matrix.platform == 'macos-latest'
         working-directory: apps/app
         run: |
           ulimit -n 65536
@@ -217,7 +215,7 @@ jobs:
             # electron-updater ymls dropped — bootstrapper uses latest.json on R2
           fi
 
-          if [[ "${{ matrix.platform }}" == "macos-13" ]]; then
+          if [[ "${{ matrix.platform }}" == "macos-latest" ]]; then
             DMG=$(ls ./apps/app/dist/*.dmg 2>/dev/null | head -n1)
             [[ -f "$DMG" ]] && cp "$DMG" ./release/Mutualzz.dmg
           fi
