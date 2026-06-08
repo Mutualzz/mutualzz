@@ -88,6 +88,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
 
+      - name: Install macOS build dependencies
+        if: matrix.platform == 'macos-latest'
+        run: brew install pkg-config cairo pango libpng jpeg giflib librsvg pixman
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -106,6 +110,18 @@ jobs:
           corepack --version
           pnpm --version
 
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: echo "dir=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.dir }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
       - name: Init only needed submodules
         run: |
           git submodule update --init ./apps/app
@@ -122,12 +138,8 @@ jobs:
       - name: Install dependencies
         run: pnpm i --ignore-scripts
 
-      - name: Install macOS build dependencies
-        if: matrix.platform == 'macos-latest'
-        run: brew install pkg-config cairo pango libpng jpeg giflib librsvg pixman
-
       - name: Rebuild native modules
-        run: pnpm rebuild canvas keytar zlib-sync bufferutil esbuild unrs-resolver electron
+        run: pnpm rebuild canvas keytar zlib-sync bufferutil esbuild @swc/core @parcel/watcher sharp unrs-resolver electron
 
       - name: Build all packages
         run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/ui-core" --filter="./packages/ui-web" --filter="./packages/validators" --filter="./packages/bitfield" --filter="./packages/color-picker" --filter="./packages/contexify"
@@ -218,7 +230,6 @@ jobs:
           APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
           CSC_LINK: ${{ secrets.APPLE_CERTIFICATE }}
           CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
-          #DEBUG: electron-builder
 
       - name: Build app package (Windows)
         if: matrix.platform == 'windows-latest'
@@ -255,8 +266,7 @@ jobs:
 
       - name: Cleanup keychain
         if: matrix.platform == 'macos-latest' && always()
-        run: |
-          security delete-keychain build.keychain || true
+        run: security delete-keychain build.keychain || true
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
