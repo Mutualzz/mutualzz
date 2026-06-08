@@ -142,39 +142,68 @@ jobs:
           mkdir -p apps/app/resources
 
           if [[ "${{ matrix.platform }}" == "macos-latest" ]]; then
-              # Download both arches for universal build
-              gh release download --repo mutualzz/updater \
-                --pattern "updater-macos-x64" \
-                --dir /tmp/updater-bins/
-              gh release download --repo mutualzz/updater \
-                --pattern "updater-macos-arm64" \
-                --dir /tmp/updater-bins/
+            gh release download --repo mutualzz/updater \
+              --pattern "updater-macos-x64" \
+              --dir /tmp/updater-bins/
+            gh release download --repo mutualzz/updater \
+              --pattern "updater-macos-arm64" \
+              --dir /tmp/updater-bins/
 
-              # Combine into a universal binary with lipo
-              lipo -create \
-                /tmp/updater-bins/updater-macos-x64 \
-                /tmp/updater-bins/updater-macos-arm64 \
-                -output apps/app/resources/updater
+            lipo -create \
+              /tmp/updater-bins/updater-macos-x64 \
+              /tmp/updater-bins/updater-macos-arm64 \
+              -output apps/app/resources/updater
 
-              chmod +x apps/app/resources/updater
-            fi
+            chmod +x apps/app/resources/updater
+          fi
 
-            if [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
-              gh release download --repo mutualzz/updater \
-                --pattern "updater-windows-x64.exe" \
-                --dir apps/app/resources/
-              mv apps/app/resources/updater-windows-x64.exe \
-                 apps/app/resources/updater.exe
-            fi
+          if [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
+            gh release download --repo mutualzz/updater \
+              --pattern "updater-windows-x64.exe" \
+              --dir apps/app/resources/
+            mv apps/app/resources/updater-windows-x64.exe \
+               apps/app/resources/updater.exe
+          fi
 
-            if [[ "${{ matrix.platform }}" == "ubuntu-22.04" ]]; then
-              gh release download --repo mutualzz/updater \
-                --pattern "updater-linux-x64" \
-                --dir apps/app/resources/
-              mv apps/app/resources/updater-linux-x64 \
-                 apps/app/resources/updater
-              chmod +x apps/app/resources/updater
-            fi
+          if [[ "${{ matrix.platform }}" == "ubuntu-22.04" ]]; then
+            gh release download --repo mutualzz/updater \
+              --pattern "updater-linux-x64" \
+              --dir apps/app/resources/
+            mv apps/app/resources/updater-linux-x64 \
+               apps/app/resources/updater
+            chmod +x apps/app/resources/updater
+          fi
+
+      - name: Setup macOS keychain
+        if: matrix.platform == 'macos-latest'
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+        run: |
+          echo "$APPLE_CERTIFICATE" | base64 --decode > /tmp/certificate.p12
+
+          security create-keychain -p "build-keychain-password" build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "build-keychain-password" build.keychain
+
+          security set-keychain-settings -t 3600 -l build.keychain
+
+          security import /tmp/certificate.p12 \
+            -k build.keychain \
+            -P "$APPLE_CERTIFICATE_PASSWORD" \
+            -T /usr/bin/codesign \
+            -T /usr/bin/security
+
+          security set-key-partition-list \
+            -S apple-tool:,apple:,codesign: \
+            -s -k "build-keychain-password" \
+            build.keychain
+
+          security list-keychains -d user -s build.keychain $(security list-keychains -d user | tr -d '"')
+
+          security find-identity -v -p codesigning build.keychain
+
+          rm /tmp/certificate.p12
 
       - name: Build app package (macOS)
         if: matrix.platform == 'macos-latest'
@@ -184,14 +213,9 @@ jobs:
           pnpm exec electron-builder --mac --publish never
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
-          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
-          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
-          CSC_LINK: ${{ secrets.APPLE_CERTIFICATE }}
-          CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
 
       - name: Build app package (Windows)
         if: matrix.platform == 'windows-latest'
@@ -212,7 +236,6 @@ jobs:
           if [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
             EXE=$(ls ./apps/app/dist/*.exe 2>/dev/null | head -n1)
             [[ -f "$EXE" ]] && cp "$EXE" ./release/MutualzzSetup.exe
-            # electron-updater ymls dropped — bootstrapper uses latest.json on R2
           fi
 
           if [[ "${{ matrix.platform }}" == "macos-latest" ]]; then
@@ -226,6 +249,11 @@ jobs:
             [[ -f "$DEB" ]]      && cp "$DEB"      ./release/Mutualzz.deb
             [[ -f "$APPIMAGE" ]] && cp "$APPIMAGE" ./release/Mutualzz.AppImage
           fi
+
+      - name: Cleanup keychain
+        if: matrix.platform == 'macos-latest' && always()
+        run: |
+          security delete-keychain build.keychain || true
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
