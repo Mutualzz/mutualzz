@@ -205,6 +205,12 @@ jobs:
 
           rm /tmp/certificate.p12
 
+      - name: Check cert type
+        if: matrix.platform == 'macos-latest'
+        run: |
+          security find-certificate -a -p build.keychain | \
+            openssl x509 -noout -subject 2>/dev/null | head -5
+
       - name: Build app package (macOS)
         if: matrix.platform == 'macos-latest'
         working-directory: apps/app
