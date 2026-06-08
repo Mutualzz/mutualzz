@@ -1,318 +1,410 @@
 name: Release (Electron + Netlify)
 
 on:
-    workflow_dispatch:
-    push:
-        branches:
-            - release
+  workflow_dispatch:
+  push:
+    branches:
+      - release
 
 jobs:
-    deploy-web:
-        name: Deploy Web version to Netlify
-        runs-on: ubuntu-latest
+  deploy-web:
+    name: Deploy Web version to Netlify
+    runs-on: ubuntu-latest
 
-        steps:
-            -   uses: actions/checkout@v4
-                with:
-                    submodules: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
 
-            -   name: Setup Node
-                uses: actions/setup-node@v4
-                with:
-                    node-version: '24'
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
 
-            -   name: Enable Corepack
-                run: corepack enable
+      - name: Enable Corepack
+        run: corepack enable
 
-            -   name: Activate pnpm
-                run: corepack prepare pnpm@latest --activate
+      - name: Activate pnpm
+        run: corepack prepare pnpm@latest --activate
 
-            -   name: Verify toolchain
-                shell: bash
-                run: |
-                    node --version
-                    corepack --version
-                    pnpm --version
+      - name: Verify toolchain
+        shell: bash
+        run: |
+          node --version
+          corepack --version
+          pnpm --version
 
-            -   name: Init only needed submodules
-                run: |
-                    git submodule update --init ./apps/app
-                    git submodule update --init ./packages/types
-                    git submodule update --init ./packages/logger
-                    git submodule update --init ./packages/color-picker
-                    git submodule update --init ./packages/contexify
-                    git submodule update --init ./packages/ui-core
-                    git submodule update --init ./packages/ui-web
-                    git submodule update --init ./packages/validators
-                    git submodule update --init ./packages/bitfield
-                    git submodule update --init ./tooling/eslint-config
+      - name: Init only needed submodules
+        run: |
+          git submodule update --init ./apps/app
+          git submodule update --init ./packages/types
+          git submodule update --init ./packages/logger
+          git submodule update --init ./packages/color-picker
+          git submodule update --init ./packages/contexify
+          git submodule update --init ./packages/ui-core
+          git submodule update --init ./packages/ui-web
+          git submodule update --init ./packages/validators
+          git submodule update --init ./packages/bitfield
+          git submodule update --init ./tooling/eslint-config
 
-            -   name: Install dependencies
-                run: pnpm i --ignore-scripts
+      - name: Install dependencies
+        run: pnpm i --ignore-scripts
 
-            -   name: Build all packages
-                run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/ui-core" --filter="./packages/ui-web" --filter="./packages/validators" --filter="./packages/bitfield" --filter="./packages/color-picker" --filter="./packages/contexify"
+      - name: Build all packages
+        run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/ui-core" --filter="./packages/ui-web" --filter="./packages/validators" --filter="./packages/bitfield" --filter="./packages/color-picker" --filter="./packages/contexify"
 
-            -   name: Deploy to Netlify
-                env:
-                    NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-                run: pnpx netlify deploy --cwd apps/app --prod --site=94e51d96-ca0f-4128-bda5-7f22eb07fcc5 --message "${{ github.event.head_commit.message }}"
+      - name: Deploy to Netlify
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        run: pnpx netlify deploy --cwd apps/app --prod --site=94e51d96-ca0f-4128-bda5-7f22eb07fcc5 --message "${{ github.event.head_commit.message }}"
 
-    build-binaries:
-        name: Build Binaries (${{ matrix.platform }})
-        needs: deploy-web
-        permissions:
-            contents: write
+  build-binaries:
+    name: Build Binaries (${{ matrix.platform }})
+    needs: deploy-web
+    permissions:
+      contents: write
 
-        strategy:
-            fail-fast: false
-            matrix:
-                include:
-                    -   platform: macos-latest
-                        artifact_name: macos
-                    -   platform: ubuntu-22.04
-                        artifact_name: linux
-                    -   platform: windows-latest
-                        artifact_name: windows
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Pinned to macos-13 (Intel) so electron-builder can cross-compile
+          # both x64 and arm64 targets reliably for universal DMG
+          - platform: macos-13
+            artifact_name: macos
+          - platform: ubuntu-22.04
+            artifact_name: linux
+          - platform: windows-latest
+            artifact_name: windows
 
-        runs-on: ${{ matrix.platform }}
+    runs-on: ${{ matrix.platform }}
 
-        steps:
-            -   uses: actions/checkout@v4
-                with:
-                    submodules: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
 
-            -   name: Install Linux system dependencies
-                if: matrix.platform == 'ubuntu-22.04'
-                run: |
-                    sudo apt-get update
-                    sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+      - name: Install Linux system dependencies
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
 
-            -   name: Setup Node
-                uses: actions/setup-node@v4
-                with:
-                    node-version: '24'
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
 
-            -   name: Enable Corepack
-                run: corepack enable
+      - name: Enable Corepack
+        run: corepack enable
 
-            -   name: Activate pnpm
-                run: corepack prepare pnpm@latest --activate
+      - name: Activate pnpm
+        run: corepack prepare pnpm@latest --activate
 
-            -   name: Verify toolchain
-                shell: bash
-                run: |
-                    node --version
-                    corepack --version
-                    pnpm --version
+      - name: Verify toolchain
+        shell: bash
+        run: |
+          node --version
+          corepack --version
+          pnpm --version
 
-            -   name: Init only needed submodules
-                run: |
-                    git submodule update --init ./apps/app
-                    git submodule update --init ./packages/types
-                    git submodule update --init ./packages/logger
-                    git submodule update --init ./packages/color-picker
-                    git submodule update --init ./packages/contexify
-                    git submodule update --init ./packages/ui-core
-                    git submodule update --init ./packages/ui-web
-                    git submodule update --init ./packages/validators
-                    git submodule update --init ./packages/bitfield
-                    git submodule update --init ./tooling/eslint-config
+      - name: Init only needed submodules
+        run: |
+          git submodule update --init ./apps/app
+          git submodule update --init ./packages/types
+          git submodule update --init ./packages/logger
+          git submodule update --init ./packages/color-picker
+          git submodule update --init ./packages/contexify
+          git submodule update --init ./packages/ui-core
+          git submodule update --init ./packages/ui-web
+          git submodule update --init ./packages/validators
+          git submodule update --init ./packages/bitfield
+          git submodule update --init ./tooling/eslint-config
 
-            -   name: Install dependencies
-                run: pnpm i
+      - name: Install dependencies
+        run: pnpm i
 
-            -   name: Build all packages
-                run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/ui-core" --filter="./packages/ui-web" --filter="./packages/validators" --filter="./packages/bitfield" --filter="./packages/color-picker" --filter="./packages/contexify"
+      - name: Build all packages
+        run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/ui-core" --filter="./packages/ui-web" --filter="./packages/validators" --filter="./packages/bitfield" --filter="./packages/color-picker" --filter="./packages/contexify"
 
-            -   name: Build app (electron-vite)
-                working-directory: apps/app
-                env:
-                    VITE_API_URL: ${{ secrets.VITE_API_URL }}
-                    VITE_WS_URL: ${{ secrets.VITE_WS_URL }}
-                    VITE_CDN_URL: ${{ secrets.VITE_CDN_URL }}
-                    VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
-                run: pnpm exec electron-vite build
+      - name: Build app (electron-vite)
+        working-directory: apps/app
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          VITE_WS_URL: ${{ secrets.VITE_WS_URL }}
+          VITE_CDN_URL: ${{ secrets.VITE_CDN_URL }}
+          VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
+        run: pnpm exec electron-vite build
 
-            -   name: Build app package (macOS)
-                if: matrix.platform == 'macos-latest'
-                working-directory: apps/app
-                run: |
-                    ulimit -n 65536
-                    pnpm exec electron-builder --mac --publish never
-                env:
-                    APPLE_ID: ${{ secrets.APPLE_ID }}
-                    APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
-                    APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-                    APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
-                    APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
-                    APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
-                    APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
-                    CSC_LINK: ${{ secrets.APPLE_CERTIFICATE }}
-                    CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+      - name: Download bootstrapper binary
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p apps/app/resources
 
-            -   name: Build app package (Windows)
-                if: matrix.platform == 'windows-latest'
-                working-directory: apps/app
-                shell: bash
-                run: pnpm exec electron-builder --win --publish never
+          if [[ "${{ matrix.platform }}" == "macos-13" ]]; then
+              # Download both arches for universal build
+              gh release download --repo mutualzz/updater \
+                --pattern "updater-macos-x64" \
+                --dir /tmp/updater-bins/
+              gh release download --repo mutualzz/updater \
+                --pattern "updater-macos-arm64" \
+                --dir /tmp/updater-bins/
 
-            -   name: Build app package (Linux)
-                if: matrix.platform == 'ubuntu-22.04'
-                working-directory: apps/app
-                run: pnpm exec electron-builder --linux --publish never
+              # Combine into a universal binary with lipo
+              lipo -create \
+                /tmp/updater-bins/updater-macos-x64 \
+                /tmp/updater-bins/updater-macos-arm64 \
+                -output apps/app/resources/updater
 
-            -   name: Collect artifacts
-                shell: bash
-                run: |
-                    mkdir -p release
+              chmod +x apps/app/resources/updater
+            fi
 
-                    if [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
-                      EXE=$(ls ./apps/app/dist/*.exe 2>/dev/null | head -n1)
-                      [[ -f "$EXE" ]] && cp "$EXE" ./release/MutualzzSetup.exe
-                      [[ -f "./apps/app/dist/latest.yml" ]] && cp "./apps/app/dist/latest.yml" ./release/latest-win.yml
-                    fi
+            if [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
+              gh release download --repo mutualzz/updater \
+                --pattern "updater-windows-x64.exe" \
+                --dir apps/app/resources/
+              mv apps/app/resources/updater-windows-x64.exe \
+                 apps/app/resources/updater.exe
+            fi
 
-                    if [[ "${{ matrix.platform }}" == "macos-latest" ]]; then
-                      DMG=$(ls ./apps/app/dist/*.dmg 2>/dev/null | head -n1)
-                      [[ -f "$DMG" ]] && cp "$DMG" ./release/Mutualzz.dmg
-                      [[ -f "./apps/app/dist/latest-mac.yml" ]] && cp "./apps/app/dist/latest-mac.yml" ./release/latest-mac.yml
-                    fi
+            if [[ "${{ matrix.platform }}" == "ubuntu-22.04" ]]; then
+              gh release download --repo mutualzz/updater \
+                --pattern "updater-linux-x64" \
+                --dir apps/app/resources/
+              mv apps/app/resources/updater-linux-x64 \
+                 apps/app/resources/updater
+              chmod +x apps/app/resources/updater
+            fi
 
-                    if [[ "${{ matrix.platform }}" == "ubuntu-22.04" ]]; then
-                      DEB=$(ls ./apps/app/dist/*.deb 2>/dev/null | head -n1)
-                      APPIMAGE=$(ls ./apps/app/dist/*.AppImage 2>/dev/null | head -n1)
-                      [[ -f "$DEB" ]]      && cp "$DEB"      ./release/Mutualzz.deb
-                      [[ -f "$APPIMAGE" ]] && cp "$APPIMAGE" ./release/Mutualzz.AppImage
-                      [[ -f "./apps/app/dist/latest-linux.yml" ]] && cp "./apps/app/dist/latest-linux.yml" ./release/latest-linux.yml
-                    fi
+      - name: Build app package (macOS)
+        if: matrix.platform == 'macos-13'
+        working-directory: apps/app
+        run: |
+          ulimit -n 65536
+          pnpm exec electron-builder --mac --publish never
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          CSC_LINK: ${{ secrets.APPLE_CERTIFICATE }}
+          CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
 
-            -   name: Upload artifacts
-                uses: actions/upload-artifact@v4
-                with:
-                    name: release-${{ matrix.artifact_name }}
-                    path: release/
-                    if-no-files-found: warn
-                    retention-days: 3
+      - name: Build app package (Windows)
+        if: matrix.platform == 'windows-latest'
+        working-directory: apps/app
+        shell: bash
+        run: pnpm exec electron-builder --win --publish never
 
-    release:
-        name: Publish Release
-        needs: build-binaries
-        runs-on: ubuntu-latest
-        permissions:
-            contents: write
+      - name: Build app package (Linux)
+        if: matrix.platform == 'ubuntu-22.04'
+        working-directory: apps/app
+        run: pnpm exec electron-builder --linux --publish never
 
-        steps:
-            -   uses: actions/checkout@v4
-                with:
-                    submodules: false
+      - name: Collect artifacts
+        shell: bash
+        run: |
+          mkdir -p release
 
-            -   name: Setup Node
-                uses: actions/setup-node@v4
-                with:
-                    node-version: '24'
+          if [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
+            EXE=$(ls ./apps/app/dist/*.exe 2>/dev/null | head -n1)
+            [[ -f "$EXE" ]] && cp "$EXE" ./release/MutualzzSetup.exe
+            # electron-updater ymls dropped — bootstrapper uses latest.json on R2
+          fi
 
-            -   name: Init app submodule (for version)
-                run: git submodule update --init ./apps/app
+          if [[ "${{ matrix.platform }}" == "macos-13" ]]; then
+            DMG=$(ls ./apps/app/dist/*.dmg 2>/dev/null | head -n1)
+            [[ -f "$DMG" ]] && cp "$DMG" ./release/Mutualzz.dmg
+          fi
 
-            -   name: Download all artifacts
-                uses: actions/download-artifact@v4
-                with:
-                    pattern: release-*
-                    path: release/
-                    merge-multiple: true
+          if [[ "${{ matrix.platform }}" == "ubuntu-22.04" ]]; then
+            DEB=$(ls ./apps/app/dist/*.deb 2>/dev/null | head -n1)
+            APPIMAGE=$(ls ./apps/app/dist/*.AppImage 2>/dev/null | head -n1)
+            [[ -f "$DEB" ]]      && cp "$DEB"      ./release/Mutualzz.deb
+            [[ -f "$APPIMAGE" ]] && cp "$APPIMAGE" ./release/Mutualzz.AppImage
+          fi
 
-            -   name: List collected artifacts
-                run: ls -lah release/
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-${{ matrix.artifact_name }}
+          path: release/
+          if-no-files-found: warn
+          retention-days: 1
 
-            -   name: Read app version
-                id: version
-                run: |
-                    VERSION=$(node -p "require('./apps/app/package.json').version")
-                    echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+  publish-r2:
+    name: Upload to R2
+    needs: build-binaries
+    runs-on: ubuntu-latest
 
-            -   name: Read changelog
-                id: changelog
-                shell: bash
-                run: |
-                    if [ -f CHANGELOG.md ]; then
-                      delim="CHANGELOG_$(date +%s)_$RANDOM"
-                      {
-                        echo "body<<$delim"
-                        head -c 65000 CHANGELOG.md
-                        echo
-                        echo "$delim"
-                      } >> "$GITHUB_OUTPUT"
-                    else
-                      echo "body=" >> "$GITHUB_OUTPUT"
-                    fi
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
 
-            -   name: Rename updater ymls to expected filenames
-                shell: bash
-                run: |
-                    [[ -f release/latest-win.yml ]] && mv release/latest-win.yml release/latest.yml
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
 
-            -   name: Create GitHub release
-                uses: softprops/action-gh-release@v2
-                with:
-                    tag_name: v${{ steps.version.outputs.version }}
-                    name: Mutualzz v${{ steps.version.outputs.version }}
-                    body: ${{ steps.changelog.outputs.body }}
-                    draft: false
-                    prerelease: false
-                    overwrite_files: true
-                    files: |
-                        release/MutualzzSetup.exe
-                        release/Mutualzz.dmg
-                        release/Mutualzz.deb
-                        release/Mutualzz.AppImage
-                        release/latest.yml
-                        release/latest-mac.yml
-                        release/latest-linux.yml
-                env:
-                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Init app submodule (for version)
+        run: git submodule update --init ./apps/app
 
-            -   name: Install Wrangler
-                run: npm install -g wrangler
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: release-*
+          path: release/
+          merge-multiple: true
 
-            -   name: Upload binaries to R2
-                shell: bash
-                env:
-                    CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
-                    CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
-                run: |
-                    upload() {
-                      local src="$1" dest="$2"
-                      if [[ -f "$src" ]]; then
-                        echo "Uploading $src → $dest"
-                        wrangler r2 object put "$dest" --file "$src" --remote
-                      else
-                        echo "Skipping $dest (file not found)"
-                      fi
-                    }
+      - name: List collected artifacts
+        run: ls -lah release/
 
-                    upload "release/MutualzzSetup.exe"  "mutualzz/releases/latest/MutualzzSetup.exe"
-                    upload "release/Mutualzz.dmg"       "mutualzz/releases/latest/Mutualzz.dmg"
-                    upload "release/Mutualzz.deb"       "mutualzz/releases/latest/Mutualzz.deb"
-                    upload "release/Mutualzz.AppImage"  "mutualzz/releases/latest/Mutualzz.AppImage"
+      - name: Read app version
+        id: version
+        run: |
+          VERSION=$(node -p "require('./apps/app/package.json').version")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
-            -   name: Generate and upload latest.json
-                shell: bash
-                env:
-                    CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
-                    CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
-                run: |
-                    cat <<EOF > latest.json
-                    {
-                      "version": "${{ steps.version.outputs.version }}",
-                      "win": "https://proxy.mutualzz.com/releases/latest/MutualzzSetup.exe",
-                      "osx": "https://proxy.mutualzz.com/releases/latest/Mutualzz.dmg",
-                      "linux": {
-                        "debian": "https://proxy.mutualzz.com/releases/latest/Mutualzz.deb",
-                        "appimage": "https://proxy.mutualzz.com/releases/latest/Mutualzz.AppImage"
-                      }
-                    }
-                    EOF
+      - name: Generate sha256 checksums
+        id: checksums
+        shell: bash
+        run: |
+          sha256() { sha256sum "$1" 2>/dev/null | awk '{print $1}'; }
 
-                    wrangler r2 object put "mutualzz/releases/latest/latest.json" --file latest.json --remote
-                    echo "latest.json uploaded"
+          echo "win=$(sha256 release/MutualzzSetup.exe)"       >> "$GITHUB_OUTPUT"
+          echo "osx=$(sha256 release/Mutualzz.dmg)"            >> "$GITHUB_OUTPUT"
+          echo "deb=$(sha256 release/Mutualzz.deb)"            >> "$GITHUB_OUTPUT"
+          echo "appimage=$(sha256 release/Mutualzz.AppImage)"  >> "$GITHUB_OUTPUT"
+
+      - name: Install Wrangler
+        run: npm install -g wrangler
+
+      - name: Upload binaries to R2
+        shell: bash
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: |
+          upload() {
+            local src="$1" dest="$2"
+            if [[ -f "$src" ]]; then
+              echo "Uploading $src → $dest"
+              wrangler r2 object put "$dest" --file "$src" --remote
+            else
+              echo "Skipping $dest (file not found)"
+            fi
+          }
+
+          upload "release/MutualzzSetup.exe"  "mutualzz/releases/latest/MutualzzSetup.exe"
+          upload "release/Mutualzz.dmg"       "mutualzz/releases/latest/Mutualzz.dmg"
+          upload "release/Mutualzz.deb"       "mutualzz/releases/latest/Mutualzz.deb"
+          upload "release/Mutualzz.AppImage"  "mutualzz/releases/latest/Mutualzz.AppImage"
+
+      - name: Generate and upload latest.json
+        shell: bash
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: |
+          cat <<EOF > latest.json
+          {
+            "version": "${{ steps.version.outputs.version }}",
+            "win": {
+              "x64": {
+                "url": "https://proxy.mutualzz.com/releases/latest/MutualzzSetup.exe",
+                "sha256": "${{ steps.checksums.outputs.win }}"
+              }
+            },
+            "osx": {
+              "universal": {
+                "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz.dmg",
+                "sha256": "${{ steps.checksums.outputs.osx }}"
+              }
+            },
+            "linux": {
+              "debian": {
+                "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz.deb",
+                "sha256": "${{ steps.checksums.outputs.deb }}"
+              },
+              "appimage": {
+                "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz.AppImage",
+                "sha256": "${{ steps.checksums.outputs.appimage }}"
+              }
+            }
+          }
+          EOF
+
+          wrangler r2 object put "mutualzz/releases/latest/latest.json" --file latest.json --remote
+          echo "latest.json uploaded"
+
+  github-release:
+    name: Create GitHub Release
+    needs: publish-r2
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Init app submodule (for version)
+        run: git submodule update --init ./apps/app
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: release-*
+          path: release/
+          merge-multiple: true
+
+      - name: Read app version
+        id: version
+        run: |
+          VERSION=$(node -p "require('./apps/app/package.json').version")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Read changelog
+        id: changelog
+        shell: bash
+        run: |
+          if [ -f CHANGELOG.md ]; then
+            delim="CHANGELOG_$(date +%s)_$RANDOM"
+            {
+              echo "body<<$delim"
+              head -c 65000 CHANGELOG.md
+              echo
+              echo "$delim"
+            } >> "$GITHUB_OUTPUT"
+          else
+            echo "body=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.version.outputs.version }}
+          name: Mutualzz v${{ steps.version.outputs.version }}
+          body: ${{ steps.changelog.outputs.body }}
+          draft: false
+          prerelease: false
+          overwrite_files: true
+          files: |
+            release/MutualzzSetup.exe
+            release/Mutualzz.dmg
+            release/Mutualzz.deb
+            release/Mutualzz.AppImage
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
