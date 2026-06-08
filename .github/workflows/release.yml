@@ -139,7 +139,7 @@ jobs:
         run: pnpm i --ignore-scripts
 
       - name: Rebuild native modules
-        run: pnpm rebuild canvas keytar zlib-sync bufferutil esbuild @swc/core @parcel/watcher sharp unrs-resolver electron
+        run: pnpm rebuild canvas zlib-sync bufferutil esbuild @swc/core @parcel/watcher sharp unrs-resolver electron
 
       - name: Build all packages
         run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/ui-core" --filter="./packages/ui-web" --filter="./packages/validators" --filter="./packages/bitfield" --filter="./packages/color-picker" --filter="./packages/contexify"
