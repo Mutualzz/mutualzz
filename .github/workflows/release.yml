@@ -385,6 +385,7 @@ jobs:
           upload "release/Mutualzz.deb"       "mutualzz/releases/latest/Mutualzz.deb"
           upload "release/Mutualzz.AppImage"  "mutualzz/releases/latest/Mutualzz.AppImage"
 
+          # latest.json goes up last — only live once all binaries are in place
           upload "latest.json"                "mutualzz/releases/latest/latest.json"
 
   github-release:
