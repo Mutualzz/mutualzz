@@ -239,6 +239,17 @@ jobs:
           CSC_LINK: ${{ secrets.APPLE_CERTIFICATE }}
           CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
 
+      - name: Download VC++ Redistributable
+        if: matrix.platform == 'windows-latest'
+        shell: powershell
+        run: |
+          $url = "https://aka.ms/vs/17/release/vc_redist.x64.exe"
+          $dest = "apps/app/resources/vc_redist.x64.exe"
+          Write-Host "Downloading VC++ Redistributable..."
+          Invoke-WebRequest -Uri $url -OutFile $dest
+          Write-Host "Downloaded: $(Get-Item $dest | Select-Object -ExpandProperty Length) bytes"
+
+
       - name: Build app package (Windows)
         if: matrix.platform == 'windows-latest'
         working-directory: apps/app
