@@ -249,6 +249,19 @@ jobs:
           Invoke-WebRequest -Uri $url -OutFile $dest
           Write-Host "Downloaded: $(Get-Item $dest | Select-Object -ExpandProperty Length) bytes"
 
+      - name: Download ShellExecAsUser NSIS plugin
+        if: matrix.platform == 'windows-latest'
+        shell: powershell
+        run: |
+          $url = "https://nsis.sourceforge.io/mediawiki/images/c/c7/ShellExecAsUser.zip"
+          $zip = "$env:TEMP\ShellExecAsUser.zip"
+          Invoke-WebRequest -Uri $url -OutFile $zip
+          Expand-Archive -Path $zip -DestinationPath "$env:TEMP\ShellExecAsUser"
+          # Copy the x86-unicode dll to resources (works for both 32/64 bit NSIS)
+          Copy-Item "$env:TEMP\ShellExecAsUser\ShellExecAsUser.dll" `
+            "apps/app/resources/ShellExecAsUser.dll"
+          Write-Host "ShellExecAsUser plugin installed"
+
 
       - name: Build app package (Windows)
         if: matrix.platform == 'windows-latest'
