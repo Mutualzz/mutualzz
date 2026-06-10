@@ -171,10 +171,12 @@ jobs:
           if [[ "${{ matrix.platform }}" == "macos-latest" ]]; then
             gh release download --repo mutualzz/updater \
               --pattern "updater-macos-x64" \
-              --dir /tmp/updater-bins/
+              --dir /tmp/updater-bins/ \
+              --clobber
             gh release download --repo mutualzz/updater \
               --pattern "updater-macos-arm64" \
-              --dir /tmp/updater-bins/
+              --dir /tmp/updater-bins/ \
+              --clobber
 
             lipo -create \
               /tmp/updater-bins/updater-macos-x64 \
@@ -187,7 +189,8 @@ jobs:
           if [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
             gh release download --repo mutualzz/updater \
               --pattern "updater-windows-x64.exe" \
-              --dir apps/app/resources/
+              --dir apps/app/resources/ \
+              --clobber
             mv apps/app/resources/updater-windows-x64.exe \
                apps/app/resources/updater.exe
           fi
@@ -195,7 +198,8 @@ jobs:
           if [[ "${{ matrix.platform }}" == "ubuntu-22.04" ]]; then
             gh release download --repo mutualzz/updater \
               --pattern "updater-linux-x64" \
-              --dir apps/app/resources/
+              --dir apps/app/resources/ \
+              --clobber
             mv apps/app/resources/updater-linux-x64 \
                apps/app/resources/updater
             chmod +x apps/app/resources/updater
