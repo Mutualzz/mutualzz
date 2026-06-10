@@ -247,7 +247,7 @@ jobs:
           $dest = "apps/app/resources/vc_redist.x64.exe"
           Write-Host "Downloading VC++ Redistributable..."
           Invoke-WebRequest -Uri $url -OutFile $dest
-          Write-Host "Downloaded: $(Get-Item $dest | Select-Object -ExpandProperty Length) bytes
+          Write-Host "Downloaded: $(Get-Item $dest | Select-Object -ExpandProperty Length) bytes"
 
 
       - name: Build app package (Windows)
