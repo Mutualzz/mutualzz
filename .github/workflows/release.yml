@@ -168,6 +168,10 @@ jobs:
         run: |
           mkdir -p apps/app/resources
 
+          # Show latest updater release
+          echo "Latest updater release:"
+          gh release view --repo mutualzz/updater --json tagName,publishedAt
+
           if [[ "${{ matrix.platform }}" == "macos-latest" ]]; then
             gh release download --repo mutualzz/updater \
               --pattern "updater-macos-x64" \
