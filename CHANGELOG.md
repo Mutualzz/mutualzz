@@ -1,8 +1,11 @@
 # Changelog
 
-## Version v6.5.0
+## Version 6.6.0
 
-- Group DM: Added ways to modify group dms (Icon, name, kicking, leaving, deleting) (Azrael)
-- GIFs: Added way to support gifs universally and embed them properly. (Azrael)
-- Emojis: Fixed autocomplete colon for emojis and fixed some permission checking (Azrael)
-- Other Minor Bugs: fixed (Azrael)
+- Expressions: Significantly optimized. No longer sends api requests hydrated properly (Azrael)
+- Markdown: fixed some bugs (Azrael)
+- Channel: Channel topic is markdown rendered (Azrael)
+- Channel: Added settings page (Azrael)
+- Channels: Added categorical and per channel overrides - finally amirite (Azrael)
+- Category collapse: fixed infinite redirection bug lol (Azrael)
+- Markdown Input: improved visuals (Azrael)
