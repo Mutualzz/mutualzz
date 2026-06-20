@@ -1,12 +1,15 @@
 # Changelog
 
-## Version v6.7.0
+## Desktop v6.8.0
 
-- Voice System: Added screen sharing
-- Voice System: Fixed some bugs
-- Voice System: Added ways to move members between channels
-- Voice System: Added push to talk
-- Voice System: Improved Voice detection and other factors
-- User Profiles: Added user profile editing and made it cool B) (expect some bugs)
-- Status: Added custom statuses Status: Fixed scheduled statuses (Azrael)
-- Roles: Added hierarchy and proper positionining (Azrael)
+- Custom Fonts: Added (per profile and per theme)
+- Emojis: Fixed rendering of emojis enlarged when single (Azrael)
+- Visuals: Fixed up some visuals Message Reactions: Added (Azrael)
+- Permissions: Made them searchable and jumpable with categories (Azrael)
+- Screen share: fixed some screensharing problems (Azrael)
+- Profile Customization: Added Snap to grid option and context menu to vertically or horizontally align blocks (Azrael)
+- Voice channels: Fixed moving members  between channels (Azrael)
+
+## Mobile v3.0.0
+
+- Slowly migrating desktop to mobile, so both are available (Azrael)
