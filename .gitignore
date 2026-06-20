@@ -9,6 +9,7 @@ lerna-debug.log*
 
 .nitro
 .tanstack
+.pnpm-store
 .vercel
 .turbo
 
