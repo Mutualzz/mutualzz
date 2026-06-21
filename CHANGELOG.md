@@ -1,6 +1,6 @@
 # Changelog
 
-## Version v6.8.1
+## Desktop v6.8.1
 
 - Voice Channels: Fix audio not transmitting (Azrael)
 - Profile: Bios pushes up the username inside banner in profiles (Azrael)
