@@ -426,8 +426,8 @@ importers:
         specifier: ~56.0.17
         version: 56.0.17(expo@56.0.12)(react-native@0.85.3)(react@19.2.3)(typescript@6.0.3)
       expo-clipboard:
-        specifier: ~8.0.8
-        version: 8.0.8(expo@56.0.12)(react-native@0.85.3)(react@19.2.3)
+        specifier: ~56.0.4
+        version: 56.0.4(expo@56.0.12)(react-native@0.85.3)(react@19.2.3)
       expo-constants:
         specifier: ~56.0.18
         version: 56.0.18(expo@56.0.12)(react-native@0.85.3)
@@ -554,7 +554,7 @@ importers:
         version: 1.14.1
       '@discordjs/opus':
         specifier: ^0.10.0
-        version: 0.10.0(encoding@0.1.13)(supports-color@10.2.2)
+        version: 0.10.0(encoding@0.1.13)
       '@discordjs/voice':
         specifier: ^0.19.2
         version: 0.19.2(@discordjs/opus@0.10.0)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(bufferutil@4.1.0)
@@ -644,7 +644,7 @@ importers:
         version: 1.1.9
       discord-player-youtubei:
         specifier: ^2.0.0
-        version: 2.0.0(bufferutil@4.1.0)(canvas@3.2.3)(supports-color@10.2.2)
+        version: 2.0.0(bufferutil@4.1.0)(canvas@3.2.3)
       discord.js:
         specifier: ^14.26.4
         version: 14.26.4(bufferutil@4.1.0)
@@ -7009,8 +7009,8 @@ packages:
       react: 19.2.3
       react-native: 0.85.3
 
-  expo-clipboard@8.0.8:
-    resolution: {integrity: sha512-VKoBkHIpZZDJTB0jRO4/PZskHdMNOEz3P/41tmM6fDuODMpqhvyWK053X0ebspkxiawJX9lX33JXHBCvVsTTOA==}
+  expo-clipboard@56.0.4:
+    resolution: {integrity: sha512-qb4DYlkiowHYHaUYVT2FN9nk/nI1xShXOUYsI7J9dVpQCOHcGFjCBPX1VAvEW4Ye4/Aagd6IuhOVAq/+scBOiA==}
     peerDependencies:
       expo: '*'
       react: 19.2.3
@@ -12387,10 +12387,10 @@ snapshots:
     dependencies:
       discord-api-types: 0.38.49
 
-  '@discordjs/node-pre-gyp@0.4.5(encoding@0.1.13)(supports-color@10.2.2)':
+  '@discordjs/node-pre-gyp@0.4.5(encoding@0.1.13)':
     dependencies:
       detect-libc: 2.1.2
-      https-proxy-agent: 5.0.1(supports-color@10.2.2)
+      https-proxy-agent: 5.0.1
       make-dir: 3.1.0
       node-fetch: 2.7.0(encoding@0.1.13)
       nopt: 5.0.0
@@ -12402,9 +12402,9 @@ snapshots:
       - encoding
       - supports-color
 
-  '@discordjs/opus@0.10.0(encoding@0.1.13)(supports-color@10.2.2)':
+  '@discordjs/opus@0.10.0(encoding@0.1.13)':
     dependencies:
-      '@discordjs/node-pre-gyp': 0.4.5(encoding@0.1.13)(supports-color@10.2.2)
+      '@discordjs/node-pre-gyp': 0.4.5(encoding@0.1.13)
       node-addon-api: 8.8.0
     transitivePeerDependencies:
       - encoding
@@ -16001,7 +16001,7 @@ snapshots:
 
   acorn@8.17.0: {}
 
-  agent-base@6.0.2(supports-color@10.2.2):
+  agent-base@6.0.2:
     dependencies:
       debug: 4.4.3(supports-color@10.2.2)
     transitivePeerDependencies:
@@ -16291,7 +16291,7 @@ snapshots:
     dependencies:
       follow-redirects: 1.16.0
       form-data: 4.0.6
-      https-proxy-agent: 5.0.1(supports-color@10.2.2)
+      https-proxy-agent: 5.0.1
       proxy-from-env: 2.1.0
     transitivePeerDependencies:
       - debug
@@ -16621,7 +16621,7 @@ snapshots:
       cross-spawn: 7.0.6
       debug: 4.4.3(supports-color@10.2.2)
       fs-extra: 10.1.0
-      http-proxy-agent: 7.0.2(supports-color@10.2.2)
+      http-proxy-agent: 7.0.2
       https-proxy-agent: 7.0.6
       is-ci: 3.0.1
       js-yaml: 4.2.0
@@ -17274,10 +17274,10 @@ snapshots:
       node-html-parser: 7.1.0
       otpauth: 9.5.1
 
-  discord-player-youtubei@2.0.0(bufferutil@4.1.0)(canvas@3.2.3)(supports-color@10.2.2):
+  discord-player-youtubei@2.0.0(bufferutil@4.1.0)(canvas@3.2.3):
     dependencies:
       bgutils-js: 3.2.0
-      jsdom: 26.1.0(bufferutil@4.1.0)(canvas@3.2.3)(supports-color@10.2.2)
+      jsdom: 26.1.0(bufferutil@4.1.0)(canvas@3.2.3)
       tiny-typed-emitter: 2.1.0
       undici: 7.28.0
       youtubei.js: 16.0.1
@@ -18072,7 +18072,7 @@ snapshots:
       - supports-color
       - typescript
 
-  expo-clipboard@8.0.8(expo@56.0.12)(react-native@0.85.3)(react@19.2.3):
+  expo-clipboard@56.0.4(expo@56.0.12)(react-native@0.85.3)(react@19.2.3):
     dependencies:
       expo: 56.0.12(@babel/core@7.29.7)(@expo/dom-webview@56.0.5)(@expo/metro-runtime@56.0.15)(bufferutil@4.1.0)(expo-router@56.2.11)(react-dom@19.2.3)(react-native-webview@13.16.1)(react-native-worklets@0.8.3)(react-native@0.85.3)(react@19.2.3)(supports-color@5.5.0)(typescript@6.0.3)
       react: 19.2.3
@@ -18938,12 +18938,12 @@ snapshots:
   http-proxy-agent@5.0.0:
     dependencies:
       '@tootallnate/once': 2.0.1
-      agent-base: 6.0.2(supports-color@10.2.2)
+      agent-base: 6.0.2
       debug: 4.4.3(supports-color@10.2.2)
     transitivePeerDependencies:
       - supports-color
 
-  http-proxy-agent@7.0.2(supports-color@10.2.2):
+  http-proxy-agent@7.0.2:
     dependencies:
       agent-base: 7.1.4
       debug: 4.4.3(supports-color@10.2.2)
@@ -18955,9 +18955,9 @@ snapshots:
       quick-lru: 5.1.1
       resolve-alpn: 1.2.1
 
-  https-proxy-agent@5.0.1(supports-color@10.2.2):
+  https-proxy-agent@5.0.1:
     dependencies:
-      agent-base: 6.0.2(supports-color@10.2.2)
+      agent-base: 6.0.2
       debug: 4.4.3(supports-color@10.2.2)
     transitivePeerDependencies:
       - supports-color
@@ -19674,13 +19674,13 @@ snapshots:
 
   jsc-safe-url@0.2.4: {}
 
-  jsdom@26.1.0(bufferutil@4.1.0)(canvas@3.2.3)(supports-color@10.2.2):
+  jsdom@26.1.0(bufferutil@4.1.0)(canvas@3.2.3):
     dependencies:
       cssstyle: 4.6.0
       data-urls: 5.0.0
       decimal.js: 10.6.0
       html-encoding-sniffer: 4.0.0
-      http-proxy-agent: 7.0.2(supports-color@10.2.2)
+      http-proxy-agent: 7.0.2
       https-proxy-agent: 7.0.6
       is-potential-custom-element-name: 1.0.1
       nwsapi: 2.2.24
@@ -19967,7 +19967,7 @@ snapshots:
       cacache: 16.1.3
       http-cache-semantics: 4.2.0
       http-proxy-agent: 5.0.0
-      https-proxy-agent: 5.0.1(supports-color@10.2.2)
+      https-proxy-agent: 5.0.1
       is-lambda: 1.0.1
       lru-cache: 7.18.3
       minipass: 3.3.6
@@ -21097,7 +21097,7 @@ snapshots:
 
   prism-media@1.3.5(@discordjs/opus@0.10.0):
     optionalDependencies:
-      '@discordjs/opus': 0.10.0(encoding@0.1.13)(supports-color@10.2.2)
+      '@discordjs/opus': 0.10.0(encoding@0.1.13)
 
   proc-log@4.2.0: {}
 
@@ -22170,7 +22170,7 @@ snapshots:
 
   socks-proxy-agent@7.0.0:
     dependencies:
-      agent-base: 6.0.2(supports-color@10.2.2)
+      agent-base: 6.0.2
       debug: 4.4.3(supports-color@10.2.2)
       socks: 2.8.9
     transitivePeerDependencies:
