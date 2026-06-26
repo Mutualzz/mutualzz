@@ -1,7 +1,5 @@
 # Changelog
 
-## Version v6.10.0
+## Version v6.10.1
 
-- Profile: Fixed 1 to 1 sizing
-- Profile: Added drawing block
-- Profile: Fixed font sizing (Azrael)
+- All: Fixed some layering bugs (Azrael)
