@@ -1,5 +1,6 @@
 # Changelog
 
-## Version v6.10.1
+## App v6.10.3
 
-- All: Fixed some layering bugs (Azrael)
+- Profile Music: Made it into a collapsible pill (Azrael)
+- Activity: Fixed weird centered text for activities (Azrael)
