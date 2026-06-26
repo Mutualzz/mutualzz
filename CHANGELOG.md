@@ -1,7 +1,7 @@
 # Changelog
 
-## Version v6.9.0
+## Version v6.10.0
 
-- Replies: Added replies
-- Profile Editor: Fixed 1 to 1 bugs
-- Safety: Added content safety feature
+- Profile: Fixed 1 to 1 sizing
+- Profile: Added drawing block
+- Profile: Fixed font sizing (Azrael)
