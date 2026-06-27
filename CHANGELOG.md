@@ -1,6 +1,6 @@
 # Changelog
 
-## App v6.10.3
+## Version v6.10.4
 
-- Profile Music: Made it into a collapsible pill (Azrael)
-- Activity: Fixed weird centered text for activities (Azrael)
+- Updater: Fixed updater issues (Azrael)
+- Profile Music: Moved it to window title bar so its in a neat place instead of taking up the space (Azrael)- Profile Music: Moved it to window title bar so its in a neat place instead of taking up the space (Azrael)
