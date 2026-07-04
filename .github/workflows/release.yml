@@ -19,7 +19,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: "24"
 
       - name: Enable Corepack
         run: corepack enable
@@ -103,7 +103,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: "24"
 
       - name: Enable Corepack
         run: corepack enable
@@ -257,7 +257,6 @@ jobs:
           Invoke-WebRequest -Uri $url -OutFile $dest
           Write-Host "Downloaded: $(Get-Item $dest | Select-Object -ExpandProperty Length) bytes"
 
-
       - name: Build app package (Windows)
         if: matrix.platform == 'windows-latest'
         working-directory: apps/app
@@ -277,6 +276,12 @@ jobs:
           if [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
             EXE=$(ls ./apps/app/dist/*.exe 2>/dev/null | head -n1)
             [[ -f "$EXE" ]] && cp "$EXE" ./release/MutualzzSetup.exe
+
+            ASAR="./apps/app/dist/win-unpacked/resources/app.asar"
+            [[ -f "$ASAR" ]] && cp "$ASAR" ./release/Mutualzz.asar
+
+            node -p "require('./apps/app/node_modules/electron/package.json').version" \
+              > ./release/electron-version.txt
           fi
 
           if [[ "${{ matrix.platform }}" == "macos-latest" ]]; then
@@ -303,9 +308,270 @@ jobs:
           if-no-files-found: warn
           retention-days: 1
 
+  build-mobile:
+    name: Build Mobile (${{ matrix.target }})
+    permissions:
+      contents: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: ubuntu-latest
+            target: android
+          - platform: macos-latest
+            target: ios
+
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Activate pnpm
+        run: corepack prepare pnpm@latest --activate
+
+      - name: Init only needed submodules
+        run: |
+          git submodule update --init ./apps/mobile
+          git submodule update --init ./packages/types
+          git submodule update --init ./packages/logger
+          git submodule update --init ./packages/ui-core
+          git submodule update --init ./packages/ui-native
+          git submodule update --init ./packages/validators
+          git submodule update --init ./packages/bitfield
+          git submodule update --init ./tooling/eslint-config
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: echo "dir=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.dir }}
+          key: ${{ runner.os }}-pnpm-mobile-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-mobile-
+
+      - name: Install dependencies
+        run: pnpm i
+
+      - name: Build workspace packages
+        run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/ui-core" --filter="./packages/ui-native" --filter="./packages/validators" --filter="./packages/bitfield"
+
+      - name: Setup Java
+        if: matrix.target == 'android'
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Setup Android SDK
+        if: matrix.target == 'android'
+        uses: android-actions/setup-android@v3
+
+      - name: Prebuild Android project
+        if: matrix.target == 'android'
+        working-directory: apps/mobile
+        env:
+          CI: "1"
+        run: pnpm exec expo prebuild --platform android --no-install
+
+      - name: Decode Android keystore
+        if: matrix.target == 'android'
+        shell: bash
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > apps/mobile/android/app/release.keystore
+
+      - name: Patch Android release signing config
+        if: matrix.target == 'android'
+        shell: bash
+        run: |
+          cat <<'EOF' > /tmp/patch-android-signing.mjs
+          import fs from "node:fs";
+
+          const path = "apps/mobile/android/app/build.gradle";
+          let gradle = fs.readFileSync(path, "utf8");
+
+          if (!gradle.includes("signingConfigs.release")) {
+            gradle = gradle.replace(
+              /signingConfigs\s*\{([\s\S]*?debug\s*\{[\s\S]*?\}\s*)\}/,
+              (match, debugBlock) => `signingConfigs {${debugBlock}
+                  release {
+                      storeFile file(System.getenv("ANDROID_RELEASE_STORE_FILE"))
+                      storePassword System.getenv("ANDROID_RELEASE_STORE_PASSWORD")
+                      keyAlias System.getenv("ANDROID_RELEASE_KEY_ALIAS")
+                      keyPassword System.getenv("ANDROID_RELEASE_KEY_PASSWORD")
+                  }
+              }`
+            );
+
+            gradle = gradle.replace(
+              /(release\s*\{[\s\S]*?)signingConfig signingConfigs\.debug/,
+              "$1signingConfig signingConfigs.release"
+            );
+
+            fs.writeFileSync(path, gradle);
+            console.log("Patched build.gradle with release signing config");
+          }
+          EOF
+          node /tmp/patch-android-signing.mjs
+          sed -i "s/versionCode [0-9]\+/versionCode ${{ github.run_number }}/" apps/mobile/android/app/build.gradle
+
+      - name: Build Android release (AAB + APK)
+        if: matrix.target == 'android'
+        working-directory: apps/mobile/android
+        env:
+          ANDROID_RELEASE_STORE_FILE: ${{ github.workspace }}/apps/mobile/android/app/release.keystore
+          ANDROID_RELEASE_STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_RELEASE_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_RELEASE_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          chmod +x ./gradlew
+          ./gradlew bundleRelease assembleRelease --no-daemon
+
+      - name: Collect Android artifacts
+        if: matrix.target == 'android'
+        shell: bash
+        run: |
+          mkdir -p release
+          AAB=$(ls apps/mobile/android/app/build/outputs/bundle/release/*.aab 2>/dev/null | head -n1)
+          APK=$(ls apps/mobile/android/app/build/outputs/apk/release/*.apk 2>/dev/null | head -n1)
+          [[ -f "$AAB" ]] && cp "$AAB" ./release/Mutualzz.aab
+          [[ -f "$APK" ]] && cp "$APK" ./release/Mutualzz.apk
+
+      - name: Prebuild iOS project
+        if: matrix.target == 'ios'
+        working-directory: apps/mobile
+        env:
+          CI: "1"
+        run: pnpm exec expo prebuild --platform ios --no-install
+
+      - name: Install CocoaPods dependencies
+        if: matrix.target == 'ios'
+        working-directory: apps/mobile/ios
+        run: pod install --repo-update
+
+      - name: Setup iOS signing
+        if: matrix.target == 'ios'
+        shell: bash
+        env:
+          IOS_DISTRIBUTION_CERTIFICATE_BASE64: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_BASE64 }}
+          IOS_DISTRIBUTION_CERTIFICATE_PASSWORD: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_PASSWORD }}
+          IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+        run: |
+          echo "$IOS_DISTRIBUTION_CERTIFICATE_BASE64" | base64 --decode > /tmp/ios_distribution.p12
+          echo "$IOS_PROVISIONING_PROFILE_BASE64" | base64 --decode > /tmp/profile.mobileprovision
+
+          security create-keychain -p "build-keychain-password" ios-build.keychain
+          security default-keychain -s ios-build.keychain
+          security unlock-keychain -p "build-keychain-password" ios-build.keychain
+          security set-keychain-settings -t 21600 ios-build.keychain
+          security import /tmp/ios_distribution.p12 \
+            -k ios-build.keychain \
+            -P "$IOS_DISTRIBUTION_CERTIFICATE_PASSWORD" \
+            -T /usr/bin/codesign \
+            -T /usr/bin/security
+          security set-key-partition-list \
+            -S apple-tool:,apple:,codesign: \
+            -s -k "build-keychain-password" \
+            ios-build.keychain
+          security list-keychains -d user -s ios-build.keychain $(security list-keychains -d user | tr -d '"')
+
+          mkdir -p ~/Library/MobileDevice/"Provisioning Profiles"
+          PROFILE_UUID=$(security cms -D -i /tmp/profile.mobileprovision | plutil -extract UUID xml1 -o - - | sed -n 's/.*<string>\(.*\)<\/string>.*/\1/p')
+          PROFILE_NAME=$(security cms -D -i /tmp/profile.mobileprovision | plutil -extract Name xml1 -o - - | sed -n 's/.*<string>\(.*\)<\/string>.*/\1/p')
+          cp /tmp/profile.mobileprovision ~/Library/MobileDevice/"Provisioning Profiles"/"$PROFILE_UUID.mobileprovision"
+
+          CODE_SIGN_IDENTITY=$(security find-identity -v -p codesigning ios-build.keychain | grep -m1 "Apple Distribution" | sed -E 's/.*"(.*)"/\1/')
+
+          echo "PROFILE_NAME=$PROFILE_NAME" >> "$GITHUB_ENV"
+          echo "CODE_SIGN_IDENTITY=$CODE_SIGN_IDENTITY" >> "$GITHUB_ENV"
+
+      - name: Archive and export IPA
+        if: matrix.target == 'ios'
+        shell: bash
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          IOS_EXPORT_METHOD: ${{ vars.IOS_EXPORT_METHOD }}
+        run: |
+          WORKSPACE=$(ls apps/mobile/ios/*.xcworkspace | head -n1)
+          SCHEME=$(basename "$WORKSPACE" .xcworkspace)
+          ARCHIVE_PATH="$RUNNER_TEMP/Mutualzz.xcarchive"
+          EXPORT_PATH="$RUNNER_TEMP/export"
+          METHOD="${IOS_EXPORT_METHOD:-app-store}"
+
+          xcodebuild \
+            -workspace "$WORKSPACE" \
+            -scheme "$SCHEME" \
+            -configuration Release \
+            -destination "generic/platform=iOS" \
+            -archivePath "$ARCHIVE_PATH" \
+            CODE_SIGN_STYLE=Manual \
+            CODE_SIGN_IDENTITY="$CODE_SIGN_IDENTITY" \
+            PROVISIONING_PROFILE_SPECIFIER="$PROFILE_NAME" \
+            DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
+            archive
+
+          cat <<PLIST > "$RUNNER_TEMP/ExportOptions.plist"
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+              <key>method</key>
+              <string>$METHOD</string>
+              <key>teamID</key>
+              <string>$APPLE_TEAM_ID</string>
+              <key>signingStyle</key>
+              <string>manual</string>
+              <key>provisioningProfiles</key>
+              <dict>
+                  <key>com.mutualzz.app</key>
+                  <string>$PROFILE_NAME</string>
+              </dict>
+          </dict>
+          </plist>
+          PLIST
+
+          xcodebuild -exportArchive \
+            -archivePath "$ARCHIVE_PATH" \
+            -exportPath "$EXPORT_PATH" \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist"
+
+      - name: Collect iOS artifacts
+        if: matrix.target == 'ios'
+        shell: bash
+        run: |
+          mkdir -p release
+          IPA=$(ls "$RUNNER_TEMP"/export/*.ipa 2>/dev/null | head -n1)
+          [[ -f "$IPA" ]] && cp "$IPA" ./release/Mutualzz.ipa
+
+      - name: Cleanup iOS keychain
+        if: matrix.target == 'ios' && always()
+        run: security delete-keychain ios-build.keychain || true
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-mobile-${{ matrix.target }}
+          path: release/
+          if-no-files-found: warn
+          retention-days: 1
+
   publish-r2:
     name: Upload to R2
-    needs: build-binaries
+    needs: [build-binaries, build-mobile]
     runs-on: ubuntu-latest
 
     steps:
@@ -316,7 +582,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: "24"
 
       - name: Init app submodule (for version)
         run: git submodule update --init ./apps/app
@@ -337,6 +603,16 @@ jobs:
           VERSION=$(node -p "require('./apps/app/package.json').version")
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
+      - name: Read electron version
+        id: electron_version
+        shell: bash
+        run: |
+          if [ -f release/electron-version.txt ]; then
+            echo "version=$(tr -d '[:space:]' < release/electron-version.txt)" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Generate sha256 checksums
         id: checksums
         shell: bash
@@ -347,6 +623,10 @@ jobs:
           echo "osx=$(sha256 release/Mutualzz.dmg)"            >> "$GITHUB_OUTPUT"
           echo "deb=$(sha256 release/Mutualzz.deb)"            >> "$GITHUB_OUTPUT"
           echo "appimage=$(sha256 release/Mutualzz.AppImage)"  >> "$GITHUB_OUTPUT"
+          echo "asar=$(sha256 release/Mutualzz.asar)"          >> "$GITHUB_OUTPUT"
+          echo "apk=$(sha256 release/Mutualzz.apk)"            >> "$GITHUB_OUTPUT"
+          echo "aab=$(sha256 release/Mutualzz.aab)"            >> "$GITHUB_OUTPUT"
+          echo "ipa=$(sha256 release/Mutualzz.ipa)"            >> "$GITHUB_OUTPUT"
 
       - name: Install Wrangler
         run: npm install -g wrangler
@@ -360,7 +640,12 @@ jobs:
             "win": {
               "x64": {
                 "url": "https://proxy.mutualzz.com/releases/latest/MutualzzSetup.exe",
-                "sha256": "${{ steps.checksums.outputs.win }}"
+                "sha256": "${{ steps.checksums.outputs.win }}",
+                "electronVersion": "${{ steps.electron_version.outputs.version }}",
+                "asar": {
+                  "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz.asar",
+                  "sha256": "${{ steps.checksums.outputs.asar }}"
+                }
               }
             },
             "osx": {
@@ -378,6 +663,22 @@ jobs:
                 "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz.AppImage",
                 "sha256": "${{ steps.checksums.outputs.appimage }}"
               }
+            },
+            "android": {
+              "apk": {
+                "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz.apk",
+                "sha256": "${{ steps.checksums.outputs.apk }}"
+              },
+              "aab": {
+                "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz.aab",
+                "sha256": "${{ steps.checksums.outputs.aab }}"
+              }
+            },
+            "ios": {
+              "ipa": {
+                "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz.ipa",
+                "sha256": "${{ steps.checksums.outputs.ipa }}"
+              }
             }
           }
           EOF
@@ -392,7 +693,7 @@ jobs:
           upload() {
             local src="$1" dest="$2"
             if [[ -f "$src" ]]; then
-              echo "Uploading $src → $dest"
+              echo "Uploading $src -> $dest"
               wrangler r2 object put "$dest" --file "$src" --remote
             else
               echo "Skipping $dest (file not found)"
@@ -403,8 +704,12 @@ jobs:
           upload "release/Mutualzz.dmg"       "mutualzz/releases/latest/Mutualzz.dmg"
           upload "release/Mutualzz.deb"       "mutualzz/releases/latest/Mutualzz.deb"
           upload "release/Mutualzz.AppImage"  "mutualzz/releases/latest/Mutualzz.AppImage"
+          upload "release/Mutualzz.asar"      "mutualzz/releases/latest/Mutualzz.asar"
+          upload "release/Mutualzz.apk"       "mutualzz/releases/latest/Mutualzz.apk"
+          upload "release/Mutualzz.aab"       "mutualzz/releases/latest/Mutualzz.aab"
+          upload "release/Mutualzz.ipa"       "mutualzz/releases/latest/Mutualzz.ipa"
 
-          # latest.json goes up last — only live once all binaries are in place
+          # latest.json goes up last -- only live once all binaries are in place
           upload "latest.json"                "mutualzz/releases/latest/latest.json"
 
   github-release:
@@ -422,7 +727,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: "24"
 
       - name: Init app submodule (for version)
         run: git submodule update --init ./apps/app
@@ -470,5 +775,9 @@ jobs:
             release/Mutualzz.dmg
             release/Mutualzz.deb
             release/Mutualzz.AppImage
+            release/Mutualzz.asar
+            release/Mutualzz.apk
+            release/Mutualzz.aab
+            release/Mutualzz.ipa
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
