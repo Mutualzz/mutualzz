@@ -473,6 +473,8 @@ jobs:
           echo "$IOS_DISTRIBUTION_CERTIFICATE_BASE64" | base64 --decode > /tmp/ios_distribution.p12
           echo "$IOS_PROVISIONING_PROFILE_BASE64" | base64 --decode > /tmp/profile.mobileprovision
 
+          openssl pkcs12 -in /tmp/ios_distribution.p12 -nokeys -passin pass:"$IOS_DISTRIBUTION_CERTIFICATE_PASSWORD" >/dev/null
+
           security create-keychain -p "build-keychain-password" ios-build.keychain
           security default-keychain -s ios-build.keychain
           security unlock-keychain -p "build-keychain-password" ios-build.keychain
