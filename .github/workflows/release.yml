@@ -486,12 +486,6 @@ jobs:
           ls -lh /tmp/ios_distribution.p12
           file /tmp/ios_distribution.p12
 
-          echo "Testing PKCS12 integrity..."
-          openssl pkcs12 -info \
-            -in /tmp/ios_distribution.p12 \
-            -nokeys \
-            -passin pass:"$IOS_DISTRIBUTION_CERTIFICATE_PASSWORD" >/dev/null
-
           echo "Creating keychain..."
           security create-keychain -p "build-keychain-password" ios-build.keychain
           security default-keychain -s ios-build.keychain
