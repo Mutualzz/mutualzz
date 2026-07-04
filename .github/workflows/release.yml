@@ -471,6 +471,22 @@ jobs:
       - name: Build workspace packages
         run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/ui-core" --filter="./packages/ui-native" --filter="./packages/validators" --filter="./packages/bitfield"
 
+      - name: Write .env.production
+        working-directory: apps/mobile
+        env:
+          EXPO_PUBLIC_API_URL: ${{ secrets.EXPO_PUBLIC_API_URL }}
+          EXPO_PUBLIC_WS_URL: ${{ secrets.EXPO_PUBLIC_WS_URL }}
+          EXPO_PUBLIC_CDN_URL: ${{ secrets.EXPO_PUBLIC_CDN_URL }}
+          EXPO_SENTRY_DSN: ${{ secrets.EXPO_SENTRY_DSN }}
+        run: |
+          cat <<EOF > .env.production
+          EXPO_PUBLIC_API_URL="$EXPO_PUBLIC_API_URL"
+          EXPO_PUBLIC_WS_URL="$EXPO_PUBLIC_WS_URL"
+          EXPO_PUBLIC_CDN_URL="$EXPO_PUBLIC_CDN_URL"
+
+          EXPO_SENTRY_DSN="$EXPO_SENTRY_DSN"
+          EOF
+
       - name: Setup Java
         if: matrix.target == 'android'
         uses: actions/setup-java@v4
