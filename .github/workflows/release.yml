@@ -280,8 +280,7 @@ jobs:
             ASAR="./apps/app/dist/win-unpacked/resources/app.asar"
             [[ -f "$ASAR" ]] && cp "$ASAR" ./release/Mutualzz.asar
 
-            node -p "require('./apps/app/node_modules/electron/package.json').version" \
-              > ./release/electron-version.txt
+            pnpm exec node -p "require('electron/package.json').version" > ./release/electron-version.txt
           fi
 
           if [[ "${{ matrix.platform }}" == "macos-latest" ]]; then
