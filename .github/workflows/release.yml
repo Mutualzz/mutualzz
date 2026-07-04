@@ -464,11 +464,6 @@ jobs:
           INFO_PLIST=$(find apps/mobile/ios -maxdepth 2 -name Info.plist ! -path "*Pods*" | head -n1)
           /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${{ github.run_number }}" "$INFO_PLIST"
 
-      - name: Install CocoaPods dependencies
-        if: matrix.target == 'ios'
-        working-directory: apps/mobile/ios
-        run: pod install --repo-update
-
       - name: Setup iOS signing
         if: matrix.target == 'ios'
         shell: bash
@@ -516,12 +511,12 @@ jobs:
           echo "Installing provisioning profile..."
           mkdir -p ~/Library/MobileDevice/"Provisioning Profiles"
 
-          PROFILE_UUID=$(security cms -D -i /tmp/profile.mobileprovision \
-            | plutil -extract UUID xml1 -o - - \
+          security cms -D -i /tmp/profile.mobileprovision > /tmp/profile.plist
+
+          PROFILE_UUID=$(plutil -extract UUID xml1 -o - /tmp/profile.plist \
             | sed -n 's/.*<string>\(.*\)<\/string>.*/\1/p')
 
-          PROFILE_NAME=$(security cms -D -i /tmp/profile.mobileprovision \
-            | plutil -extract Name xml1 -o - - \
+          PROFILE_NAME=$(plutil -extract Name xml1 -o - /tmp/profile.plist \
             | sed -n 's/.*<string>\(.*\)<\/string>.*/\1/p')
 
           cp /tmp/profile.mobileprovision \
@@ -531,8 +526,79 @@ jobs:
             | grep -m1 "Apple Distribution" \
             | sed -E 's/.*"(.*)"/\1/')
 
+          CODE_SIGN_SHA1=$(security find-identity -v -p codesigning ios-build.keychain \
+            | grep -m1 "Apple Distribution" \
+            | awk '{print $2}')
+
           echo "PROFILE_NAME=$PROFILE_NAME" >> "$GITHUB_ENV"
           echo "CODE_SIGN_IDENTITY=$CODE_SIGN_IDENTITY" >> "$GITHUB_ENV"
+          echo "CODE_SIGN_SHA1=$CODE_SIGN_SHA1" >> "$GITHUB_ENV"
+
+      - name: Verify certificate and capabilities match provisioning profile
+        if: matrix.target == 'ios'
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          echo "Checking that '$CODE_SIGN_IDENTITY' is included in profile '$PROFILE_NAME'..."
+          MATCH="no"
+          i=0
+          while :; do
+            CERT_XML=$(plutil -extract "DeveloperCertificates.$i" xml1 -o - /tmp/profile.plist 2>/dev/null) || break
+            [[ -z "$CERT_XML" ]] && break
+
+            CERT_B64=$(echo "$CERT_XML" | sed -n '/<data>/,/<\/data>/p' | sed '1d;$d' | tr -d '\n\r\t ')
+            echo "$CERT_B64" | base64 --decode > "/tmp/profile_cert_$i.der"
+
+            FPR=$(openssl x509 -inform DER -in "/tmp/profile_cert_$i.der" -noout -fingerprint -sha1 \
+              | sed 's/.*=//; s/://g')
+
+            if [[ "$FPR" == "$CODE_SIGN_SHA1" ]]; then
+              MATCH="yes"
+              break
+            fi
+
+            i=$((i + 1))
+          done
+
+          if [[ "$MATCH" != "yes" ]]; then
+            echo "::error::Certificate '$CODE_SIGN_IDENTITY' ($CODE_SIGN_SHA1) is not included in provisioning profile '$PROFILE_NAME'. Regenerate the profile in the Apple Developer portal against this certificate, re-export it, and update the IOS_PROVISIONING_PROFILE_BASE64 secret."
+            exit 1
+          fi
+          echo "Certificate matches a certificate in the provisioning profile."
+
+          ENTITLEMENTS_FILE=$(find apps/mobile/ios -maxdepth 2 -name "*.entitlements" | head -n1)
+          if [[ -z "$ENTITLEMENTS_FILE" ]]; then
+            echo "No entitlements file found, skipping capability check."
+            exit 0
+          fi
+
+          echo "Checking capabilities requested in $ENTITLEMENTS_FILE against '$PROFILE_NAME'..."
+          APP_KEYS=$(plutil -convert xml1 -o - "$ENTITLEMENTS_FILE" | grep -oE '<key>[^<]+</key>' | sed -E 's/<\/?key>//g')
+
+          MISSING=""
+          while IFS= read -r key; do
+            [[ -z "$key" ]] && continue
+            case "$key" in
+              application-identifier | com.apple.developer.team-identifier | keychain-access-groups | get-task-allow)
+                continue
+                ;;
+            esac
+            if ! plutil -extract "Entitlements.$key" raw -o - /tmp/profile.plist >/dev/null 2>&1; then
+              MISSING="$MISSING $key"
+            fi
+          done <<<"$APP_KEYS"
+
+          if [[ -n "$MISSING" ]]; then
+            echo "::error::Provisioning profile '$PROFILE_NAME' is missing entitlement(s):$MISSING. Enable the matching capability on the com.mutualzz.app identifier in the Apple Developer portal, regenerate the profile, and update the IOS_PROVISIONING_PROFILE_BASE64 secret."
+            exit 1
+          fi
+          echo "All requested capabilities are present in the provisioning profile."
+
+      - name: Install CocoaPods dependencies
+        if: matrix.target == 'ios'
+        working-directory: apps/mobile/ios
+        run: pod install --repo-update
 
       - name: Archive and export IPA
         if: matrix.target == 'ios'
