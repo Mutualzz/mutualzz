@@ -457,6 +457,13 @@ jobs:
           CI: "1"
         run: pnpm exec expo prebuild --platform ios --no-install
 
+      - name: Bump iOS build number
+        if: matrix.target == 'ios'
+        shell: bash
+        run: |
+          INFO_PLIST=$(find apps/mobile/ios -maxdepth 2 -name Info.plist ! -path "*Pods*" | head -n1)
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${{ github.run_number }}" "$INFO_PLIST"
+
       - name: Install CocoaPods dependencies
         if: matrix.target == 'ios'
         working-directory: apps/mobile/ios
@@ -534,7 +541,7 @@ jobs:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           IOS_EXPORT_METHOD: ${{ vars.IOS_EXPORT_METHOD }}
         run: |
-          WORKSPACE=$(ls apps/mobile/ios/*.xcworkspace | head -n1)
+          WORKSPACE=$(ls -d apps/mobile/ios/*.xcworkspace | head -n1)
           SCHEME=$(basename "$WORKSPACE" .xcworkspace)
           ARCHIVE_PATH="$RUNNER_TEMP/Mutualzz.xcarchive"
           EXPORT_PATH="$RUNNER_TEMP/export"
@@ -576,6 +583,26 @@ jobs:
             -archivePath "$ARCHIVE_PATH" \
             -exportPath "$EXPORT_PATH" \
             -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist"
+
+      - name: Upload to App Store Connect (TestFlight)
+        if: matrix.target == 'ios'
+        shell: bash
+        env:
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
+        run: |
+          mkdir -p ~/.appstoreconnect/private_keys
+          echo "$APP_STORE_CONNECT_API_KEY_BASE64" | base64 --decode \
+            > ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8
+
+          IPA=$(ls "$RUNNER_TEMP"/export/*.ipa 2>/dev/null | head -n1)
+
+          xcrun altool --upload-app \
+            --type ios \
+            --file "$IPA" \
+            --apiKey "$APP_STORE_CONNECT_KEY_ID" \
+            --apiIssuer "$APP_STORE_CONNECT_ISSUER_ID"
 
       - name: Collect iOS artifacts
         if: matrix.target == 'ios'
