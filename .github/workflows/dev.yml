@@ -283,6 +283,20 @@ jobs:
           fi
           echo "All requested capabilities are present in the provisioning profile."
 
+      - name: Allow arbitrary HTTP (development only)
+        shell: bash
+        run: |
+          INFO_PLIST=$(find apps/mobile/ios -name Info.plist | head -n1)
+
+          echo "Patching $INFO_PLIST"
+
+          /usr/libexec/PlistBuddy -c "Add :NSAppTransportSecurity dict" "$INFO_PLIST" 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :NSAppTransportSecurity:NSAllowsArbitraryLoads bool true" "$INFO_PLIST" 2>/dev/null \
+            || /usr/libexec/PlistBuddy -c "Set :NSAppTransportSecurity:NSAllowsArbitraryLoads true" "$INFO_PLIST"
+
+          echo "ATS configuration:"
+          /usr/libexec/PlistBuddy -c "Print :NSAppTransportSecurity" "$INFO_PLIST"
+
       - name: Install CocoaPods dependencies
         working-directory: apps/mobile/ios
         run: pod install --repo-update
