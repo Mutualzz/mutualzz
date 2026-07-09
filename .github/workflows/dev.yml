@@ -319,7 +319,7 @@ jobs:
                 continue
                 ;;
             esac
-            if ! plutil -extract "Entitlements.$key" raw -o - /tmp/profile.plist >/dev/null 2>&1; then
+            if ! plutil -extract "Entitlements.$key" json -o - /tmp/profile.plist >/dev/null 2>&1; then
               MISSING="$MISSING $key"
             fi
           done <<<"$APP_KEYS"
