@@ -103,8 +103,13 @@ def main() -> int:
         list_uuid_match = re.search(r"^\s*([A-F0-9]{24}) /\* .*? \*/ = \{", block, re.M)
         if not list_uuid_match:
             continue
-        config_uuids = re.findall(r"([A-F0-9]{24}) /\* .*? \*/,?", block)
-        config_list_to_configs[list_uuid_match.group(1)] = config_uuids[1:] if config_uuids else []
+        build_configs_match = re.search(r"buildConfigurations = \(\s*(.*?)\s*\);\s*", block, re.S)
+        if not build_configs_match:
+            config_list_to_configs[list_uuid_match.group(1)] = []
+            continue
+        build_configs_body = build_configs_match.group(1)
+        config_uuids = re.findall(r"([A-F0-9]{24}) /\* .*? \*/", build_configs_body)
+        config_list_to_configs[list_uuid_match.group(1)] = config_uuids
 
     target_config_uuids: dict[str, set[str]] = {}
     for target_name, list_uuid in target_to_config_list.items():
