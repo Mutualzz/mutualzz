@@ -663,17 +663,21 @@ jobs:
           fi
 
           echo "Checking capabilities requested in $ENTITLEMENTS_FILE against '$PROFILE_NAME'..."
+          PROFILE_ENTITLEMENTS=$(plutil -extract Entitlements json -o - /tmp/profile.plist)
+          echo "Provisioning profile entitlements: $PROFILE_ENTITLEMENTS"
+
           APP_KEYS=$(plutil -convert xml1 -o - "$ENTITLEMENTS_FILE" | grep -oE '<key>[^<]+</key>' | sed -E 's/<\/?key>//g')
 
           MISSING=""
           while IFS= read -r key; do
             [[ -z "$key" ]] && continue
             case "$key" in
-              application-identifier | com.apple.developer.team-identifier | keychain-access-groups | get-task-allow)
+              application-identifier | com.apple.developer.team-identifier | keychain-access-groups | get-task-allow | aps-environment)
+                # aps-environment is added by Xcode during archive for App Store profiles.
                 continue
                 ;;
             esac
-            if ! plutil -extract "Entitlements.$key" json -o - /tmp/profile.plist >/dev/null 2>&1; then
+            if ! jq -e --arg k "$key" 'has($k)' <<<"$PROFILE_ENTITLEMENTS" >/dev/null; then
               MISSING="$MISSING $key"
             fi
           done <<<"$APP_KEYS"
