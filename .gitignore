@@ -39,3 +39,6 @@ dist-ssr
 
 # ngrok tunnel config (contains personal authtoken)
 ngrok.yml
+
+# Firebase service account keys (FCM v1 credentials for EAS)
+*firebase-adminsdk*.json
