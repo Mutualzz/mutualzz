@@ -619,7 +619,15 @@ jobs:
         working-directory: apps/mobile
         env:
           CI: "1"
-        run: pnpm exec expo prebuild --platform ios --no-install
+        run: |
+          set -euo pipefail
+
+          if [[ ! -f targets/notification-service/expo-target.config.js ]]; then
+            echo "::error::Missing targets/notification-service/expo-target.config.js. The notification service extension must be present in apps/mobile before prebuild."
+            exit 1
+          fi
+
+          pnpm exec expo prebuild --platform ios --no-install
 
       - name: Resolve notification service extension target
         if: matrix.target == 'ios'
@@ -628,30 +636,14 @@ jobs:
           set -euo pipefail
 
           PBXPROJ=$(find apps/mobile/ios -name project.pbxproj | head -n1)
-          EXTENSION_TARGET=$(python3 - "$PBXPROJ" "$EXTENSION_BUNDLE_ID" <<'PY'
-          import re
-          import sys
-
-          pbxproj_path, bundle_id = sys.argv[1:3]
-          text = open(pbxproj_path, encoding="utf-8").read()
-
-          for match in re.finditer(
-              r"/\* ([^*]+) \*/ = \{\n\t\t\tisa = PBXNativeTarget;",
-              text,
-          ):
-              start = match.start()
-              end = text.find("\n\t\t};", start)
-              block = text[start:end]
-              if f"PRODUCT_BUNDLE_IDENTIFIER = {bundle_id};" in block:
-                  print(match.group(1))
-                  break
-          PY
-          )
-
-          if [[ -z "$EXTENSION_TARGET" ]]; then
-            echo "::error::Could not find an Xcode target for bundle ID '$EXTENSION_BUNDLE_ID' after prebuild."
+          if [[ -z "$PBXPROJ" ]]; then
+            echo "::error::No project.pbxproj found after iOS prebuild."
             exit 1
           fi
+
+          EXTENSION_TARGET=$(python3 .github/scripts/resolve-ios-extension-target.py \
+            "$PBXPROJ" \
+            "$EXTENSION_BUNDLE_ID")
 
           echo "Resolved notification service extension target: $EXTENSION_TARGET"
           echo "EXTENSION_TARGET=$EXTENSION_TARGET" >> "$GITHUB_ENV"
