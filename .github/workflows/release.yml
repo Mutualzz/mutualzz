@@ -707,58 +707,12 @@ jobs:
             echo "::error::No project.pbxproj found after iOS prebuild."
             exit 1
           fi
-
-          python3 - "$PBXPROJ" "$APPLE_TEAM_ID" "$PROFILE_NAME" "$EXTENSION_PROFILE_NAME" "$CODE_SIGN_IDENTITY" <<'PY'
-          import re
-          import sys
-          from pathlib import Path
-
-          pbxproj_path = Path(sys.argv[1])
-          team_id = sys.argv[2]
-          main_profile = sys.argv[3]
-          extension_profile = sys.argv[4]
-          code_sign_identity = sys.argv[5]
-
-          text = pbxproj_path.read_text(encoding="utf-8")
-
-          def replace_or_insert(block: str, key: str, value: str) -> str:
-              pattern = re.compile(rf"(\n\s+{re.escape(key)} = )[^;]+;")
-              replacement = rf"\1{value};"
-              if pattern.search(block):
-                  return pattern.sub(replacement, block, count=1)
-              insert_at = block.rfind("\n\t\t\t};")
-              if insert_at == -1:
-                  insert_at = block.rfind("\n\t\t};")
-              if insert_at == -1:
-                  raise RuntimeError(f"Could not insert build setting {key}")
-              return block[:insert_at] + f"\n\t\t\t\t{key} = {value};" + block[insert_at:]
-
-          def patch_config(match: re.Match[str]) -> str:
-              block = match.group(0)
-              settings = match.group(2)
-              bundle_match = re.search(r'PRODUCT_BUNDLE_IDENTIFIER = "?([^";\n]+)"?;', settings)
-              if not bundle_match:
-                  return block
-              bundle_id = bundle_match.group(1).strip()
-              if bundle_id == "com.mutualzz.app":
-                  profile = main_profile
-              elif bundle_id == "com.mutualzz.app.notification-service":
-                  profile = extension_profile
-              else:
-                  return block
-              block = replace_or_insert(block, "CODE_SIGN_STYLE", "Manual")
-              block = replace_or_insert(block, "DEVELOPMENT_TEAM", team_id)
-              block = replace_or_insert(block, "CODE_SIGN_IDENTITY", f"\"{code_sign_identity}\"")
-              block = replace_or_insert(block, "PROVISIONING_PROFILE_SPECIFIER", f"\"{profile}\"")
-              return block
-
-          pattern = re.compile(
-              r'([A-F0-9]{24} /\* .*? \*/ = \{\n\t\t\tisa = XCBuildConfiguration;.*?\n\t\t\tbuildSettings = \{(.*?)\n\t\t\t\};.*?\n\t\t\};)',
-              re.S,
-          )
-          updated = pattern.sub(patch_config, text)
-          pbxproj_path.write_text(updated, encoding="utf-8")
-          PY
+          python3 .github/scripts/patch-ios-signing.py \
+            "$PBXPROJ" \
+            "$APPLE_TEAM_ID" \
+            "$PROFILE_NAME" \
+            "$EXTENSION_PROFILE_NAME" \
+            "$CODE_SIGN_IDENTITY"
 
       - name: Archive and export IPA
         if: matrix.target == 'ios'
