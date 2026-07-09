@@ -629,26 +629,6 @@ jobs:
 
           pnpm exec expo prebuild --platform ios --no-install
 
-      - name: Resolve notification service extension target
-        if: matrix.target == 'ios'
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          PBXPROJ=$(find apps/mobile/ios -name project.pbxproj | head -n1)
-          if [[ -z "$PBXPROJ" ]]; then
-            echo "::error::No project.pbxproj found after iOS prebuild."
-            exit 1
-          fi
-
-          XCODEPROJ=$(dirname "$PBXPROJ")
-          EXTENSION_TARGET=$(bash .github/scripts/resolve-ios-extension-target.sh \
-            "$XCODEPROJ" \
-            "$EXTENSION_BUNDLE_ID")
-
-          echo "Resolved notification service extension target: $EXTENSION_TARGET"
-          echo "EXTENSION_TARGET=$EXTENSION_TARGET" >> "$GITHUB_ENV"
-
       - name: Bump iOS build number
         if: matrix.target == 'ios'
         shell: bash
@@ -694,6 +674,25 @@ jobs:
         if: matrix.target == 'ios'
         working-directory: apps/mobile/ios
         run: pod install --repo-update
+
+      - name: Resolve notification service extension target
+        if: matrix.target == 'ios'
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          PBXPROJ=$(find apps/mobile/ios -name project.pbxproj | head -n1)
+          if [[ -z "$PBXPROJ" ]]; then
+            echo "::error::No project.pbxproj found after iOS prebuild."
+            exit 1
+          fi
+
+          EXTENSION_TARGET=$(bash .github/scripts/resolve-ios-extension-target.sh \
+            "$PBXPROJ" \
+            "$EXTENSION_BUNDLE_ID")
+
+          echo "Resolved notification service extension target: $EXTENSION_TARGET"
+          echo "EXTENSION_TARGET=$EXTENSION_TARGET" >> "$GITHUB_ENV"
 
       - name: Archive and export IPA
         if: matrix.target == 'ios'
