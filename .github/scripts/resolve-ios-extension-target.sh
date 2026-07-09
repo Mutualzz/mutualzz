@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Resolve an Xcode native target name from PRODUCT_BUNDLE_IDENTIFIER via xcodebuild.
+# Compatible with macOS default bash 3.2 (no mapfile).
 set -euo pipefail
 
 if [[ $# -ne 2 ]]; then
@@ -15,55 +16,50 @@ if [[ ! -d "$XCODEPROJ" ]]; then
   exit 1
 fi
 
-mapfile -t TARGETS < <(
-  xcodebuild -project "$XCODEPROJ" -list 2>/dev/null | awk '
-    /^[[:space:]]*Targets:$/ { capture = 1; next }
-    capture && /^[[:space:]]*Build configurations:/ { capture = 0 }
-    capture && /^[[:space:]]+/ {
-      sub(/^[[:space:]]+/, "", $0)
-      print
-    }
-  '
-)
+target_bundle_id() {
+  xcodebuild \
+    -project "$XCODEPROJ" \
+    -target "$1" \
+    -configuration Release \
+    -sdk iphoneos \
+    -showBuildSettings 2>/dev/null \
+    | awk -F' = ' '/PRODUCT_BUNDLE_IDENTIFIER/ { gsub(/^ /, "", $2); print $2; exit }' \
+    | tr -d '"[:space:]'
+}
 
-if [[ ${#TARGETS[@]} -eq 0 ]]; then
+TARGETS_FILE="$(mktemp)"
+trap 'rm -f "$TARGETS_FILE"' EXIT
+
+xcodebuild -project "$XCODEPROJ" -list 2>/dev/null | awk '
+  /^[[:space:]]*Targets:$/ { capture = 1; next }
+  capture && /^[[:space:]]*Build configurations:/ { capture = 0 }
+  capture && /^[[:space:]]+/ {
+    sub(/^[[:space:]]+/, "", $0)
+    print
+  }
+' > "$TARGETS_FILE"
+
+if [[ ! -s "$TARGETS_FILE" ]]; then
   echo "::error::No Xcode targets found in $XCODEPROJ" >&2
   xcodebuild -project "$XCODEPROJ" -list >&2 || true
   exit 1
 fi
 
-for target in "${TARGETS[@]}"; do
-  bundle_id="$(
-    xcodebuild \
-      -project "$XCODEPROJ" \
-      -target "$target" \
-      -configuration Release \
-      -sdk iphoneos \
-      -showBuildSettings 2>/dev/null \
-      | awk -F' = ' '/PRODUCT_BUNDLE_IDENTIFIER/ { gsub(/^ /, "", $2); print $2; exit }' \
-      | tr -d '"[:space:]'
-  )"
-
+while IFS= read -r target; do
+  [[ -z "$target" ]] && continue
+  bundle_id="$(target_bundle_id "$target")"
   if [[ "$bundle_id" == "$EXPECTED_BUNDLE_ID" ]]; then
     echo "$target"
     exit 0
   fi
-done
+done < "$TARGETS_FILE"
 
 echo "::error::Could not find an Xcode target for bundle ID '$EXPECTED_BUNDLE_ID' after prebuild." >&2
 echo "Targets and bundle identifiers in project:" >&2
-for target in "${TARGETS[@]}"; do
-  bundle_id="$(
-    xcodebuild \
-      -project "$XCODEPROJ" \
-      -target "$target" \
-      -configuration Release \
-      -sdk iphoneos \
-      -showBuildSettings 2>/dev/null \
-      | awk -F' = ' '/PRODUCT_BUNDLE_IDENTIFIER/ { gsub(/^ /, "", $2); print $2; exit }' \
-      | tr -d '"[:space:]'
-  )"
+while IFS= read -r target; do
+  [[ -z "$target" ]] && continue
+  bundle_id="$(target_bundle_id "$target" || true)"
   echo "  $target -> ${bundle_id:-<unknown>}" >&2
-done
+done < "$TARGETS_FILE"
 
 exit 1
