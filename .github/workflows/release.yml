@@ -713,10 +713,7 @@ jobs:
             -configuration Release \
             -destination "generic/platform=iOS" \
             -archivePath "$ARCHIVE_PATH" \
-            CODE_SIGN_STYLE=Manual \
-            CODE_SIGN_IDENTITY="$CODE_SIGN_IDENTITY" \
-            PROVISIONING_PROFILE_SPECIFIER="$PROFILE_NAME" \
-            "PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*][target=$EXTENSION_TARGET]=$EXTENSION_PROFILE_NAME" \
+            CODE_SIGN_STYLE=Automatic \
             DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
             archive
 
