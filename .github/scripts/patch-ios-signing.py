@@ -68,11 +68,6 @@ def main() -> int:
     }
     patched_counts = {target_name: 0 for target_name in target_profiles}
 
-    target_section_match = re.search(
-        r"/\* Begin PBXNativeTarget section \*/(.*?)/\* End PBXNativeTarget section \*/",
-        text,
-        re.S,
-    )
     config_list_section_match = re.search(
         r"/\* Begin XCConfigurationList section \*/(.*?)/\* End XCConfigurationList section \*/",
         text,
@@ -83,37 +78,27 @@ def main() -> int:
         text,
         re.S,
     )
-    if not (target_section_match and config_list_section_match and build_config_section_match):
+    if not (config_list_section_match and build_config_section_match):
         print("::error::Missing expected Xcode project sections.", file=sys.stderr)
         return 1
 
-    target_to_config_list: dict[str, str] = {}
-    for block in parse_section_objects(target_section_match.group(1)):
-        if "isa = PBXNativeTarget;" not in block:
-            continue
-        name_match = re.search(r"/\* ([^*]+) \*/ = \{", block)
-        config_list_match = re.search(r"buildConfigurationList = ([A-F0-9]{24}) /\* .*? \*/;", block)
-        if name_match and config_list_match:
-            target_to_config_list[name_match.group(1).strip()] = config_list_match.group(1)
-
-    config_list_to_configs: dict[str, list[str]] = {}
+    target_config_uuids: dict[str, set[str]] = {target_name: set() for target_name in target_profiles}
     for block in parse_section_objects(config_list_section_match.group(1)):
         if "isa = XCConfigurationList;" not in block:
             continue
-        list_uuid_match = re.search(r"^\s*([A-F0-9]{24}) /\* .*? \*/ = \{", block, re.M)
-        if not list_uuid_match:
+        target_name = None
+        for candidate in target_profiles:
+            if f'Build configuration list for PBXNativeTarget "{candidate}"' in block:
+                target_name = candidate
+                break
+        if target_name is None:
             continue
         build_configs_match = re.search(r"buildConfigurations = \(\s*(.*?)\s*\);\s*", block, re.S)
         if not build_configs_match:
-            config_list_to_configs[list_uuid_match.group(1)] = []
             continue
         build_configs_body = build_configs_match.group(1)
         config_uuids = re.findall(r"([A-F0-9]{24}) /\* .*? \*/", build_configs_body)
-        config_list_to_configs[list_uuid_match.group(1)] = config_uuids
-
-    target_config_uuids: dict[str, set[str]] = {}
-    for target_name, list_uuid in target_to_config_list.items():
-        target_config_uuids[target_name] = set(config_list_to_configs.get(list_uuid, []))
+        target_config_uuids[target_name].update(config_uuids)
 
     build_config_blocks = parse_section_objects(build_config_section_match.group(1))
     updated_blocks: list[str] = []
@@ -143,6 +128,9 @@ def main() -> int:
 
     missing = [target_name for target_name, count in patched_counts.items() if count == 0]
     if missing:
+        print("Discovered target configuration UUIDs:", file=sys.stderr)
+        for target_name, uuids in target_config_uuids.items():
+            print(f"  {target_name}: {sorted(uuids)}", file=sys.stderr)
         print(
             "::error::Failed to patch signing settings for targets: " + ", ".join(missing),
             file=sys.stderr,
