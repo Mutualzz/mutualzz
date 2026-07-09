@@ -555,7 +555,16 @@ jobs:
         shell: bash
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-        run: echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > apps/mobile/android/app/release.keystore
+        run: |
+          if [[ -z "$ANDROID_KEYSTORE_BASE64" ]]; then
+            echo "::error::ANDROID_KEYSTORE_BASE64 secret is not set"
+            exit 1
+          fi
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > apps/mobile/android/app/release.keystore
+          if [[ ! -s apps/mobile/android/app/release.keystore ]]; then
+            echo "::error::Decoded Android keystore is empty or invalid"
+            exit 1
+          fi
 
       - name: Patch Android release signing config
         if: matrix.target == 'android'
@@ -579,15 +588,20 @@ jobs:
                   }
               }`
             );
-
-            gradle = gradle.replace(
-              /(release\s*\{[\s\S]*?)signingConfig signingConfigs\.debug/,
-              "$1signingConfig signingConfigs.release"
-            );
-
-            fs.writeFileSync(path, gradle);
-            console.log("Patched build.gradle with release signing config");
           }
+
+          gradle = gradle.replace(
+            /(buildTypes\s*\{[\s\S]*?\brelease\s*\{[\s\S]*?)signingConfig signingConfigs\.debug/,
+            "$1signingConfig signingConfigs.release"
+          );
+
+          if (!/buildTypes\s*\{[\s\S]*?\brelease\s*\{[\s\S]*?signingConfig signingConfigs\.release/.test(gradle)) {
+            console.error("Failed to patch release buildType signing config");
+            process.exit(1);
+          }
+
+          fs.writeFileSync(path, gradle);
+          console.log("Patched build.gradle with release signing config");
           EOF
           node /tmp/patch-android-signing.mjs
           sed -i "s/versionCode [0-9]\+/versionCode ${{ github.run_number }}/" apps/mobile/android/app/build.gradle
