@@ -707,12 +707,16 @@ jobs:
             echo "::error::No project.pbxproj found after iOS prebuild."
             exit 1
           fi
+          WORKSPACE=$(ls -d apps/mobile/ios/*.xcworkspace | head -n1)
+          MAIN_TARGET=$(basename "$WORKSPACE" .xcworkspace)
           python3 .github/scripts/patch-ios-signing.py \
             "$PBXPROJ" \
             "$APPLE_TEAM_ID" \
             "$PROFILE_NAME" \
             "$EXTENSION_PROFILE_NAME" \
-            "$CODE_SIGN_IDENTITY"
+            "$CODE_SIGN_IDENTITY" \
+            "$MAIN_TARGET" \
+            "$EXTENSION_TARGET"
 
       - name: Archive and export IPA
         if: matrix.target == 'ios'

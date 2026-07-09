@@ -25,75 +25,29 @@ def replace_or_insert(block: str, key: str, value: str) -> str:
     return block[: build_settings_match.start()] + prefix + inner + suffix + block[build_settings_match.end() :]
 
 
-def patch_xcbuildconfiguration_section(
-    text: str,
-    bundle_profiles: dict[str, str],
-    team_id: str,
-    code_sign_identity: str,
-    patched_counts: dict[str, int],
-) -> str:
-    begin_marker = "/* Begin XCBuildConfiguration section */"
-    end_marker = "/* End XCBuildConfiguration section */"
-
-    begin = text.find(begin_marker)
-    end = text.find(end_marker)
-    if begin == -1 or end == -1 or end <= begin:
-        raise RuntimeError("Could not locate XCBuildConfiguration section in project.pbxproj")
-
-    section = text[begin:end]
+def parse_section_objects(section: str) -> list[str]:
     lines = section.splitlines(keepends=True)
-
     object_start = re.compile(r"^\s*[A-F0-9]{24} /\* .*? \*/ = \{$")
     object_end = re.compile(r"^\s*\};$")
 
-    patched_lines: list[str] = []
+    objects: list[str] = []
     current_block: list[str] | None = None
-
-    def flush_block(block_lines: list[str]) -> list[str]:
-        block = "".join(block_lines)
-        if "isa = XCBuildConfiguration;" not in block:
-            return block_lines
-
-        bundle_match = re.search(r'PRODUCT_BUNDLE_IDENTIFIER = "?([^";\n]+)"?;', block)
-        if not bundle_match:
-            return block_lines
-
-        bundle_id = bundle_match.group(1).strip()
-        profile = bundle_profiles.get(bundle_id)
-        if not profile:
-            return block_lines
-
-        patched_counts[bundle_id] += 1
-        block = replace_or_insert(block, "CODE_SIGN_STYLE", "Manual")
-        block = replace_or_insert(block, "DEVELOPMENT_TEAM", team_id)
-        block = replace_or_insert(block, "CODE_SIGN_IDENTITY", f"\"{code_sign_identity}\"")
-        block = replace_or_insert(block, "PROVISIONING_PROFILE_SPECIFIER", f"\"{profile}\"")
-        return block.splitlines(keepends=True)
-
     for line in lines:
         if current_block is None:
             if object_start.match(line):
                 current_block = [line]
-            else:
-                patched_lines.append(line)
             continue
-
         current_block.append(line)
         if object_end.match(line):
-            patched_lines.extend(flush_block(current_block))
+            objects.append("".join(current_block))
             current_block = None
-
-    if current_block is not None:
-        patched_lines.extend(flush_block(current_block))
-
-    patched_section = "".join(patched_lines)
-    return text[:begin] + patched_section + text[end:]
+    return objects
 
 
 def main() -> int:
-    if len(sys.argv) != 6:
+    if len(sys.argv) != 8:
         print(
-            "usage: patch-ios-signing.py <project.pbxproj> <team_id> <main_profile> <extension_profile> <code_sign_identity>",
+            "usage: patch-ios-signing.py <project.pbxproj> <team_id> <main_profile> <extension_profile> <code_sign_identity> <main_target> <extension_target>",
             file=sys.stderr,
         )
         return 2
@@ -103,27 +57,89 @@ def main() -> int:
     main_profile = sys.argv[3]
     extension_profile = sys.argv[4]
     code_sign_identity = sys.argv[5]
+    main_target = sys.argv[6]
+    extension_target = sys.argv[7]
 
     text = pbxproj_path.read_text(encoding="utf-8")
 
-    bundle_profiles = {
-        "com.mutualzz.app": main_profile,
-        "com.mutualzz.app.notification-service": extension_profile,
+    target_profiles = {
+        main_target: main_profile,
+        extension_target: extension_profile,
     }
-    patched_counts = {bundle_id: 0 for bundle_id in bundle_profiles}
+    patched_counts = {target_name: 0 for target_name in target_profiles}
 
-    updated = patch_xcbuildconfiguration_section(
-        text=text,
-        bundle_profiles=bundle_profiles,
-        team_id=team_id,
-        code_sign_identity=code_sign_identity,
-        patched_counts=patched_counts,
+    target_section_match = re.search(
+        r"/\* Begin PBXNativeTarget section \*/(.*?)/\* End PBXNativeTarget section \*/",
+        text,
+        re.S,
+    )
+    config_list_section_match = re.search(
+        r"/\* Begin XCConfigurationList section \*/(.*?)/\* End XCConfigurationList section \*/",
+        text,
+        re.S,
+    )
+    build_config_section_match = re.search(
+        r"/\* Begin XCBuildConfiguration section \*/(.*?)/\* End XCBuildConfiguration section \*/",
+        text,
+        re.S,
+    )
+    if not (target_section_match and config_list_section_match and build_config_section_match):
+        print("::error::Missing expected Xcode project sections.", file=sys.stderr)
+        return 1
+
+    target_to_config_list: dict[str, str] = {}
+    for block in parse_section_objects(target_section_match.group(1)):
+        if "isa = PBXNativeTarget;" not in block:
+            continue
+        name_match = re.search(r"/\* ([^*]+) \*/ = \{", block)
+        config_list_match = re.search(r"buildConfigurationList = ([A-F0-9]{24}) /\* .*? \*/;", block)
+        if name_match and config_list_match:
+            target_to_config_list[name_match.group(1).strip()] = config_list_match.group(1)
+
+    config_list_to_configs: dict[str, list[str]] = {}
+    for block in parse_section_objects(config_list_section_match.group(1)):
+        if "isa = XCConfigurationList;" not in block:
+            continue
+        list_uuid_match = re.search(r"^\s*([A-F0-9]{24}) /\* .*? \*/ = \{", block, re.M)
+        if not list_uuid_match:
+            continue
+        config_uuids = re.findall(r"([A-F0-9]{24}) /\* .*? \*/,?", block)
+        config_list_to_configs[list_uuid_match.group(1)] = config_uuids[1:] if config_uuids else []
+
+    target_config_uuids: dict[str, set[str]] = {}
+    for target_name, list_uuid in target_to_config_list.items():
+        target_config_uuids[target_name] = set(config_list_to_configs.get(list_uuid, []))
+
+    build_config_blocks = parse_section_objects(build_config_section_match.group(1))
+    updated_blocks: list[str] = []
+    for block in build_config_blocks:
+        uuid_match = re.search(r"^\s*([A-F0-9]{24}) /\* .*? \*/ = \{", block, re.M)
+        if not uuid_match or "isa = XCBuildConfiguration;" not in block:
+            updated_blocks.append(block)
+            continue
+        config_uuid = uuid_match.group(1)
+        patched = False
+        for target_name, profile in target_profiles.items():
+            if config_uuid in target_config_uuids.get(target_name, set()):
+                block = replace_or_insert(block, "CODE_SIGN_STYLE", "Manual")
+                block = replace_or_insert(block, "DEVELOPMENT_TEAM", team_id)
+                block = replace_or_insert(block, "CODE_SIGN_IDENTITY", f"\"{code_sign_identity}\"")
+                block = replace_or_insert(block, "PROVISIONING_PROFILE_SPECIFIER", f"\"{profile}\"")
+                patched_counts[target_name] += 1
+                patched = True
+                break
+        updated_blocks.append(block)
+
+    updated = (
+        text[: build_config_section_match.start(1)]
+        + "".join(updated_blocks)
+        + text[build_config_section_match.end(1) :]
     )
 
-    missing = [bundle_id for bundle_id, count in patched_counts.items() if count == 0]
+    missing = [target_name for target_name, count in patched_counts.items() if count == 0]
     if missing:
         print(
-            "::error::Failed to patch signing settings for bundle IDs: " + ", ".join(missing),
+            "::error::Failed to patch signing settings for targets: " + ", ".join(missing),
             file=sys.stderr,
         )
         return 1
@@ -131,14 +147,14 @@ def main() -> int:
     pbxproj_path.write_text(updated, encoding="utf-8")
 
     print("Patched Xcode signing configs:", file=sys.stderr)
-    for bundle_id, count in patched_counts.items():
-        print(f"  {bundle_id}: {count} configuration(s)", file=sys.stderr)
+    for target_name, count in patched_counts.items():
+        print(f"  {target_name}: {count} configuration(s)", file=sys.stderr)
 
     verification_text = pbxproj_path.read_text(encoding="utf-8")
-    for bundle_id, profile in bundle_profiles.items():
+    for target_name, profile in target_profiles.items():
         if profile not in verification_text:
             print(
-                f"::error::Profile specifier '{profile}' was not written for bundle ID '{bundle_id}'.",
+                f"::error::Profile specifier '{profile}' was not written for target '{target_name}'.",
                 file=sys.stderr,
             )
             return 1
