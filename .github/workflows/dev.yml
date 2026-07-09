@@ -353,14 +353,14 @@ jobs:
         run: |
           set -euo pipefail
 
-          PBXPROJ=$(find apps/mobile/ios -name project.pbxproj | head -n1)
-          if [[ -z "$PBXPROJ" ]]; then
-            echo "::error::No project.pbxproj found after iOS prebuild."
+          XCODEPROJ=$(find apps/mobile/ios -name "*.xcodeproj" | head -n1)
+          if [[ -z "$XCODEPROJ" ]]; then
+            echo "::error::No .xcodeproj found after iOS prebuild."
             exit 1
           fi
 
           EXTENSION_TARGET=$(bash .github/scripts/resolve-ios-extension-target.sh \
-            "$PBXPROJ" \
+            "$XCODEPROJ" \
             "$EXTENSION_BUNDLE_ID")
 
           echo "Resolved notification service extension target: $EXTENSION_TARGET"
