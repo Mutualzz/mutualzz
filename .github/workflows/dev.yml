@@ -308,8 +308,9 @@ jobs:
             exit 1
           fi
 
-          EXTENSION_TARGET=$(python3 .github/scripts/resolve-ios-extension-target.py \
-            "$PBXPROJ" \
+          XCODEPROJ=$(dirname "$PBXPROJ")
+          EXTENSION_TARGET=$(bash .github/scripts/resolve-ios-extension-target.sh \
+            "$XCODEPROJ" \
             "$EXTENSION_BUNDLE_ID")
 
           echo "Resolved notification service extension target: $EXTENSION_TARGET"
