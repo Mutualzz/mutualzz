@@ -36,3 +36,6 @@ dist-ssr
 
 # Sentry Config File
 .env.sentry-build-plugin
+
+# ngrok tunnel config (contains personal authtoken)
+ngrok.yml
