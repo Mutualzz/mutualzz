@@ -709,8 +709,13 @@ jobs:
           fi
           WORKSPACE=$(ls -d apps/mobile/ios/*.xcworkspace | head -n1)
           MAIN_TARGET=$(basename "$WORKSPACE" .xcworkspace)
-          python3 .github/scripts/patch-ios-signing.py \
-            "$PBXPROJ" \
+          XCODEPROJ=$(find apps/mobile/ios -name "*.xcodeproj" | head -n1)
+          if [[ -z "$XCODEPROJ" ]]; then
+            echo "::error::No .xcodeproj found after iOS prebuild."
+            exit 1
+          fi
+          ruby .github/scripts/patch-ios-signing.rb \
+            "$XCODEPROJ" \
             "$APPLE_TEAM_ID" \
             "$PROFILE_NAME" \
             "$EXTENSION_PROFILE_NAME" \
