@@ -22,7 +22,8 @@
     "init-submodules": "git submodule update --init --recursive && git submodule foreach git checkout master",
     "pull": "git pull origin master && git submodule foreach git pull origin master",
     "delete-all-node-modules": "rm -rfv node_modules && git submodule foreach rm -rfv node_modules",
-    "demo:seed": "pnpm --filter @mutualzz/server demo:seed"
+    "demo:seed": "pnpm --filter @mutualzz/server demo:seed",
+    "demo:clean": "pnpm --filter @mutualzz/server demo:clean"
   },
   "devDependencies": {
     "husky": "^9.1.7",
