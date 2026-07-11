@@ -36,19 +36,42 @@ jobs:
 
       - name: Init only needed submodules
         run: |
-          git submodule update --init ./apps/app
-          git submodule update --init ./packages/types
-          git submodule update --init ./packages/logger
-          git submodule update --init ./packages/color-picker
-          git submodule update --init ./packages/contexify
-          git submodule update --init ./packages/ui-core
-          git submodule update --init ./packages/ui-web
-          git submodule update --init ./packages/validators
-          git submodule update --init ./packages/bitfield
-          git submodule update --init ./tooling/eslint-config
+          git submodule update --init --jobs 8 \
+            ./apps/app \
+            ./packages/types \
+            ./packages/logger \
+            ./packages/color-picker \
+            ./packages/contexify \
+            ./packages/ui-core \
+            ./packages/ui-web \
+            ./packages/validators \
+            ./packages/bitfield \
+            ./packages/i18n \
+            ./tooling/eslint-config
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: echo "dir=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.dir }}
+          key: ${{ runner.os }}-pnpm-desktop-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-desktop-
+
+      - name: Cache Turbo
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-desktop-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-desktop-${{ hashFiles('**/pnpm-lock.yaml') }}-
+            ${{ runner.os }}-turbo-desktop-
 
       - name: Install dependencies
-        run: pnpm i --ignore-scripts
+        run: pnpm i --filter @mutualzz/app... --ignore-scripts
 
       - name: Build all packages
         run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/ui-core" --filter="./packages/ui-web" --filter="./packages/validators" --filter="./packages/bitfield" --filter="./packages/color-picker" --filter="./packages/contexify"
@@ -126,27 +149,54 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: ${{ steps.pnpm-cache.outputs.dir }}
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-pnpm-desktop-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-pnpm-
+            ${{ runner.os }}-pnpm-desktop-
 
       - name: Init only needed submodules
         run: |
-          git submodule update --init ./apps/app
-          git submodule update --init ./packages/types
-          git submodule update --init ./packages/logger
-          git submodule update --init ./packages/color-picker
-          git submodule update --init ./packages/contexify
-          git submodule update --init ./packages/ui-core
-          git submodule update --init ./packages/ui-web
-          git submodule update --init ./packages/validators
-          git submodule update --init ./packages/bitfield
-          git submodule update --init ./tooling/eslint-config
+          git submodule update --init --jobs 8 \
+            ./apps/app \
+            ./packages/types \
+            ./packages/logger \
+            ./packages/color-picker \
+            ./packages/contexify \
+            ./packages/ui-core \
+            ./packages/ui-web \
+            ./packages/validators \
+            ./packages/bitfield \
+            ./packages/i18n \
+            ./tooling/eslint-config
+
+      - name: Cache Turbo
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-desktop-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-desktop-${{ hashFiles('**/pnpm-lock.yaml') }}-
+            ${{ runner.os }}-turbo-desktop-
+
+      - name: Cache Electron
+        uses: actions/cache@v4
+        with:
+          path: |
+            .cache/electron
+            .cache/electron-builder
+          key: ${{ runner.os }}-electron-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-electron-
 
       - name: Install dependencies
-        run: pnpm i --ignore-scripts
+        env:
+          ELECTRON_CACHE: ${{ github.workspace }}/.cache/electron
+          ELECTRON_BUILDER_CACHE: ${{ github.workspace }}/.cache/electron-builder
+        run: pnpm i --filter @mutualzz/app... --ignore-scripts
 
       - name: Rebuild native modules
+        env:
+          ELECTRON_CACHE: ${{ github.workspace }}/.cache/electron
+          ELECTRON_BUILDER_CACHE: ${{ github.workspace }}/.cache/electron-builder
         run: pnpm rebuild canvas zlib-sync bufferutil esbuild @swc/core @parcel/watcher sharp unrs-resolver electron
 
       - name: Build all packages
@@ -240,6 +290,8 @@ jobs:
           ulimit -n 65536
           pnpm exec electron-builder --mac --publish never
         env:
+          ELECTRON_CACHE: ${{ github.workspace }}/.cache/electron
+          ELECTRON_BUILDER_CACHE: ${{ github.workspace }}/.cache/electron-builder
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
@@ -261,11 +313,17 @@ jobs:
         if: matrix.platform == 'windows-latest'
         working-directory: apps/app
         shell: bash
+        env:
+          ELECTRON_CACHE: ${{ github.workspace }}/.cache/electron
+          ELECTRON_BUILDER_CACHE: ${{ github.workspace }}/.cache/electron-builder
         run: pnpm exec electron-builder --win --publish never
 
       - name: Build app package (Linux)
         if: matrix.platform == 'ubuntu-22.04'
         working-directory: apps/app
+        env:
+          ELECTRON_CACHE: ${{ github.workspace }}/.cache/electron
+          ELECTRON_BUILDER_CACHE: ${{ github.workspace }}/.cache/electron-builder
         run: pnpm exec electron-builder --linux --publish never
 
       - name: Collect artifacts
@@ -489,14 +547,16 @@ jobs:
 
       - name: Init only needed submodules
         run: |
-          git submodule update --init ./apps/mobile
-          git submodule update --init ./packages/types
-          git submodule update --init ./packages/logger
-          git submodule update --init ./packages/ui-core
-          git submodule update --init ./packages/ui-native
-          git submodule update --init ./packages/validators
-          git submodule update --init ./packages/bitfield
-          git submodule update --init ./tooling/eslint-config
+          git submodule update --init --jobs 8 \
+            ./apps/mobile \
+            ./packages/types \
+            ./packages/logger \
+            ./packages/ui-core \
+            ./packages/ui-native \
+            ./packages/validators \
+            ./packages/bitfield \
+            ./packages/i18n \
+            ./tooling/eslint-config
 
       - name: Get pnpm store directory
         id: pnpm-cache
@@ -510,8 +570,39 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-mobile-
 
+      - name: Cache Turbo
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-mobile-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-mobile-${{ hashFiles('**/pnpm-lock.yaml') }}-
+            ${{ runner.os }}-turbo-mobile-
+
+      - name: Cache Gradle
+        if: matrix.target == 'android'
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-mobile-${{ hashFiles('pnpm-lock.yaml', 'apps/mobile/package.json', 'apps/mobile/app.json') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-mobile-
+
+      - name: Cache CocoaPods
+        if: matrix.target == 'ios'
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Caches/CocoaPods
+            ~/Library/Caches/org.cocoapods.cache
+          key: ${{ runner.os }}-pods-mobile-${{ hashFiles('pnpm-lock.yaml', 'apps/mobile/package.json', 'apps/mobile/app.json') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-mobile-
+
       - name: Install dependencies
-        run: pnpm i
+        run: pnpm i --filter @mutualzz/mobile...
 
       - name: Build workspace packages
         run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/ui-core" --filter="./packages/ui-native" --filter="./packages/validators" --filter="./packages/bitfield"
@@ -614,9 +705,10 @@ jobs:
           ANDROID_RELEASE_STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_RELEASE_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_RELEASE_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          GRADLE_OPTS: -Dorg.gradle.caching=true -Dorg.gradle.parallel=true -Dorg.gradle.daemon=false
         run: |
           chmod +x ./gradlew
-          ./gradlew bundleRelease assembleRelease --no-daemon
+          ./gradlew bundleRelease assembleRelease --build-cache --no-daemon
 
       - name: Collect Android artifacts
         if: matrix.target == 'android'
@@ -691,7 +783,7 @@ jobs:
       - name: Install CocoaPods dependencies
         if: matrix.target == 'ios'
         working-directory: apps/mobile/ios
-        run: pod install --repo-update
+        run: pod install
 
       - name: Resolve notification service extension target
         if: matrix.target == 'ios'
@@ -763,6 +855,7 @@ jobs:
             CODE_SIGN_STYLE=Manual \
             CODE_SIGN_IDENTITY="$CODE_SIGN_IDENTITY" \
             DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
+            COMPILER_INDEX_STORE_ENABLE=NO \
             archive
 
           cat <<PLIST > "$RUNNER_TEMP/ExportOptions.plist"
