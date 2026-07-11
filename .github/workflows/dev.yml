@@ -62,7 +62,7 @@ jobs:
         run: pnpm i --filter @mutualzz/mobile...
 
       - name: Build workspace packages
-        run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/ui-core" --filter="./packages/ui-native" --filter="./packages/validators" --filter="./packages/bitfield"
+        run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/ui-core" --filter="./packages/ui-native" --filter="./packages/validators" --filter="./packages/bitfield" --filter="./packages/i18n"
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -325,7 +325,7 @@ jobs:
         run: pnpm i --filter @mutualzz/mobile...
 
       - name: Build workspace packages
-        run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/ui-core" --filter="./packages/ui-native" --filter="./packages/validators" --filter="./packages/bitfield"
+        run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/ui-core" --filter="./packages/ui-native" --filter="./packages/validators" --filter="./packages/bitfield" --filter="./packages/i18n"
 
       - name: Prebuild iOS project
         working-directory: apps/mobile
