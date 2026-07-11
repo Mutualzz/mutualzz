@@ -74,7 +74,7 @@ jobs:
         run: pnpm i --filter @mutualzz/app... --ignore-scripts
 
       - name: Build all packages
-        run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/ui-core" --filter="./packages/ui-web" --filter="./packages/validators" --filter="./packages/bitfield" --filter="./packages/color-picker" --filter="./packages/contexify"
+        run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/ui-core" --filter="./packages/ui-web" --filter="./packages/validators" --filter="./packages/bitfield" --filter="./packages/color-picker" --filter="./packages/contexify" --filter="./packages/i18n"
 
       - name: Deploy to Netlify
         env:
@@ -200,7 +200,7 @@ jobs:
         run: pnpm rebuild canvas zlib-sync bufferutil esbuild @swc/core @parcel/watcher sharp unrs-resolver electron
 
       - name: Build all packages
-        run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/ui-core" --filter="./packages/ui-web" --filter="./packages/validators" --filter="./packages/bitfield" --filter="./packages/color-picker" --filter="./packages/contexify"
+        run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/ui-core" --filter="./packages/ui-web" --filter="./packages/validators" --filter="./packages/bitfield" --filter="./packages/color-picker" --filter="./packages/contexify" --filter="./packages/i18n"
 
       - name: Build app (electron-vite)
         working-directory: apps/app
@@ -605,7 +605,7 @@ jobs:
         run: pnpm i --filter @mutualzz/mobile...
 
       - name: Build workspace packages
-        run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/ui-core" --filter="./packages/ui-native" --filter="./packages/validators" --filter="./packages/bitfield"
+        run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/ui-core" --filter="./packages/ui-native" --filter="./packages/validators" --filter="./packages/bitfield" --filter="./packages/i18n"
 
       - name: Write .env.production
         working-directory: apps/mobile
