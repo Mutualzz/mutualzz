@@ -43,3 +43,6 @@
 [submodule "apps/voice"]
 	path = apps/voice
 	url = https://github.com/Mutualzz/voice.git
+[submodule "packages/i18n"]
+	path = packages/i18n
+	url = https://github.com/Mutualzz/i18n
