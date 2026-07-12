@@ -377,13 +377,16 @@ jobs:
           cmd = sys.argv[1]
           if cmd == "mc":
               print(resolve("Minecraft", sys.argv[2]))
+          elif cmd == "mc-plugin":
+              try:
+                  print(resolve("Bukkit", sys.argv[2]))
+              except SystemExit:
+                  print(resolve("Minecraft", sys.argv[2]))
           elif cmd == "fabric":
               print(first_named("Fabric") or resolve("Modloader", "Fabric"))
           elif cmd == "paper":
-              vid = first_named("Paper", "Bukkit")
-              if vid is None:
-                  raise SystemExit("Paper/Bukkit loader version not found")
-              print(vid)
+              vid = first_named("Paper", "Bukkit", "Spigot")
+              print("" if vid is None else vid)
           elif cmd == "java":
               vid = first_named("Java 25", "Java 21", "Java 17")
               print("" if vid is None else vid)
@@ -394,10 +397,11 @@ jobs:
           python -c "from pathlib import Path; import textwrap; p=Path('/tmp/cf_resolve.py'); p.write_text(textwrap.dedent(p.read_text()))"
 
           MC_ID=$(python /tmp/cf_resolve.py mc "$MC_VERSION")
+          BRIDGE_MC_ID=$(python /tmp/cf_resolve.py mc-plugin "$MC_VERSION")
           FABRIC_ID=$(python /tmp/cf_resolve.py fabric)
           PAPER_ID=$(python /tmp/cf_resolve.py paper)
           JAVA_ID=$(python /tmp/cf_resolve.py java)
-          echo "Resolved CF IDs: mc=$MC_ID fabric=$FABRIC_ID paper=$PAPER_ID java=${JAVA_ID:-none}"
+          echo "Resolved CF IDs: mc=$MC_ID bridge_mc=$BRIDGE_MC_ID fabric=$FABRIC_ID paper=${PAPER_ID:-none} java=${JAVA_ID:-none}"
 
           upload_file() {
             local project_id="$1"
@@ -457,7 +461,8 @@ jobs:
             fi
           }
 
-          BRIDGE_VERSIONS=("$MC_ID" "$PAPER_ID")
+          BRIDGE_VERSIONS=("$BRIDGE_MC_ID")
+          [[ -n "${PAPER_ID:-}" ]] && BRIDGE_VERSIONS+=("$PAPER_ID")
           VOICE_VERSIONS=("$MC_ID" "$FABRIC_ID")
           if [[ -n "${JAVA_ID:-}" ]]; then
             BRIDGE_VERSIONS+=("$JAVA_ID")
