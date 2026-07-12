@@ -333,143 +333,73 @@ jobs:
 
           BRIDGE=$(ls release/mutualzz-bridge-*.jar | head -n1)
           VOICE=$(ls release/mutualzz-voice-*.jar | head -n1)
-          CHANGELOG="Official Mutualzz Minecraft v${VERSION} — see GitHub Release minecraft-v${VERSION}. Files go through CurseForge moderation before they appear publicly."
+          # Avoid fancy dashes in metadata; CF has been flaky parsing unicode in form fields.
+          CHANGELOG="Official Mutualzz Minecraft v${VERSION} - see GitHub Release minecraft-v${VERSION}. Files go through CurseForge moderation before they appear publicly."
 
-          curl -sS -H "X-Api-Token: ${CURSEFORGE_TOKEN}" \
-            "https://minecraft.curseforge.com/api/game/version-types" > /tmp/cf-types.json
-          curl -sS -H "X-Api-Token: ${CURSEFORGE_TOKEN}" \
-            "https://minecraft.curseforge.com/api/game/versions" > /tmp/cf-versions.json
-
-          cat > /tmp/cf_resolve.py <<'PY'
-          import json, sys
-
-          types = json.load(open("/tmp/cf-types.json"))
-          versions = json.load(open("/tmp/cf-versions.json"))
-
-          def type_ids(query: str) -> set[int]:
-              q = query.casefold()
-              return {
-                  t["id"]
-                  for t in types
-                  if t.get("name", "").casefold() == q or t.get("slug", "").casefold() == q
-              }
-
-          def resolve(type_query: str, version_name: str) -> int:
-              ids = type_ids(type_query)
-              matches = [
-                  v for v in versions
-                  if v.get("name") == version_name and (not ids or v.get("gameVersionTypeID") in ids)
-              ]
-              if not matches and ids:
-                  matches = [v for v in versions if v.get("name") == version_name]
-              if not matches:
-                  raise SystemExit(f"CurseForge version not found: type={type_query} name={version_name}")
-              typed = [m for m in matches if m.get("gameVersionTypeID") in ids] if ids else matches
-              return (typed or matches)[0]["id"]
-
-          def first_named(*names: str) -> int | None:
-              for name in names:
-                  for v in versions:
-                      if v.get("name") == name:
-                          return v["id"]
-              return None
-
-          cmd = sys.argv[1]
-          if cmd == "mc":
-              print(resolve("Minecraft", sys.argv[2]))
-          elif cmd == "mc-plugin":
-              try:
-                  print(resolve("Bukkit", sys.argv[2]))
-              except SystemExit:
-                  print(resolve("Minecraft", sys.argv[2]))
-          elif cmd == "fabric":
-              print(first_named("Fabric") or resolve("Modloader", "Fabric"))
-          elif cmd == "paper":
-              vid = first_named("Paper", "Bukkit", "Spigot")
-              print("" if vid is None else vid)
-          elif cmd == "java":
-              vid = first_named("Java 25", "Java 21", "Java 17")
-              print("" if vid is None else vid)
-          else:
-              raise SystemExit(f"unknown cmd {cmd}")
-          PY
-
-          python -c "from pathlib import Path; import textwrap; p=Path('/tmp/cf_resolve.py'); p.write_text(textwrap.dedent(p.read_text()))"
-
-          MC_ID=$(python /tmp/cf_resolve.py mc "$MC_VERSION")
-          BRIDGE_MC_ID=$(python /tmp/cf_resolve.py mc-plugin "$MC_VERSION")
-          FABRIC_ID=$(python /tmp/cf_resolve.py fabric)
-          PAPER_ID=$(python /tmp/cf_resolve.py paper)
-          JAVA_ID=$(python /tmp/cf_resolve.py java)
-          echo "Resolved CF IDs: mc=$MC_ID bridge_mc=$BRIDGE_MC_ID fabric=$FABRIC_ID paper=${PAPER_ID:-none} java=${JAVA_ID:-none}"
-
+          # Prefer gameVersionNames (official docs explicitly show e.g. "26.1.2") over numeric IDs,
+          # which can collide across Minecraft/Bukkit namespaces and trigger opaque 500s.
           upload_file() {
             local project_id="$1"
             local display_name="$2"
             local jar="$3"
-            shift 3
-            local meta_file
-            local -a game_version_ids=("$@")
+            local names_json="$4"
+            local relations_json="${5:-null}"
+            local meta_file metadata_json http_code
 
             meta_file=$(mktemp)
-            if [[ "$project_id" == "$CURSEFORGE_VOICE_PROJECT_ID" ]]; then
+            if [[ "$relations_json" != "null" ]]; then
               jq -n \
                 --arg changelog "$CHANGELOG" \
                 --arg displayName "$display_name" \
-                --argjson gameVersions "$(printf '%s\n' "${game_version_ids[@]}" | jq -R . | jq -s 'map(tonumber)')" \
+                --argjson gameVersionNames "$names_json" \
+                --argjson relations "$relations_json" \
                 '{
                   changelog: $changelog,
                   changelogType: "markdown",
                   displayName: $displayName,
-                  gameVersions: $gameVersions,
+                  gameVersionNames: $gameVersionNames,
                   releaseType: "release",
-                  relations: {
-                    projects: [
-                      {slug: "fabric-api", type: "requiredDependency"},
-                      {slug: "amecs", type: "requiredDependency"}
-                    ]
-                  }
+                  relations: $relations
                 }' > "$meta_file"
             else
               jq -n \
                 --arg changelog "$CHANGELOG" \
                 --arg displayName "$display_name" \
-                --argjson gameVersions "$(printf '%s\n' "${game_version_ids[@]}" | jq -R . | jq -s 'map(tonumber)')" \
+                --argjson gameVersionNames "$names_json" \
                 '{
                   changelog: $changelog,
                   changelogType: "markdown",
                   displayName: $displayName,
-                  gameVersions: $gameVersions,
+                  gameVersionNames: $gameVersionNames,
                   releaseType: "release"
                 }' > "$meta_file"
             fi
 
+            metadata_json=$(jq -c . "$meta_file")
             echo "Uploading $(basename "$jar") -> CurseForge project $project_id ($display_name)"
-            HTTP_CODE=$(curl -sS -o /tmp/cf-response.json -w "%{http_code}" \
+            echo "metadata=$metadata_json"
+
+            http_code=$(curl -sS -o /tmp/cf-response.json -w "%{http_code}" \
               -X POST "https://minecraft.curseforge.com/api/projects/${project_id}/upload-file" \
               -H "X-Api-Token: ${CURSEFORGE_TOKEN}" \
-              --form-string "metadata=$(cat "$meta_file")" \
-              -F "file=@${jar}")
+              --form-string "metadata=${metadata_json}" \
+              -F "file=@${jar};type=application/java-archive")
             rm -f "$meta_file"
 
-            echo "CurseForge HTTP $HTTP_CODE"
+            echo "CurseForge HTTP $http_code"
             cat /tmp/cf-response.json
             echo
-            if [[ "$HTTP_CODE" -lt 200 || "$HTTP_CODE" -ge 300 ]]; then
-              echo "::error::CurseForge upload failed for project $project_id (HTTP $HTTP_CODE)"
+            if [[ "$http_code" -lt 200 || "$http_code" -ge 300 ]]; then
+              echo "::error::CurseForge upload failed for project $project_id (HTTP $http_code)"
               exit 1
             fi
           }
 
-          BRIDGE_VERSIONS=("$BRIDGE_MC_ID")
-          [[ -n "${PAPER_ID:-}" ]] && BRIDGE_VERSIONS+=("$PAPER_ID")
-          VOICE_VERSIONS=("$MC_ID" "$FABRIC_ID")
-          if [[ -n "${JAVA_ID:-}" ]]; then
-            BRIDGE_VERSIONS+=("$JAVA_ID")
-            VOICE_VERSIONS+=("$JAVA_ID")
-          fi
+          BRIDGE_NAMES=$(jq -n --arg mc "$MC_VERSION" '["Server", $mc, "Java 25"]')
+          VOICE_NAMES=$(jq -n --arg mc "$MC_VERSION" '["Client", "Server", $mc, "Fabric", "Java 25"]')
+          VOICE_RELATIONS='{"projects":[{"slug":"fabric-api","type":"requiredDependency"},{"slug":"amecs","type":"requiredDependency"}]}'
 
-          upload_file "$CURSEFORGE_BRIDGE_PROJECT_ID" "Mutualzz Bridge ${VERSION}" "$BRIDGE" "${BRIDGE_VERSIONS[@]}"
-          upload_file "$CURSEFORGE_VOICE_PROJECT_ID" "Mutualzz Voice ${VERSION}" "$VOICE" "${VOICE_VERSIONS[@]}"
+          upload_file "$CURSEFORGE_BRIDGE_PROJECT_ID" "Mutualzz Bridge ${VERSION}" "$BRIDGE" "$BRIDGE_NAMES"
+          upload_file "$CURSEFORGE_VOICE_PROJECT_ID" "Mutualzz Voice ${VERSION}" "$VOICE" "$VOICE_NAMES" "$VOICE_RELATIONS"
 
           echo "CurseForge upload complete (pending moderation)"
