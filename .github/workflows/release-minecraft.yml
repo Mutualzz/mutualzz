@@ -47,7 +47,7 @@ jobs:
         working-directory: apps/mc-voice
         run: |
           chmod +x ./gradlew
-          ./gradlew remapJar --no-daemon
+          ./gradlew jar --no-daemon
 
       - name: Collect jars
         id: collect
@@ -78,7 +78,6 @@ jobs:
         id: version
         shell: bash
         run: |
-          # Prefer bridge version; keep voice mod_version in sync manually
           VERSION=$(grep -E '^\s*version\s*=' apps/mc-bridge/build.gradle.kts | head -n1 | sed -E 's/.*"([^"]+)".*/\1/')
           if [[ -z "$VERSION" ]]; then
             echo "::error::Could not read version from apps/mc-bridge/build.gradle.kts"
@@ -260,7 +259,6 @@ jobs:
             fi
           }
 
-          # Fabric API + Amecs required for the client voice mod
           VOICE_DEPS='[
             {"project_id":"P7dR8mSH","dependency_type":"required"},
             {"project_id":"rcLriA4v","dependency_type":"required"}
@@ -393,7 +391,6 @@ jobs:
               raise SystemExit(f"unknown cmd {cmd}")
           PY
 
-          # Dedent the helper (YAML block indent ends up in the heredoc body)
           python -c "from pathlib import Path; import textwrap; p=Path('/tmp/cf_resolve.py'); p.write_text(textwrap.dedent(p.read_text()))"
 
           MC_ID=$(python /tmp/cf_resolve.py mc "$MC_VERSION")
