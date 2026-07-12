@@ -342,7 +342,9 @@ jobs:
           console.log("Patched build.gradle with release signing config");
           EOF
           node /tmp/patch-android-signing.mjs
-          sed -i "s/versionCode [0-9]\+/versionCode ${{ github.run_number }}/" apps/mobile/android/app/build.gradle
+          VERSION_CODE=$((1000 + ${{ github.run_number }}))
+          sed -i "s/versionCode [0-9]\+/versionCode ${VERSION_CODE}/" apps/mobile/android/app/build.gradle
+          echo "Using versionCode=${VERSION_CODE}"
 
       - name: Build Android release (AAB + APK)
         if: matrix.target == 'android'
@@ -666,6 +668,6 @@ jobs:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
           packageName: com.mutualzz.app
           releaseFiles: release/Mutualzz.aab
-          track: Release
+          tracks: Release
           status: completed
           changesNotSentForReview: true
