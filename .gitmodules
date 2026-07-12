@@ -46,3 +46,9 @@
 [submodule "packages/i18n"]
 	path = packages/i18n
 	url = https://github.com/Mutualzz/i18n
+[submodule "apps/mc-bridge"]
+	path = apps/mc-bridge
+	url = https://github.com/Mutualzz/mc-bridge
+[submodule "apps/mc-voice"]
+	path = apps/mc-voice
+	url = https://github.com/Mutualzz/mc-voice.git

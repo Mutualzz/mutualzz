@@ -1,0 +1,469 @@
+name: Release Minecraft
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - release
+
+concurrency:
+  group: release-minecraft-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-minecraft:
+    name: Build bridge + voice
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: Init Minecraft submodules
+        run: |
+          git submodule update --init --jobs 8 \
+            ./apps/mc-bridge \
+            ./apps/mc-voice
+
+      - name: Setup JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "25"
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build Mutualzz Bridge
+        working-directory: apps/mc-bridge
+        run: ./gradlew jar --no-daemon
+
+      - name: Build Mutualzz Voice
+        working-directory: apps/mc-voice
+        run: ./gradlew remapJar --no-daemon
+
+      - name: Collect jars
+        id: collect
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p release
+
+          BRIDGE=$(ls apps/mc-bridge/build/libs/mutualzz-bridge-*.jar 2>/dev/null | grep -v sources | grep -v javadoc | head -n1)
+          VOICE=$(ls apps/mc-voice/build/libs/mutualzz-voice-*.jar 2>/dev/null | grep -v sources | grep -v javadoc | head -n1)
+
+          if [[ -z "${BRIDGE:-}" || ! -f "$BRIDGE" ]]; then
+            echo "::error::Bridge jar not found under apps/mc-bridge/build/libs/"
+            ls -lah apps/mc-bridge/build/libs/ || true
+            exit 1
+          fi
+          if [[ -z "${VOICE:-}" || ! -f "$VOICE" ]]; then
+            echo "::error::Voice jar not found under apps/mc-voice/build/libs/"
+            ls -lah apps/mc-voice/build/libs/ || true
+            exit 1
+          fi
+
+          cp "$BRIDGE" "./release/$(basename "$BRIDGE")"
+          cp "$VOICE" "./release/$(basename "$VOICE")"
+          ls -lah release/
+
+      - name: Read Minecraft version
+        id: version
+        shell: bash
+        run: |
+          # Prefer bridge version; keep voice mod_version in sync manually
+          VERSION=$(grep -E '^\s*version\s*=' apps/mc-bridge/build.gradle.kts | head -n1 | sed -E 's/.*"([^"]+)".*/\1/')
+          if [[ -z "$VERSION" ]]; then
+            echo "::error::Could not read version from apps/mc-bridge/build.gradle.kts"
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Minecraft release version: $VERSION"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-minecraft
+          path: release/
+          if-no-files-found: error
+          retention-days: 1
+
+  github-release:
+    name: Create GitHub Release
+    needs: [build-minecraft]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: Init bridge submodule (for version)
+        run: git submodule update --init ./apps/mc-bridge
+
+      - name: Download Minecraft artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: release-minecraft
+          path: release/
+
+      - name: Read Minecraft version
+        id: version
+        shell: bash
+        run: |
+          VERSION=$(grep -E '^\s*version\s*=' apps/mc-bridge/build.gradle.kts | head -n1 | sed -E 's/.*"([^"]+)".*/\1/')
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Read changelog
+        id: changelog
+        shell: bash
+        run: |
+          if [ -f CHANGELOG.md ]; then
+            delim="CHANGELOG_$(date +%s)_$RANDOM"
+            {
+              echo "body<<$delim"
+              head -c 65000 CHANGELOG.md
+              echo
+              echo "$delim"
+            } >> "$GITHUB_OUTPUT"
+          else
+            echo "body=Official Mutualzz Bridge (Paper) + Mutualzz Voice (Fabric) jars." >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: minecraft-v${{ steps.version.outputs.version }}
+          name: Mutualzz Minecraft v${{ steps.version.outputs.version }}
+          body: ${{ steps.changelog.outputs.body }}
+          draft: false
+          prerelease: false
+          overwrite_files: true
+          files: |
+            release/mutualzz-bridge-*.jar
+            release/mutualzz-voice-*.jar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-modrinth:
+    name: Publish to Modrinth
+    needs: [build-minecraft, github-release]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: Init Minecraft submodules
+        run: |
+          git submodule update --init --jobs 8 \
+            ./apps/mc-bridge \
+            ./apps/mc-voice
+
+      - name: Download Minecraft artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: release-minecraft
+          path: release/
+
+      - name: Read versions
+        id: meta
+        shell: bash
+        run: |
+          VERSION=$(grep -E '^\s*version\s*=' apps/mc-bridge/build.gradle.kts | head -n1 | sed -E 's/.*"([^"]+)".*/\1/')
+          MC_VERSION=$(grep -E '^minecraft_version=' apps/mc-voice/gradle.properties | cut -d= -f2 | tr -d '[:space:]')
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "mc_version=$MC_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Upload to Modrinth
+        env:
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+          MODRINTH_BRIDGE_PROJECT: ${{ secrets.MODRINTH_BRIDGE_PROJECT }}
+          MODRINTH_VOICE_PROJECT: ${{ secrets.MODRINTH_VOICE_PROJECT }}
+          VERSION: ${{ steps.meta.outputs.version }}
+          MC_VERSION: ${{ steps.meta.outputs.mc_version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ -z "${MODRINTH_TOKEN:-}" ]]; then
+            echo "::error::MODRINTH_TOKEN secret is not set"
+            exit 1
+          fi
+          if [[ -z "${MODRINTH_BRIDGE_PROJECT:-}" || -z "${MODRINTH_VOICE_PROJECT:-}" ]]; then
+            echo "::error::Set MODRINTH_BRIDGE_PROJECT and MODRINTH_VOICE_PROJECT (slug or project ID)"
+            exit 1
+          fi
+
+          BRIDGE=$(ls release/mutualzz-bridge-*.jar | head -n1)
+          VOICE=$(ls release/mutualzz-voice-*.jar | head -n1)
+          CHANGELOG="Official Mutualzz Minecraft v${VERSION} — see GitHub Release minecraft-v${VERSION}."
+
+          upload_version() {
+            local project_id="$1"
+            local name="$2"
+            local loaders_json="$3"
+            local deps_json="$4"
+            local jar="$5"
+            local part="file"
+            local meta_file
+
+            meta_file=$(mktemp)
+            jq -n \
+              --arg project_id "$project_id" \
+              --arg name "$name" \
+              --arg version_number "$VERSION" \
+              --arg changelog "$CHANGELOG" \
+              --arg mc "$MC_VERSION" \
+              --argjson loaders "$loaders_json" \
+              --argjson dependencies "$deps_json" \
+              --arg part "$part" \
+              '{
+                name: $name,
+                version_number: $version_number,
+                changelog: $changelog,
+                dependencies: $dependencies,
+                game_versions: [$mc],
+                version_type: "release",
+                loaders: $loaders,
+                featured: true,
+                status: "listed",
+                project_id: $project_id,
+                file_parts: [$part],
+                primary_file: $part
+              }' > "$meta_file"
+
+            echo "Uploading $(basename "$jar") -> project $project_id ($name)"
+            HTTP_CODE=$(curl -sS -o /tmp/modrinth-response.json -w "%{http_code}" \
+              -X POST "https://api.modrinth.com/v2/version" \
+              -H "Authorization: ${MODRINTH_TOKEN}" \
+              -F "data=@${meta_file};type=application/json" \
+              -F "${part}=@${jar};type=application/java-archive")
+            rm -f "$meta_file"
+
+            echo "Modrinth HTTP $HTTP_CODE"
+            cat /tmp/modrinth-response.json
+            echo
+            if [[ "$HTTP_CODE" -lt 200 || "$HTTP_CODE" -ge 300 ]]; then
+              echo "::error::Modrinth upload failed for $project_id (HTTP $HTTP_CODE)"
+              exit 1
+            fi
+          }
+
+          # Fabric API + Amecs required for the client voice mod
+          VOICE_DEPS='[
+            {"project_id":"P7dR8mSH","dependency_type":"required"},
+            {"project_id":"rcLriA4v","dependency_type":"required"}
+          ]'
+
+          upload_version \
+            "$MODRINTH_BRIDGE_PROJECT" \
+            "Mutualzz Bridge ${VERSION}" \
+            '["paper"]' \
+            '[]' \
+            "$BRIDGE"
+
+          upload_version \
+            "$MODRINTH_VOICE_PROJECT" \
+            "Mutualzz Voice ${VERSION}" \
+            '["fabric"]' \
+            "$VOICE_DEPS" \
+            "$VOICE"
+
+          echo "Modrinth publish complete"
+
+  publish-curseforge:
+    name: Publish to CurseForge
+    needs: [build-minecraft, github-release]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: Init Minecraft submodules
+        run: |
+          git submodule update --init --jobs 8 \
+            ./apps/mc-bridge \
+            ./apps/mc-voice
+
+      - name: Download Minecraft artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: release-minecraft
+          path: release/
+
+      - name: Read versions
+        id: meta
+        shell: bash
+        run: |
+          VERSION=$(grep -E '^\s*version\s*=' apps/mc-bridge/build.gradle.kts | head -n1 | sed -E 's/.*"([^"]+)".*/\1/')
+          MC_VERSION=$(grep -E '^minecraft_version=' apps/mc-voice/gradle.properties | cut -d= -f2 | tr -d '[:space:]')
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "mc_version=$MC_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Upload to CurseForge
+        env:
+          CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
+          CURSEFORGE_BRIDGE_PROJECT_ID: ${{ secrets.CURSEFORGE_BRIDGE_PROJECT_ID }}
+          CURSEFORGE_VOICE_PROJECT_ID: ${{ secrets.CURSEFORGE_VOICE_PROJECT_ID }}
+          VERSION: ${{ steps.meta.outputs.version }}
+          MC_VERSION: ${{ steps.meta.outputs.mc_version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ -z "${CURSEFORGE_TOKEN:-}" ]]; then
+            echo "::error::CURSEFORGE_TOKEN secret is not set (https://www.curseforge.com/account/api-tokens)"
+            exit 1
+          fi
+          if [[ -z "${CURSEFORGE_BRIDGE_PROJECT_ID:-}" || -z "${CURSEFORGE_VOICE_PROJECT_ID:-}" ]]; then
+            echo "::error::Set CURSEFORGE_BRIDGE_PROJECT_ID and CURSEFORGE_VOICE_PROJECT_ID (numeric project IDs from CurseForge)"
+            exit 1
+          fi
+
+          BRIDGE=$(ls release/mutualzz-bridge-*.jar | head -n1)
+          VOICE=$(ls release/mutualzz-voice-*.jar | head -n1)
+          CHANGELOG="Official Mutualzz Minecraft v${VERSION} — see GitHub Release minecraft-v${VERSION}. Files go through CurseForge moderation before they appear publicly."
+
+          curl -sS -H "X-Api-Token: ${CURSEFORGE_TOKEN}" \
+            "https://minecraft.curseforge.com/api/game/version-types" > /tmp/cf-types.json
+          curl -sS -H "X-Api-Token: ${CURSEFORGE_TOKEN}" \
+            "https://minecraft.curseforge.com/api/game/versions" > /tmp/cf-versions.json
+
+          cat > /tmp/cf_resolve.py <<'PY'
+          import json, sys
+
+          types = json.load(open("/tmp/cf-types.json"))
+          versions = json.load(open("/tmp/cf-versions.json"))
+
+          def type_ids(query: str) -> set[int]:
+              q = query.casefold()
+              return {
+                  t["id"]
+                  for t in types
+                  if t.get("name", "").casefold() == q or t.get("slug", "").casefold() == q
+              }
+
+          def resolve(type_query: str, version_name: str) -> int:
+              ids = type_ids(type_query)
+              matches = [
+                  v for v in versions
+                  if v.get("name") == version_name and (not ids or v.get("gameVersionTypeID") in ids)
+              ]
+              if not matches and ids:
+                  matches = [v for v in versions if v.get("name") == version_name]
+              if not matches:
+                  raise SystemExit(f"CurseForge version not found: type={type_query} name={version_name}")
+              typed = [m for m in matches if m.get("gameVersionTypeID") in ids] if ids else matches
+              return (typed or matches)[0]["id"]
+
+          def first_named(*names: str) -> int | None:
+              for name in names:
+                  for v in versions:
+                      if v.get("name") == name:
+                          return v["id"]
+              return None
+
+          cmd = sys.argv[1]
+          if cmd == "mc":
+              print(resolve("Minecraft", sys.argv[2]))
+          elif cmd == "fabric":
+              print(first_named("Fabric") or resolve("Modloader", "Fabric"))
+          elif cmd == "paper":
+              vid = first_named("Paper", "Bukkit")
+              if vid is None:
+                  raise SystemExit("Paper/Bukkit loader version not found")
+              print(vid)
+          elif cmd == "java":
+              vid = first_named("Java 25", "Java 21", "Java 17")
+              print("" if vid is None else vid)
+          else:
+              raise SystemExit(f"unknown cmd {cmd}")
+          PY
+
+          # Dedent the helper (YAML block indent ends up in the heredoc body)
+          python -c "from pathlib import Path; import textwrap; p=Path('/tmp/cf_resolve.py'); p.write_text(textwrap.dedent(p.read_text()))"
+
+          MC_ID=$(python /tmp/cf_resolve.py mc "$MC_VERSION")
+          FABRIC_ID=$(python /tmp/cf_resolve.py fabric)
+          PAPER_ID=$(python /tmp/cf_resolve.py paper)
+          JAVA_ID=$(python /tmp/cf_resolve.py java)
+          echo "Resolved CF IDs: mc=$MC_ID fabric=$FABRIC_ID paper=$PAPER_ID java=${JAVA_ID:-none}"
+
+          upload_file() {
+            local project_id="$1"
+            local display_name="$2"
+            local jar="$3"
+            shift 3
+            local meta_file
+            local -a game_version_ids=("$@")
+
+            meta_file=$(mktemp)
+            if [[ "$project_id" == "$CURSEFORGE_VOICE_PROJECT_ID" ]]; then
+              jq -n \
+                --arg changelog "$CHANGELOG" \
+                --arg displayName "$display_name" \
+                --argjson gameVersions "$(printf '%s\n' "${game_version_ids[@]}" | jq -R . | jq -s 'map(tonumber)')" \
+                '{
+                  changelog: $changelog,
+                  changelogType: "markdown",
+                  displayName: $displayName,
+                  gameVersions: $gameVersions,
+                  releaseType: "release",
+                  relations: {
+                    projects: [
+                      {slug: "fabric-api", type: "requiredDependency"},
+                      {slug: "amecs", type: "requiredDependency"}
+                    ]
+                  }
+                }' > "$meta_file"
+            else
+              jq -n \
+                --arg changelog "$CHANGELOG" \
+                --arg displayName "$display_name" \
+                --argjson gameVersions "$(printf '%s\n' "${game_version_ids[@]}" | jq -R . | jq -s 'map(tonumber)')" \
+                '{
+                  changelog: $changelog,
+                  changelogType: "markdown",
+                  displayName: $displayName,
+                  gameVersions: $gameVersions,
+                  releaseType: "release"
+                }' > "$meta_file"
+            fi
+
+            echo "Uploading $(basename "$jar") -> CurseForge project $project_id ($display_name)"
+            HTTP_CODE=$(curl -sS -o /tmp/cf-response.json -w "%{http_code}" \
+              -X POST "https://minecraft.curseforge.com/api/projects/${project_id}/upload-file" \
+              -H "X-Api-Token: ${CURSEFORGE_TOKEN}" \
+              --form-string "metadata=$(cat "$meta_file")" \
+              -F "file=@${jar}")
+            rm -f "$meta_file"
+
+            echo "CurseForge HTTP $HTTP_CODE"
+            cat /tmp/cf-response.json
+            echo
+            if [[ "$HTTP_CODE" -lt 200 || "$HTTP_CODE" -ge 300 ]]; then
+              echo "::error::CurseForge upload failed for project $project_id (HTTP $HTTP_CODE)"
+              exit 1
+            fi
+          }
+
+          BRIDGE_VERSIONS=("$MC_ID" "$PAPER_ID")
+          VOICE_VERSIONS=("$MC_ID" "$FABRIC_ID")
+          if [[ -n "${JAVA_ID:-}" ]]; then
+            BRIDGE_VERSIONS+=("$JAVA_ID")
+            VOICE_VERSIONS+=("$JAVA_ID")
+          fi
+
+          upload_file "$CURSEFORGE_BRIDGE_PROJECT_ID" "Mutualzz Bridge ${VERSION}" "$BRIDGE" "${BRIDGE_VERSIONS[@]}"
+          upload_file "$CURSEFORGE_VOICE_PROJECT_ID" "Mutualzz Voice ${VERSION}" "$VOICE" "${VOICE_VERSIONS[@]}"
+
+          echo "CurseForge upload complete (pending moderation)"
