@@ -39,11 +39,15 @@ jobs:
 
       - name: Build Mutualzz Bridge
         working-directory: apps/mc-bridge
-        run: ./gradlew jar --no-daemon
+        run: |
+          chmod +x ./gradlew
+          ./gradlew jar --no-daemon
 
       - name: Build Mutualzz Voice
         working-directory: apps/mc-voice
-        run: ./gradlew remapJar --no-daemon
+        run: |
+          chmod +x ./gradlew
+          ./gradlew remapJar --no-daemon
 
       - name: Collect jars
         id: collect
