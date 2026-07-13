@@ -184,6 +184,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      id-token: write
 
     steps:
       - uses: actions/checkout@v4
@@ -210,11 +211,12 @@ jobs:
       - name: Install @mutualzz/rpc deps
         run: pnpm i --filter @mutualzz/rpc... --ignore-scripts
 
+      - name: Build @mutualzz/rpc
+        run: pnpm --filter @mutualzz/rpc build
+
       - name: Publish @mutualzz/rpc
         working-directory: packages/rpc
         run: pnpm publish --access public --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   publish-nuget:
     name: Publish to NuGet
