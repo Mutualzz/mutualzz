@@ -29,6 +29,13 @@ jobs:
         with:
           submodules: false
 
+      - name: Init RPC submodules
+        run: |
+          git submodule update --init --jobs 8 \
+            ./packages/rpc \
+            ./packages/rpc-csharp \
+            ./packages/rpc-cpp
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -70,6 +77,7 @@ jobs:
       - name: Pack Mutualzz.Rpc (NuGet)
         run: |
           mkdir -p release
+          test -f packages/rpc-csharp/Mutualzz.Rpc.csproj
           dotnet pack packages/rpc-csharp/Mutualzz.Rpc.csproj \
             -c Release \
             -o release \
@@ -181,6 +189,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: false
+
+      - name: Init RPC submodules
+        run: |
+          git submodule update --init --jobs 8 \
+            ./packages/rpc
 
       - name: Setup Node
         uses: actions/setup-node@v4
