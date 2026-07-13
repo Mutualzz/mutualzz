@@ -61,6 +61,9 @@ importers:
       react-i18next:
         specifier: ^17.0.9
         version: 17.0.9(i18next@26.3.6)(react-dom@19.2.3)(react-native@0.85.3)(react@19.2.3)(typescript@6.0.3)
+      simple-rnnoise-wasm:
+        specifier: 1.1.0
+        version: 1.1.0
     devDependencies:
       '@dnd-kit/core':
         specifier: ^6.3.1
@@ -671,7 +674,7 @@ importers:
         version: 3.18.2
       '@sentry/node':
         specifier: ^10.55.0
-        version: 10.58.0
+        version: 10.58.0(supports-color@10.2.2)
       '@sentry/profiling-node':
         specifier: ^10.55.0
         version: 10.58.0
@@ -894,7 +897,7 @@ importers:
         version: 0.31.10
       eslint:
         specifier: ^10.4.1
-        version: 10.5.0(jiti@2.7.0)(supports-color@10.2.2)
+        version: 10.5.0(jiti@2.7.0)
       nodemon:
         specifier: ^3.1.14
         version: 3.1.14
@@ -1234,7 +1237,7 @@ importers:
         version: 1.162.0(eslint@10.5.0)(typescript@6.0.3)
       eslint:
         specifier: ^10.3.0
-        version: 10.5.0(jiti@2.7.0)
+        version: 10.5.0(jiti@2.7.0)(supports-color@10.2.2)
       eslint-config-prettier:
         specifier: ^10.1.8
         version: 10.1.8(eslint@10.5.0)
@@ -11038,6 +11041,9 @@ packages:
   simple-plist@1.3.1:
     resolution: {integrity: sha512-iMSw5i0XseMnrhtIzRb7XpQEXepa9xhWxGUojHBL43SIpQuDQkh3Wpy67ZbDzZVr6EKxvwVChnVpdl8hEVLDiw==}
 
+  simple-rnnoise-wasm@1.1.0:
+    resolution: {integrity: sha512-Xoh2ZRresfOM5w9+PweYFIjJT6B1qP3kx5rphBzLV78FAbQ55d7VvOYaqBf4702Rke3E/jNhAMqamIl2djnR2g==}
+
   simple-swizzle@0.2.4:
     resolution: {integrity: sha512-nAu1WFPQSMNr2Zn9PGSZK9AGn4t/y97lEm+MXTtUDwfP0ksAIX4nO+6ruD9Jwut4C49SB1Ws+fbXsm/yScWOHw==}
 
@@ -13830,7 +13836,7 @@ snapshots:
 
   '@eslint/js@10.0.1(eslint@10.5.0)':
     optionalDependencies:
-      eslint: 10.5.0(jiti@2.7.0)
+      eslint: 10.5.0(jiti@2.7.0)(supports-color@10.2.2)
 
   '@eslint/js@9.39.4': {}
 
@@ -14948,6 +14954,15 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@opentelemetry/instrumentation@0.214.0(@opentelemetry/api@1.9.1)(supports-color@10.2.2)':
+    dependencies:
+      '@opentelemetry/api': 1.9.1
+      '@opentelemetry/api-logs': 0.214.0
+      import-in-the-middle: 3.1.0
+      require-in-the-middle: 8.0.1(supports-color@10.2.2)
+    transitivePeerDependencies:
+      - supports-color
+
   '@opentelemetry/resources@2.8.0(@opentelemetry/api@1.9.1)':
     dependencies:
       '@opentelemetry/api': 1.9.1
@@ -15732,7 +15747,7 @@ snapshots:
     optionalDependencies:
       '@opentelemetry/api': 1.9.1
       '@opentelemetry/core': 2.8.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/instrumentation': 0.214.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation': 0.214.0(@opentelemetry/api@1.9.1)(supports-color@10.2.2)
       '@opentelemetry/sdk-trace-base': 2.8.0(@opentelemetry/api@1.9.1)
       '@opentelemetry/semantic-conventions': 1.41.1
 
@@ -15746,6 +15761,22 @@ snapshots:
       '@opentelemetry/api': 1.9.1
       '@opentelemetry/core': 2.8.0(@opentelemetry/api@1.9.1)
       '@opentelemetry/instrumentation': 0.214.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/sdk-trace-base': 2.8.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/semantic-conventions': 1.41.1
+      '@sentry/core': 10.58.0
+      '@sentry/node-core': 10.58.0(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.8.0)(@opentelemetry/instrumentation@0.214.0)(@opentelemetry/sdk-trace-base@2.8.0)(@opentelemetry/semantic-conventions@1.41.1)
+      '@sentry/opentelemetry': 10.58.0(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.8.0)(@opentelemetry/sdk-trace-base@2.8.0)(@opentelemetry/semantic-conventions@1.41.1)
+      '@sentry/server-utils': 10.58.0
+      import-in-the-middle: 3.1.0
+    transitivePeerDependencies:
+      - '@opentelemetry/exporter-trace-otlp-http'
+      - supports-color
+
+  '@sentry/node@10.58.0(supports-color@10.2.2)':
+    dependencies:
+      '@opentelemetry/api': 1.9.1
+      '@opentelemetry/core': 2.8.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation': 0.214.0(@opentelemetry/api@1.9.1)(supports-color@10.2.2)
       '@opentelemetry/sdk-trace-base': 2.8.0(@opentelemetry/api@1.9.1)
       '@opentelemetry/semantic-conventions': 1.41.1
       '@sentry/core': 10.58.0
@@ -16146,7 +16177,7 @@ snapshots:
   '@tanstack/eslint-plugin-query@5.101.0(eslint@10.5.0)(typescript@6.0.3)':
     dependencies:
       '@typescript-eslint/utils': 8.61.1(eslint@10.5.0)(typescript@6.0.3)
-      eslint: 10.5.0(jiti@2.7.0)
+      eslint: 10.5.0(jiti@2.7.0)(supports-color@10.2.2)
     optionalDependencies:
       typescript: 6.0.3
     transitivePeerDependencies:
@@ -16155,7 +16186,7 @@ snapshots:
   '@tanstack/eslint-plugin-router@1.162.0(eslint@10.5.0)(typescript@6.0.3)':
     dependencies:
       '@typescript-eslint/utils': 8.61.1(eslint@10.5.0)(typescript@6.0.3)
-      eslint: 10.5.0(jiti@2.7.0)
+      eslint: 10.5.0(jiti@2.7.0)(supports-color@10.2.2)
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -16668,7 +16699,7 @@ snapshots:
       '@typescript-eslint/type-utils': 8.61.1(eslint@10.5.0)(supports-color@10.2.2)(typescript@6.0.3)
       '@typescript-eslint/utils': 8.61.1(eslint@10.5.0)(typescript@6.0.3)
       '@typescript-eslint/visitor-keys': 8.61.1
-      eslint: 10.5.0(jiti@2.7.0)
+      eslint: 10.5.0(jiti@2.7.0)(supports-color@10.2.2)
       ignore: 7.0.5
       natural-compare: 1.4.0
       ts-api-utils: 2.5.0(typescript@6.0.3)
@@ -16699,7 +16730,7 @@ snapshots:
       '@typescript-eslint/typescript-estree': 8.61.1(typescript@6.0.3)
       '@typescript-eslint/visitor-keys': 8.61.1
       debug: 4.4.3(supports-color@10.2.2)
-      eslint: 10.5.0(jiti@2.7.0)
+      eslint: 10.5.0(jiti@2.7.0)(supports-color@10.2.2)
       typescript: 6.0.3
     transitivePeerDependencies:
       - supports-color
@@ -16740,7 +16771,7 @@ snapshots:
       '@typescript-eslint/typescript-estree': 8.61.1(typescript@6.0.3)
       '@typescript-eslint/utils': 8.61.1(eslint@10.5.0)(typescript@6.0.3)
       debug: 4.4.3(supports-color@10.2.2)
-      eslint: 10.5.0(jiti@2.7.0)
+      eslint: 10.5.0(jiti@2.7.0)(supports-color@10.2.2)
       ts-api-utils: 2.5.0(typescript@6.0.3)
       typescript: 6.0.3
     transitivePeerDependencies:
@@ -16781,7 +16812,7 @@ snapshots:
       '@typescript-eslint/scope-manager': 8.61.1
       '@typescript-eslint/types': 8.61.1
       '@typescript-eslint/typescript-estree': 8.61.1(typescript@6.0.3)
-      eslint: 10.5.0(jiti@2.7.0)
+      eslint: 10.5.0(jiti@2.7.0)(supports-color@10.2.2)
       typescript: 6.0.3
     transitivePeerDependencies:
       - supports-color
@@ -16924,7 +16955,7 @@ snapshots:
 
   agent-base@6.0.2:
     dependencies:
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@5.5.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -17434,7 +17465,7 @@ snapshots:
     dependencies:
       bytes: 3.1.2
       content-type: 2.0.0
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@5.5.0)
       http-errors: 2.0.1
       iconv-lite: 0.7.2
       on-finished: 2.4.1
@@ -18118,10 +18149,6 @@ snapshots:
     dependencies:
       ms: 2.1.2
 
-  debug@4.4.3:
-    dependencies:
-      ms: 2.1.3
-
   debug@4.4.3(supports-color@10.2.2):
     dependencies:
       ms: 2.1.3
@@ -18787,7 +18814,7 @@ snapshots:
 
   eslint-config-prettier@10.1.8(eslint@10.5.0):
     dependencies:
-      eslint: 10.5.0(jiti@2.7.0)
+      eslint: 10.5.0(jiti@2.7.0)(supports-color@10.2.2)
 
   eslint-import-resolver-node@0.3.10:
     dependencies:
@@ -18802,7 +18829,7 @@ snapshots:
       debug: 3.2.7
     optionalDependencies:
       '@typescript-eslint/parser': 8.61.1(eslint@10.5.0)(supports-color@10.2.2)(typescript@6.0.3)
-      eslint: 10.5.0(jiti@2.7.0)
+      eslint: 10.5.0(jiti@2.7.0)(supports-color@10.2.2)
       eslint-import-resolver-node: 0.3.10
     transitivePeerDependencies:
       - supports-color
@@ -18816,7 +18843,7 @@ snapshots:
       array.prototype.flatmap: 1.3.3
       debug: 3.2.7
       doctrine: 2.1.0
-      eslint: 10.5.0(jiti@2.7.0)
+      eslint: 10.5.0(jiti@2.7.0)(supports-color@10.2.2)
       eslint-import-resolver-node: 0.3.10
       eslint-module-utils: 2.13.0(@typescript-eslint/parser@8.61.1)(eslint-import-resolver-node@0.3.10)(eslint@10.5.0)
       hasown: 2.0.4
@@ -18838,7 +18865,7 @@ snapshots:
 
   eslint-plugin-prettier@5.5.6(eslint-config-prettier@10.1.8)(eslint@10.5.0)(prettier@3.8.4):
     dependencies:
-      eslint: 10.5.0(jiti@2.7.0)
+      eslint: 10.5.0(jiti@2.7.0)(supports-color@10.2.2)
       prettier: 3.8.4
       prettier-linter-helpers: 1.0.1
       synckit: 0.11.13
@@ -18868,7 +18895,7 @@ snapshots:
       array.prototype.tosorted: 1.1.4
       doctrine: 2.1.0
       es-iterator-helpers: 1.3.3
-      eslint: 10.5.0(jiti@2.7.0)
+      eslint: 10.5.0(jiti@2.7.0)(supports-color@10.2.2)
       estraverse: 5.3.0
       hasown: 2.0.4
       jsx-ast-utils: 3.3.5
@@ -18887,7 +18914,7 @@ snapshots:
       '@eslint-community/regexpp': 4.12.2
       builtin-modules: 3.3.0
       bytes: 3.1.2
-      eslint: 10.5.0(jiti@2.7.0)
+      eslint: 10.5.0(jiti@2.7.0)(supports-color@10.2.2)
       functional-red-black-tree: 1.0.1
       globals: 17.6.0
       jsx-ast-utils-x: 0.1.0
@@ -18902,7 +18929,7 @@ snapshots:
   eslint-plugin-turbo@2.9.18(eslint@10.5.0)(turbo@2.9.18):
     dependencies:
       dotenv: 16.0.3
-      eslint: 10.5.0(jiti@2.7.0)
+      eslint: 10.5.0(jiti@2.7.0)(supports-color@10.2.2)
       turbo: 2.9.18
 
   eslint-scope@9.1.2:
@@ -20078,7 +20105,7 @@ snapshots:
   https-proxy-agent@5.0.1:
     dependencies:
       agent-base: 6.0.2
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@5.5.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -22916,7 +22943,14 @@ snapshots:
 
   require-in-the-middle@8.0.1:
     dependencies:
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@5.5.0)
+      module-details-from-path: 1.0.4
+    transitivePeerDependencies:
+      - supports-color
+
+  require-in-the-middle@8.0.1(supports-color@10.2.2):
+    dependencies:
+      debug: 4.4.3(supports-color@10.2.2)
       module-details-from-path: 1.0.4
     transitivePeerDependencies:
       - supports-color
@@ -23199,22 +23233,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  send@1.2.1:
-    dependencies:
-      debug: 4.4.3
-      encodeurl: 2.0.0
-      escape-html: 1.0.3
-      etag: 1.8.1
-      fresh: 2.0.0
-      http-errors: 2.0.1
-      mime-types: 3.0.2
-      ms: 2.1.3
-      on-finished: 2.4.1
-      range-parser: 1.2.1
-      statuses: 2.0.2
-    transitivePeerDependencies:
-      - supports-color
-
   send@1.2.1(supports-color@5.5.0):
     dependencies:
       debug: 4.4.3(supports-color@5.5.0)
@@ -23255,7 +23273,7 @@ snapshots:
       encodeurl: 2.0.0
       escape-html: 1.0.3
       parseurl: 1.3.3
-      send: 1.2.1
+      send: 1.2.1(supports-color@5.5.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -23386,6 +23404,8 @@ snapshots:
       bplist-creator: 0.1.0
       bplist-parser: 0.3.1
       plist: 3.1.1
+
+  simple-rnnoise-wasm@1.1.0: {}
 
   simple-swizzle@0.2.4:
     dependencies:
@@ -24075,7 +24095,7 @@ snapshots:
       '@typescript-eslint/parser': 8.61.1(eslint@10.5.0)(supports-color@10.2.2)(typescript@6.0.3)
       '@typescript-eslint/typescript-estree': 8.61.1(typescript@6.0.3)
       '@typescript-eslint/utils': 8.61.1(eslint@10.5.0)(typescript@6.0.3)
-      eslint: 10.5.0(jiti@2.7.0)
+      eslint: 10.5.0(jiti@2.7.0)(supports-color@10.2.2)
       typescript: 6.0.3
     transitivePeerDependencies:
       - supports-color
