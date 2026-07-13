@@ -1,0 +1,245 @@
+name: Release RPC
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - release
+    paths:
+      - "packages/rpc/**"
+      - "packages/rpc-cpp/**"
+      - "packages/rpc-csharp/**"
+      - ".github/workflows/release-rpc.yml"
+
+concurrency:
+  group: release-rpc-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-rpc:
+    name: Build RPC packages
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Activate pnpm
+        run: corepack prepare pnpm@latest --activate
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Install CMake
+        run: sudo apt-get update && sudo apt-get install -y cmake g++
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: echo "dir=$(pnpm store path)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.dir }}
+          key: ${{ runner.os }}-pnpm-rpc-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-rpc-
+
+      - name: Install @mutualzz/rpc deps
+        run: pnpm i --filter @mutualzz/rpc... --ignore-scripts
+
+      - name: Build @mutualzz/rpc
+        run: pnpm --filter @mutualzz/rpc build
+
+      - name: Pack Mutualzz.Rpc (NuGet)
+        run: |
+          mkdir -p release
+          dotnet pack packages/rpc-csharp/Mutualzz.Rpc.csproj \
+            -c Release \
+            -o release \
+            --nologo
+
+      - name: Build C++ client
+        run: |
+          cmake -S packages/rpc-cpp -B build/rpc-cpp -DMUTUALZZ_RPC_BUILD_EXAMPLES=ON
+          cmake --build build/rpc-cpp --config Release
+
+      - name: Package C++ sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION=$(node -p "require('./packages/rpc/package.json').version")
+          mkdir -p release
+          tar -czf "release/mutualzz-rpc-cpp-${VERSION}.tar.gz" \
+            -C packages \
+            --exclude='rpc-cpp/build' \
+            rpc-cpp
+
+      - name: Read version
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION=$(node -p "require('./packages/rpc/package.json').version")
+          CS_VERSION=$(grep -E '^\s*<Version>' packages/rpc-csharp/Mutualzz.Rpc.csproj | sed -E 's/.*<Version>([^<]+)<\/Version>.*/\1/')
+          if [[ "$VERSION" != "$CS_VERSION" ]]; then
+            echo "::error::Version mismatch: packages/rpc=$VERSION packages/rpc-csharp=$CS_VERSION"
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "RPC release version: $VERSION"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-rpc
+          path: |
+            packages/rpc/dist
+            packages/rpc/package.json
+            packages/rpc/LICENSE
+            packages/rpc/README.md
+            packages/rpc/PROTOCOL.md
+            release/
+          if-no-files-found: error
+          retention-days: 1
+
+  github-release:
+    name: Create GitHub Release
+    needs: [build-rpc]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: Download RPC artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: release-rpc
+          path: .
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: rpc-v${{ needs.build-rpc.outputs.version }}
+          name: Mutualzz RPC v${{ needs.build-rpc.outputs.version }}
+          body: |
+            Mutualzz Rich Presence RPC clients (`@mutualzz/rpc`, `Mutualzz.Rpc`, C++).
+
+            ## Install
+
+            **Node**
+            ```bash
+            npm install @mutualzz/rpc@${{ needs.build-rpc.outputs.version }}
+            ```
+
+            **.NET**
+            ```bash
+            dotnet add package Mutualzz.Rpc --version ${{ needs.build-rpc.outputs.version }}
+            ```
+
+            **C++**
+            Download `mutualzz-rpc-cpp-${{ needs.build-rpc.outputs.version }}.tar.gz` or use the sources under `packages/rpc-cpp`.
+
+            Protocol: see `PROTOCOL.md` in the Node package / repo.
+          draft: false
+          prerelease: false
+          overwrite_files: true
+          files: |
+            release/Mutualzz.Rpc.*.nupkg
+            release/mutualzz-rpc-cpp-*.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-npm:
+    name: Publish to npm
+    needs: [build-rpc, github-release]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          registry-url: https://registry.npmjs.org
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Activate pnpm
+        run: corepack prepare pnpm@latest --activate
+
+      - name: Install @mutualzz/rpc deps
+        run: pnpm i --filter @mutualzz/rpc... --ignore-scripts
+
+      - name: Publish @mutualzz/rpc
+        working-directory: packages/rpc
+        run: pnpm publish --access public --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  publish-nuget:
+    name: Publish to NuGet
+    needs: [build-rpc, github-release]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Download RPC artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: release-rpc
+          path: .
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: NuGet login
+        id: login
+        uses: NuGet/login@v1
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
+      - name: Publish Mutualzz.Rpc
+        shell: bash
+        run: |
+          set -euo pipefail
+          NUPKG=$(ls release/Mutualzz.Rpc.*.nupkg | head -n1)
+          if [[ -z "${NUPKG:-}" || ! -f "$NUPKG" ]]; then
+            echo "::error::NuGet package not found"
+            ls -lah release/ || true
+            exit 1
+          fi
+          dotnet nuget push "$NUPKG" \
+            --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" \
+            --source https://api.nuget.org/v3/index.json \
+            --skip-duplicate

@@ -45,6 +45,7 @@ allowBuilds:
   sharp: true
   unrs-resolver: true
   zlib-sync: true
+  core-js: set this to true or false
 
 nodeLinker: hoisted
 shamefullyHoist: true
