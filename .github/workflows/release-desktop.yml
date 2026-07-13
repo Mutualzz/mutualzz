@@ -95,9 +95,103 @@ jobs:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
         run: pnpx netlify deploy --cwd apps/app --prod --site=94e51d96-ca0f-4128-bda5-7f22eb07fcc5 --message "${{ github.event.head_commit.message }}"
 
+  build-updater:
+    name: Build Updater (${{ matrix.target }})
+    needs: [assert-master]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            artifact: updater-macos-x64
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            artifact: updater-macos-arm64
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            artifact: updater-windows-x64
+          - os: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
+            artifact: updater-linux-x64
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: Init updater submodule
+        run: git submodule update --init ./packages/updater
+
+      - name: Install Linux system dependencies
+        if: matrix.os == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y software-properties-common
+          sudo add-apt-repository -y universe
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libwebkit2gtk-4.1-dev \
+            libgtk-3-dev \
+            libappindicator3-dev \
+            librsvg2-dev \
+            patchelf \
+            libxcb-render0-dev \
+            libxcb-shape0-dev \
+            libxcb-xfixes0-dev \
+            libxkbcommon-dev \
+            libssl-dev
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Cache Cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            packages/updater/target
+          key: ${{ runner.os }}-${{ matrix.target }}-updater-${{ hashFiles('packages/updater/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.target }}-updater-
+
+      - name: Build release binary
+        working-directory: packages/updater
+        run: cargo build --release --target ${{ matrix.target }}
+
+      - name: Rename binary (Unix)
+        if: matrix.os != 'windows-latest'
+        working-directory: packages/updater
+        run: |
+          cp target/${{ matrix.target }}/release/updater \
+             ${{ matrix.artifact }}
+
+      - name: Rename binary (Windows)
+        if: matrix.os == 'windows-latest'
+        working-directory: packages/updater
+        shell: bash
+        run: |
+          cp target/${{ matrix.target }}/release/updater.exe \
+             ${{ matrix.artifact }}.exe
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: |
+            packages/updater/${{ matrix.artifact }}
+            packages/updater/${{ matrix.artifact }}.exe
+          if-no-files-found: warn
+          retention-days: 1
+
   build-binaries:
     name: Build Binaries (${{ matrix.platform }})
-    needs: deploy-web
+    needs: [deploy-web, build-updater]
     permissions:
       contents: write
 
@@ -129,7 +223,10 @@ jobs:
             librsvg2-dev \
             patchelf \
             fuse \
-            libfuse2
+            libfuse2 \
+            rpm \
+            fakeroot \
+            libarchive-tools
 
       - name: Install macOS build dependencies
         if: matrix.platform == 'macos-latest'
@@ -226,50 +323,34 @@ jobs:
           VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
         run: pnpm exec electron-vite build
 
-      - name: Download bootstrapper binary
+      - name: Download updater binaries
+        uses: actions/download-artifact@v4
+        with:
+          pattern: updater-*
+          path: updater-bins/
+          merge-multiple: true
+
+      - name: Place bootstrapper binary
         shell: bash
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mkdir -p apps/app/resources
-
-          # Show latest updater release
-          echo "Latest updater release:"
-          gh release view --repo mutualzz/updater --json tagName,publishedAt
+          ls -lah updater-bins/
 
           if [[ "${{ matrix.platform }}" == "macos-latest" ]]; then
-            gh release download --repo mutualzz/updater \
-              --pattern "updater-macos-x64" \
-              --dir /tmp/updater-bins/ \
-              --clobber
-            gh release download --repo mutualzz/updater \
-              --pattern "updater-macos-arm64" \
-              --dir /tmp/updater-bins/ \
-              --clobber
-
             lipo -create \
-              /tmp/updater-bins/updater-macos-x64 \
-              /tmp/updater-bins/updater-macos-arm64 \
+              updater-bins/updater-macos-x64 \
+              updater-bins/updater-macos-arm64 \
               -output apps/app/resources/updater
-
             chmod +x apps/app/resources/updater
           fi
 
           if [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
-            gh release download --repo mutualzz/updater \
-              --pattern "updater-windows-x64.exe" \
-              --dir apps/app/resources/ \
-              --clobber
-            mv apps/app/resources/updater-windows-x64.exe \
+            cp updater-bins/updater-windows-x64.exe \
                apps/app/resources/updater.exe
           fi
 
           if [[ "${{ matrix.platform }}" == "ubuntu-22.04" ]]; then
-            gh release download --repo mutualzz/updater \
-              --pattern "updater-linux-x64" \
-              --dir apps/app/resources/ \
-              --clobber
-            mv apps/app/resources/updater-linux-x64 \
+            cp updater-bins/updater-linux-x64 \
                apps/app/resources/updater
             chmod +x apps/app/resources/updater
           fi
@@ -351,7 +432,7 @@ jobs:
             [[ -f "$EXE" ]] && cp "$EXE" ./release/MutualzzSetup.exe
 
             ASAR="./apps/app/dist/win-unpacked/resources/app.asar"
-            [[ -f "$ASAR" ]] && cp "$ASAR" ./release/Mutualzz.asar
+            [[ -f "$ASAR" ]] && cp "$ASAR" ./release/Mutualzz-win.asar
 
             pnpm exec node -p "require('electron/package.json').version" > ./release/electron-version.txt
           fi
@@ -359,13 +440,32 @@ jobs:
           if [[ "${{ matrix.platform }}" == "macos-latest" ]]; then
             DMG=$(ls ./apps/app/dist/*.dmg 2>/dev/null | head -n1)
             [[ -f "$DMG" ]] && cp "$DMG" ./release/Mutualzz.dmg
+
+            ASAR=$(find ./apps/app/dist -path '*/Contents/Resources/app.asar' 2>/dev/null | head -n1)
+            [[ -f "$ASAR" ]] && cp "$ASAR" ./release/Mutualzz-mac.asar
+
+            pnpm exec node -p "require('electron/package.json').version" > ./release/electron-version.txt
           fi
 
           if [[ "${{ matrix.platform }}" == "ubuntu-22.04" ]]; then
             DEB=$(ls ./apps/app/dist/*.deb 2>/dev/null | head -n1)
             APPIMAGE=$(ls ./apps/app/dist/*.AppImage 2>/dev/null | head -n1)
+            RPM=$(ls ./apps/app/dist/*.rpm 2>/dev/null | head -n1)
+            PACMAN=$(ls ./apps/app/dist/*.pacman ./apps/app/dist/*.pkg.tar.* 2>/dev/null | head -n1)
             [[ -f "$DEB" ]]      && cp "$DEB"      ./release/Mutualzz.deb
             [[ -f "$APPIMAGE" ]] && cp "$APPIMAGE" ./release/Mutualzz.AppImage
+            [[ -f "$RPM" ]]      && cp "$RPM"      ./release/Mutualzz.rpm
+            if [[ -f "$PACMAN" ]]; then
+              cp "$PACMAN" ./release/Mutualzz.pacman
+            fi
+
+            ASAR="./apps/app/dist/linux-unpacked/resources/app.asar"
+            if [[ ! -f "$ASAR" ]]; then
+              ASAR=$(find ./apps/app/dist -path '*/resources/app.asar' 2>/dev/null | head -n1)
+            fi
+            [[ -f "$ASAR" ]] && cp "$ASAR" ./release/Mutualzz-linux.asar
+
+            pnpm exec node -p "require('electron/package.json').version" > ./release/electron-version.txt
           fi
 
       - name: Cleanup keychain
@@ -434,7 +534,11 @@ jobs:
           echo "osx=$(sha256 release/Mutualzz.dmg)"            >> "$GITHUB_OUTPUT"
           echo "deb=$(sha256 release/Mutualzz.deb)"            >> "$GITHUB_OUTPUT"
           echo "appimage=$(sha256 release/Mutualzz.AppImage)"  >> "$GITHUB_OUTPUT"
-          echo "asar=$(sha256 release/Mutualzz.asar)"          >> "$GITHUB_OUTPUT"
+          echo "rpm=$(sha256 release/Mutualzz.rpm)"            >> "$GITHUB_OUTPUT"
+          echo "pacman=$(sha256 release/Mutualzz.pacman)"      >> "$GITHUB_OUTPUT"
+          echo "asar_win=$(sha256 release/Mutualzz-win.asar)"  >> "$GITHUB_OUTPUT"
+          echo "asar_mac=$(sha256 release/Mutualzz-mac.asar)"  >> "$GITHUB_OUTPUT"
+          echo "asar_linux=$(sha256 release/Mutualzz-linux.asar)" >> "$GITHUB_OUTPUT"
 
       - name: Install Wrangler
         run: npm install -g wrangler
@@ -451,25 +555,58 @@ jobs:
                 "sha256": "${{ steps.checksums.outputs.win }}",
                 "electronVersion": "${{ steps.electron_version.outputs.version }}",
                 "asar": {
-                  "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz.asar",
-                  "sha256": "${{ steps.checksums.outputs.asar }}"
+                  "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz-win.asar",
+                  "sha256": "${{ steps.checksums.outputs.asar_win }}"
                 }
               }
             },
             "osx": {
               "universal": {
                 "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz.dmg",
-                "sha256": "${{ steps.checksums.outputs.osx }}"
+                "sha256": "${{ steps.checksums.outputs.osx }}",
+                "electronVersion": "${{ steps.electron_version.outputs.version }}",
+                "asar": {
+                  "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz-mac.asar",
+                  "sha256": "${{ steps.checksums.outputs.asar_mac }}"
+                }
               }
             },
             "linux": {
               "debian": {
                 "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz.deb",
-                "sha256": "${{ steps.checksums.outputs.deb }}"
+                "sha256": "${{ steps.checksums.outputs.deb }}",
+                "electronVersion": "${{ steps.electron_version.outputs.version }}",
+                "asar": {
+                  "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz-linux.asar",
+                  "sha256": "${{ steps.checksums.outputs.asar_linux }}"
+                }
               },
               "appimage": {
                 "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz.AppImage",
-                "sha256": "${{ steps.checksums.outputs.appimage }}"
+                "sha256": "${{ steps.checksums.outputs.appimage }}",
+                "electronVersion": "${{ steps.electron_version.outputs.version }}",
+                "asar": {
+                  "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz-linux.asar",
+                  "sha256": "${{ steps.checksums.outputs.asar_linux }}"
+                }
+              },
+              "rpm": {
+                "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz.rpm",
+                "sha256": "${{ steps.checksums.outputs.rpm }}",
+                "electronVersion": "${{ steps.electron_version.outputs.version }}",
+                "asar": {
+                  "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz-linux.asar",
+                  "sha256": "${{ steps.checksums.outputs.asar_linux }}"
+                }
+              },
+              "pacman": {
+                "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz.pacman",
+                "sha256": "${{ steps.checksums.outputs.pacman }}",
+                "electronVersion": "${{ steps.electron_version.outputs.version }}",
+                "asar": {
+                  "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz-linux.asar",
+                  "sha256": "${{ steps.checksums.outputs.asar_linux }}"
+                }
               }
             }
           }
@@ -496,7 +633,11 @@ jobs:
           upload "release/Mutualzz.dmg"       "mutualzz/releases/latest/Mutualzz.dmg"
           upload "release/Mutualzz.deb"       "mutualzz/releases/latest/Mutualzz.deb"
           upload "release/Mutualzz.AppImage"  "mutualzz/releases/latest/Mutualzz.AppImage"
-          upload "release/Mutualzz.asar"      "mutualzz/releases/latest/Mutualzz.asar"
+          upload "release/Mutualzz.rpm"       "mutualzz/releases/latest/Mutualzz.rpm"
+          upload "release/Mutualzz.pacman"    "mutualzz/releases/latest/Mutualzz.pacman"
+          upload "release/Mutualzz-win.asar"  "mutualzz/releases/latest/Mutualzz-win.asar"
+          upload "release/Mutualzz-mac.asar"  "mutualzz/releases/latest/Mutualzz-mac.asar"
+          upload "release/Mutualzz-linux.asar" "mutualzz/releases/latest/Mutualzz-linux.asar"
 
           # latest.json goes up last -- only live once all binaries are in place
           upload "latest.json"                "mutualzz/releases/latest/latest.json"
@@ -564,6 +705,10 @@ jobs:
             release/Mutualzz.dmg
             release/Mutualzz.deb
             release/Mutualzz.AppImage
-            release/Mutualzz.asar
+            release/Mutualzz.rpm
+            release/Mutualzz.pacman
+            release/Mutualzz-win.asar
+            release/Mutualzz-mac.asar
+            release/Mutualzz-linux.asar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

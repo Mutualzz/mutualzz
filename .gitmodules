@@ -61,3 +61,6 @@
 [submodule "packages/rpc-cpp"]
 	path = packages/rpc-cpp
 	url = https://github.com/Mutualzz/rpc-cpp
+[submodule "packages/updater"]
+	path = packages/updater
+	url = https://github.com/Mutualzz/updater
