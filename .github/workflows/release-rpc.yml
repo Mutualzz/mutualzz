@@ -2,22 +2,26 @@ name: Release RPC
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - release
-    paths:
-      - "packages/rpc/**"
-      - "packages/rpc-cpp/**"
-      - "packages/rpc-csharp/**"
-      - ".github/workflows/release-rpc.yml"
 
 concurrency:
   group: release-rpc-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  assert-master:
+    name: Require master
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail if not master
+        run: |
+          if [[ "${{ github.ref }}" != "refs/heads/master" ]]; then
+            echo "::error::Releases must be dispatched from master (got ${{ github.ref }})"
+            exit 1
+          fi
+
   build-rpc:
     name: Build RPC packages
+    needs: [assert-master]
     runs-on: ubuntu-latest
     permissions:
       contents: read
