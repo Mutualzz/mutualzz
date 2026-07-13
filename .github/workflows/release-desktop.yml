@@ -426,44 +426,73 @@ jobs:
         shell: bash
         run: |
           mkdir -p release
+          shopt -s nullglob
+
+          first_match() {
+            local f
+            for f in "$@"; do
+              if [[ -f "$f" ]]; then
+                printf '%s\n' "$f"
+                return 0
+              fi
+            done
+            return 0
+          }
 
           if [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
-            EXE=$(ls ./apps/app/dist/*.exe 2>/dev/null | head -n1)
-            [[ -f "$EXE" ]] && cp "$EXE" ./release/MutualzzSetup.exe
+            EXE=$(first_match ./apps/app/dist/*.exe)
+            if [[ -n "$EXE" ]]; then
+              cp "$EXE" ./release/MutualzzSetup.exe
+            fi
 
             ASAR="./apps/app/dist/win-unpacked/resources/app.asar"
-            [[ -f "$ASAR" ]] && cp "$ASAR" ./release/Mutualzz-win.asar
+            if [[ -f "$ASAR" ]]; then
+              cp "$ASAR" ./release/Mutualzz-win.asar
+            fi
 
             pnpm exec node -p "require('electron/package.json').version" > ./release/electron-version.txt
           fi
 
           if [[ "${{ matrix.platform }}" == "macos-latest" ]]; then
-            DMG=$(ls ./apps/app/dist/*.dmg 2>/dev/null | head -n1)
-            [[ -f "$DMG" ]] && cp "$DMG" ./release/Mutualzz.dmg
+            DMG=$(first_match ./apps/app/dist/*.dmg)
+            if [[ -n "$DMG" ]]; then
+              cp "$DMG" ./release/Mutualzz.dmg
+            fi
 
-            ASAR=$(find ./apps/app/dist -path '*/Contents/Resources/app.asar' 2>/dev/null | head -n1)
-            [[ -f "$ASAR" ]] && cp "$ASAR" ./release/Mutualzz-mac.asar
+            ASAR=$(find ./apps/app/dist -path '*/Contents/Resources/app.asar' -print -quit 2>/dev/null || true)
+            if [[ -f "$ASAR" ]]; then
+              cp "$ASAR" ./release/Mutualzz-mac.asar
+            fi
 
             pnpm exec node -p "require('electron/package.json').version" > ./release/electron-version.txt
           fi
 
           if [[ "${{ matrix.platform }}" == "ubuntu-22.04" ]]; then
-            DEB=$(ls ./apps/app/dist/*.deb 2>/dev/null | head -n1)
-            APPIMAGE=$(ls ./apps/app/dist/*.AppImage 2>/dev/null | head -n1)
-            RPM=$(ls ./apps/app/dist/*.rpm 2>/dev/null | head -n1)
-            PACMAN=$(ls ./apps/app/dist/*.pacman ./apps/app/dist/*.pkg.tar.* 2>/dev/null | head -n1)
-            [[ -f "$DEB" ]]      && cp "$DEB"      ./release/Mutualzz.deb
-            [[ -f "$APPIMAGE" ]] && cp "$APPIMAGE" ./release/Mutualzz.AppImage
-            [[ -f "$RPM" ]]      && cp "$RPM"      ./release/Mutualzz.rpm
-            if [[ -f "$PACMAN" ]]; then
+            DEB=$(first_match ./apps/app/dist/*.deb)
+            APPIMAGE=$(first_match ./apps/app/dist/*.AppImage)
+            RPM=$(first_match ./apps/app/dist/*.rpm)
+            PACMAN=$(first_match ./apps/app/dist/*.pacman ./apps/app/dist/*.pkg.tar.*)
+
+            if [[ -n "$DEB" ]]; then
+              cp "$DEB" ./release/Mutualzz.deb
+            fi
+            if [[ -n "$APPIMAGE" ]]; then
+              cp "$APPIMAGE" ./release/Mutualzz.AppImage
+            fi
+            if [[ -n "$RPM" ]]; then
+              cp "$RPM" ./release/Mutualzz.rpm
+            fi
+            if [[ -n "$PACMAN" ]]; then
               cp "$PACMAN" ./release/Mutualzz.pacman
             fi
 
             ASAR="./apps/app/dist/linux-unpacked/resources/app.asar"
             if [[ ! -f "$ASAR" ]]; then
-              ASAR=$(find ./apps/app/dist -path '*/resources/app.asar' 2>/dev/null | head -n1)
+              ASAR=$(find ./apps/app/dist -path '*/resources/app.asar' -print -quit 2>/dev/null || true)
             fi
-            [[ -f "$ASAR" ]] && cp "$ASAR" ./release/Mutualzz-linux.asar
+            if [[ -f "$ASAR" ]]; then
+              cp "$ASAR" ./release/Mutualzz-linux.asar
+            fi
 
             pnpm exec node -p "require('electron/package.json').version" > ./release/electron-version.txt
           fi
