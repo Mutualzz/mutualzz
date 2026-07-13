@@ -2,17 +2,26 @@ name: Release Minecraft
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - release
 
 concurrency:
   group: release-minecraft-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  assert-master:
+    name: Require master
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail if not master
+        run: |
+          if [[ "${{ github.ref }}" != "refs/heads/master" ]]; then
+            echo "::error::Releases must be dispatched from master (got ${{ github.ref }})"
+            exit 1
+          fi
+
   build-minecraft:
     name: Build bridge + voice
+    needs: [assert-master]
     runs-on: ubuntu-latest
     permissions:
       contents: write

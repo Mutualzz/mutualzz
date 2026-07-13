@@ -31,13 +31,14 @@ Most `apps/*` and `packages/*` directories are **git submodules** with their own
 
 ## Releases
 
-Push (or manually dispatch) on the `release` branch. CI publishes **three separate GitHub Releases**:
+Ship from `master` via **Actions → Run workflow** (dispatch only; non-`master` runs fail immediately). CI publishes **separate GitHub Releases**:
 
-| Product | Tag | Title | Assets |
-|---|---|---|---|
-| Desktop | `desktop-v…` | Mutualzz Desktop v… | Windows / macOS / Linux installers + asar |
-| Mobile | `mobile-v…` | Mutualzz Mobile v… | APK / AAB / IPA |
-| Minecraft | `minecraft-v…` | Mutualzz Minecraft v… | Bridge + Voice jars |
+| Product | Workflow | Tag | Title | Assets |
+|---|---|---|---|---|
+| Desktop | `release-desktop` | `desktop-v…` | Mutualzz Desktop v… | Windows / macOS / Linux installers + asar |
+| Mobile | `release-mobile` | `mobile-v…` | Mutualzz Mobile v… | APK / AAB / IPA |
+| Minecraft | `release-minecraft` | `minecraft-v…` | Mutualzz Minecraft v… | Bridge + Voice jars |
+| RPC | `release-rpc` | `rpc-v…` | Mutualzz RPC v… | npm / NuGet / C++ tarball |
 
 Desktop also updates Cloudflare R2 + `latest.json` (desktop updater only). Mobile ships GitHub assets for download / sideload. Minecraft also uploads both jars to **Modrinth** and **CurseForge** after the GitHub release (CurseForge files still wait on CF moderation).
 
