@@ -52,3 +52,12 @@
 [submodule "apps/mc-voice"]
 	path = apps/mc-voice
 	url = https://github.com/Mutualzz/mc-voice.git
+[submodule "packages/rpc"]
+	path = packages/rpc
+	url = https://github.com/Mutualzz/rpc
+[submodule "packages/rpc-csharp"]
+	path = packages/rpc-csharp
+	url = https://github.com/Mutualzz/rpc-csharp
+[submodule "packages/rpc-cpp"]
+	path = packages/rpc-cpp
+	url = https://github.com/Mutualzz/rpc-cpp

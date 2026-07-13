@@ -208,6 +208,21 @@ jobs:
           VOICE=$(ls release/mutualzz-voice-*.jar | head -n1)
           CHANGELOG="Official Mutualzz Minecraft v${VERSION} — see GitHub Release minecraft-v${VERSION}."
 
+          # Returns 0 if version_number already exists on the project.
+          modrinth_version_exists() {
+            local project_id="$1"
+            local http_code
+            http_code=$(curl -sS -o /tmp/modrinth-versions.json -w "%{http_code}" \
+              -H "Authorization: ${MODRINTH_TOKEN}" \
+              "https://api.modrinth.com/v2/project/${project_id}/version")
+            if [[ "$http_code" -lt 200 || "$http_code" -ge 300 ]]; then
+              echo "::warning::Could not list Modrinth versions for ${project_id} (HTTP ${http_code}); will attempt upload"
+              return 1
+            fi
+            jq -e --arg v "$VERSION" 'any(.[]; .version_number == $v)' \
+              /tmp/modrinth-versions.json >/dev/null
+          }
+
           upload_version() {
             local project_id="$1"
             local name="$2"
@@ -216,6 +231,11 @@ jobs:
             local jar="$5"
             local part="file"
             local meta_file
+
+            if modrinth_version_exists "$project_id"; then
+              echo "Skipping Modrinth upload for ${project_id}: version ${VERSION} already exists"
+              return 0
+            fi
 
             meta_file=$(mktemp)
             jq -n \
@@ -336,6 +356,42 @@ jobs:
           # Avoid fancy dashes in metadata; CF has been flaky parsing unicode in form fields.
           CHANGELOG="Official Mutualzz Minecraft v${VERSION} - see GitHub Release minecraft-v${VERSION}. Files go through CurseForge moderation before they appear publicly."
 
+          # Returns 0 if a file for this version is already on the project.
+          # Matches our displayName ("Mutualzz Bridge 1.0.1") and/or jar basename.
+          curseforge_version_exists() {
+            local project_id="$1"
+            local display_name="$2"
+            local jar_basename="$3"
+            local http_code files_json
+
+            http_code=$(curl -sS -o /tmp/cf-files.json -w "%{http_code}" \
+              -H "X-Api-Token: ${CURSEFORGE_TOKEN}" \
+              "https://minecraft.curseforge.com/api/projects/${project_id}/files")
+
+            if [[ "$http_code" -lt 200 || "$http_code" -ge 300 ]]; then
+              # Fall back to CurseForge Core API (x-api-key).
+              http_code=$(curl -sS -o /tmp/cf-files.json -w "%{http_code}" \
+                -H "x-api-key: ${CURSEFORGE_TOKEN}" \
+                "https://api.curseforge.com/v1/mods/${project_id}/files?pageSize=50")
+            fi
+
+            if [[ "$http_code" -lt 200 || "$http_code" -ge 300 ]]; then
+              echo "::warning::Could not list CurseForge files for ${project_id} (HTTP ${http_code}); will attempt upload"
+              return 1
+            fi
+
+            files_json=$(jq 'if type == "object" and has("data") then .data else . end' /tmp/cf-files.json)
+            echo "$files_json" | jq -e \
+              --arg dn "$display_name" \
+              --arg fn "$jar_basename" \
+              --arg v "$VERSION" \
+              'any(.[];
+                (.displayName == $dn)
+                or (.fileName == $fn)
+                or ((.fileName // "") | test("-" + $v + "(\\.|$)")))' \
+              >/dev/null
+          }
+
           # Prefer gameVersionNames (official docs explicitly show e.g. "26.1.2") over numeric IDs,
           # which can collide across Minecraft/Bukkit namespaces and trigger opaque 500s.
           upload_file() {
@@ -345,6 +401,13 @@ jobs:
             local names_json="$4"
             local relations_json="${5:-null}"
             local meta_file metadata_json http_code
+            local jar_basename
+            jar_basename=$(basename "$jar")
+
+            if curseforge_version_exists "$project_id" "$display_name" "$jar_basename"; then
+              echo "Skipping CurseForge upload for ${project_id}: version ${VERSION} already exists (${display_name} / ${jar_basename})"
+              return 0
+            fi
 
             meta_file=$(mktemp)
             if [[ "$relations_json" != "null" ]]; then
