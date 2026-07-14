@@ -336,6 +336,10 @@ jobs:
           mkdir -p apps/app/resources
           ls -lah updater-bins/
 
+          UPDATER_VER=$(sed -n 's/^version = "\(.*\)"/\1/p' packages/updater/Cargo.toml | head -1)
+          echo "$UPDATER_VER" > apps/app/resources/updater-version.txt
+          echo "Updater version: $UPDATER_VER"
+
           if [[ "${{ matrix.platform }}" == "macos-latest" ]]; then
             lipo -create \
               updater-bins/updater-macos-x64 \
@@ -450,6 +454,13 @@ jobs:
               cp "$ASAR" ./release/Mutualzz-win.asar
             fi
 
+            if [[ -f apps/app/resources/updater.exe ]]; then
+              cp apps/app/resources/updater.exe ./release/updater-win.exe
+            fi
+            if [[ -f apps/app/resources/updater-version.txt ]]; then
+              cp apps/app/resources/updater-version.txt ./release/updater-version.txt
+            fi
+
             pnpm exec node -p "require('electron/package.json').version" > ./release/electron-version.txt
           fi
 
@@ -462,6 +473,13 @@ jobs:
             ASAR=$(find ./apps/app/dist -path '*/Contents/Resources/app.asar' -print -quit 2>/dev/null || true)
             if [[ -f "$ASAR" ]]; then
               cp "$ASAR" ./release/Mutualzz-mac.asar
+            fi
+
+            if [[ -f apps/app/resources/updater ]]; then
+              cp apps/app/resources/updater ./release/updater-mac
+            fi
+            if [[ -f apps/app/resources/updater-version.txt ]]; then
+              cp apps/app/resources/updater-version.txt ./release/updater-version.txt
             fi
 
             pnpm exec node -p "require('electron/package.json').version" > ./release/electron-version.txt
@@ -492,6 +510,13 @@ jobs:
             fi
             if [[ -f "$ASAR" ]]; then
               cp "$ASAR" ./release/Mutualzz-linux.asar
+            fi
+
+            if [[ -f apps/app/resources/updater ]]; then
+              cp apps/app/resources/updater ./release/updater-linux
+            fi
+            if [[ -f apps/app/resources/updater-version.txt ]]; then
+              cp apps/app/resources/updater-version.txt ./release/updater-version.txt
             fi
 
             pnpm exec node -p "require('electron/package.json').version" > ./release/electron-version.txt
@@ -553,6 +578,16 @@ jobs:
             echo "version=" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Read updater version
+        id: updater_version
+        shell: bash
+        run: |
+          if [ -f release/updater-version.txt ]; then
+            echo "version=$(tr -d '[:space:]' < release/updater-version.txt)" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Generate sha256 checksums
         id: checksums
         shell: bash
@@ -568,6 +603,9 @@ jobs:
           echo "asar_win=$(sha256 release/Mutualzz-win.asar)"  >> "$GITHUB_OUTPUT"
           echo "asar_mac=$(sha256 release/Mutualzz-mac.asar)"  >> "$GITHUB_OUTPUT"
           echo "asar_linux=$(sha256 release/Mutualzz-linux.asar)" >> "$GITHUB_OUTPUT"
+          echo "updater_win=$(sha256 release/updater-win.exe)" >> "$GITHUB_OUTPUT"
+          echo "updater_mac=$(sha256 release/updater-mac)"     >> "$GITHUB_OUTPUT"
+          echo "updater_linux=$(sha256 release/updater-linux)" >> "$GITHUB_OUTPUT"
 
       - name: Install Wrangler
         run: npm install -g wrangler
@@ -583,6 +621,8 @@ jobs:
                 "url": "https://proxy.mutualzz.com/releases/latest/MutualzzSetup.exe",
                 "sha256": "${{ steps.checksums.outputs.win }}",
                 "electronVersion": "${{ steps.electron_version.outputs.version }}",
+                "updaterVersion": "${{ steps.updater_version.outputs.version }}",
+                "updaterSha256": "${{ steps.checksums.outputs.updater_win }}",
                 "asar": {
                   "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz-win.asar",
                   "sha256": "${{ steps.checksums.outputs.asar_win }}"
@@ -594,6 +634,8 @@ jobs:
                 "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz.dmg",
                 "sha256": "${{ steps.checksums.outputs.osx }}",
                 "electronVersion": "${{ steps.electron_version.outputs.version }}",
+                "updaterVersion": "${{ steps.updater_version.outputs.version }}",
+                "updaterSha256": "${{ steps.checksums.outputs.updater_mac }}",
                 "asar": {
                   "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz-mac.asar",
                   "sha256": "${{ steps.checksums.outputs.asar_mac }}"
@@ -605,6 +647,8 @@ jobs:
                 "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz.deb",
                 "sha256": "${{ steps.checksums.outputs.deb }}",
                 "electronVersion": "${{ steps.electron_version.outputs.version }}",
+                "updaterVersion": "${{ steps.updater_version.outputs.version }}",
+                "updaterSha256": "${{ steps.checksums.outputs.updater_linux }}",
                 "asar": {
                   "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz-linux.asar",
                   "sha256": "${{ steps.checksums.outputs.asar_linux }}"
@@ -614,6 +658,8 @@ jobs:
                 "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz.AppImage",
                 "sha256": "${{ steps.checksums.outputs.appimage }}",
                 "electronVersion": "${{ steps.electron_version.outputs.version }}",
+                "updaterVersion": "${{ steps.updater_version.outputs.version }}",
+                "updaterSha256": "${{ steps.checksums.outputs.updater_linux }}",
                 "asar": {
                   "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz-linux.asar",
                   "sha256": "${{ steps.checksums.outputs.asar_linux }}"
@@ -623,6 +669,8 @@ jobs:
                 "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz.rpm",
                 "sha256": "${{ steps.checksums.outputs.rpm }}",
                 "electronVersion": "${{ steps.electron_version.outputs.version }}",
+                "updaterVersion": "${{ steps.updater_version.outputs.version }}",
+                "updaterSha256": "${{ steps.checksums.outputs.updater_linux }}",
                 "asar": {
                   "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz-linux.asar",
                   "sha256": "${{ steps.checksums.outputs.asar_linux }}"
@@ -632,6 +680,8 @@ jobs:
                 "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz.pacman",
                 "sha256": "${{ steps.checksums.outputs.pacman }}",
                 "electronVersion": "${{ steps.electron_version.outputs.version }}",
+                "updaterVersion": "${{ steps.updater_version.outputs.version }}",
+                "updaterSha256": "${{ steps.checksums.outputs.updater_linux }}",
                 "asar": {
                   "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz-linux.asar",
                   "sha256": "${{ steps.checksums.outputs.asar_linux }}"
