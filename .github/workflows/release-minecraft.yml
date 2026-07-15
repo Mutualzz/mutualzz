@@ -351,9 +351,46 @@ jobs:
             echo "::error::Set MODRINTH_BRIDGE_PROJECT and MODRINTH_VOICE_PROJECT (slug or project ID)"
             exit 1
           fi
+          if [[ -z "${VERSION:-}" || -z "${MC_VERSION:-}" ]]; then
+            echo "::error::VERSION/MC_VERSION missing (meta step failed)"
+            exit 1
+          fi
 
           BRIDGE=$(ls release/mutualzz-bridge-*.jar | head -n1)
-          CHANGELOG="Official Mutualzz Minecraft v${VERSION} — see GitHub Release minecraft-v${VERSION}."
+          CHANGELOG="Official Mutualzz Minecraft v${VERSION} - see GitHub Release minecraft-v${VERSION}."
+
+          require_json() {
+            local label="$1"
+            local value="$2"
+            if [[ -z "${value}" ]]; then
+              echo "::error::${label} is empty (expected JSON)"
+              exit 1
+            fi
+            if ! jq -e . >/dev/null 2>&1 <<<"${value}"; then
+              echo "::error::Invalid JSON for ${label}:"
+              printf '%s\n' "${value}"
+              exit 1
+            fi
+          }
+
+          assert_project_exists() {
+            local project_id="$1"
+            local http_code
+            http_code=$(curl -sS -o /tmp/modrinth-project.json -w "%{http_code}" \
+              -H "Authorization: ${MODRINTH_TOKEN}" \
+              -H "User-Agent: mutualzz-ci/minecraft-release" \
+              "https://api.modrinth.com/v2/project/${project_id}")
+            if [[ "$http_code" -eq 404 ]]; then
+              echo "::error::Modrinth project not found for '${project_id}' (HTTP 404). Check MODRINTH_*_PROJECT slug/ID and that MODRINTH_TOKEN can access it."
+              cat /tmp/modrinth-project.json || true
+              exit 1
+            fi
+            if [[ "$http_code" -lt 200 || "$http_code" -ge 300 ]]; then
+              echo "::error::Failed to resolve Modrinth project '${project_id}' (HTTP ${http_code})"
+              cat /tmp/modrinth-project.json || true
+              exit 1
+            fi
+          }
 
           modrinth_version_exists() {
             local project_id="$1"
@@ -361,9 +398,14 @@ jobs:
             local http_code
             http_code=$(curl -sS -o /tmp/modrinth-versions.json -w "%{http_code}" \
               -H "Authorization: ${MODRINTH_TOKEN}" \
+              -H "User-Agent: mutualzz-ci/minecraft-release" \
               "https://api.modrinth.com/v2/project/${project_id}/version")
             if [[ "$http_code" -lt 200 || "$http_code" -ge 300 ]]; then
               echo "::warning::Could not list Modrinth versions for ${project_id} (HTTP ${http_code}); will attempt upload"
+              return 1
+            fi
+            if ! jq -e . >/dev/null 2>&1 </tmp/modrinth-versions.json; then
+              echo "::warning::Modrinth versions response was not JSON for ${project_id}; will attempt upload"
               return 1
             fi
             jq -e --arg v "$version_number" 'any(.[]; .version_number == $v)' \
@@ -380,6 +422,10 @@ jobs:
             local jar="$7"
             local part="file"
             local meta_file
+
+            require_json "loaders" "$loaders_json"
+            require_json "dependencies" "$deps_json"
+            require_json "game_versions" "$game_versions_json"
 
             if modrinth_version_exists "$project_id" "$version_number"; then
               echo "Skipping Modrinth upload for ${project_id}: version_number ${version_number} already exists"
@@ -415,6 +461,7 @@ jobs:
             HTTP_CODE=$(curl -sS -o /tmp/modrinth-response.json -w "%{http_code}" \
               -X POST "https://api.modrinth.com/v2/version" \
               -H "Authorization: ${MODRINTH_TOKEN}" \
+              -H "User-Agent: mutualzz-ci/minecraft-release" \
               -F "data=@${meta_file};type=application/json" \
               -F "${part}=@${jar};type=application/java-archive")
             rm -f "$meta_file"
@@ -428,28 +475,29 @@ jobs:
             fi
           }
 
-          FABRIC_VOICE_DEPS='[
-            {"project_id":"P7dR8mSH","dependency_type":"required"},
-            {"project_id":"rcLriA4v","dependency_type":"required"}
-          ]'
+          assert_project_exists "$MODRINTH_BRIDGE_PROJECT"
+          assert_project_exists "$MODRINTH_VOICE_PROJECT"
+
+          FABRIC_VOICE_DEPS='[{"project_id":"P7dR8mSH","dependency_type":"required"},{"project_id":"rcLriA4v","dependency_type":"required"}]'
           EMPTY_DEPS='[]'
 
-          BRIDGE_GAME_VERSIONS='[
-            "1.18.2","1.19","1.19.1","1.19.2","1.19.3","1.19.4",
-            "1.20","1.20.1","1.20.2","1.20.3","1.20.4","1.20.5","1.20.6",
-            "1.21","1.21.1","1.21.2","1.21.3","1.21.4","1.21.5","1.21.6","1.21.7","1.21.8",
-            "1.21.9","1.21.10","1.21.11"
-          ]'
-          BRIDGE_GAME_VERSIONS=$(jq -c --arg mc "$MC_VERSION" --argjson base "$BRIDGE_GAME_VERSIONS" '
-            if ($base | index($mc)) then $base else ($base + [$mc]) end
+          BRIDGE_GAME_VERSIONS=$(jq -cn --arg mc "$MC_VERSION" '
+            [
+              "1.18.2","1.19","1.19.1","1.19.2","1.19.3","1.19.4",
+              "1.20","1.20.1","1.20.2","1.20.3","1.20.4","1.20.5","1.20.6",
+              "1.21","1.21.1","1.21.2","1.21.3","1.21.4","1.21.5","1.21.6","1.21.7","1.21.8",
+              "1.21.9","1.21.10","1.21.11"
+            ] as $base
+            | if ($base | index($mc)) then $base else ($base + [$mc]) end
           ')
+          require_json "BRIDGE_GAME_VERSIONS" "$BRIDGE_GAME_VERSIONS"
 
           upload_version \
             "$MODRINTH_BRIDGE_PROJECT" \
             "Mutualzz Bridge ${VERSION}" \
             "$VERSION" \
             '["paper","spigot","bukkit"]' \
-            '[]' \
+            "$EMPTY_DEPS" \
             "$BRIDGE_GAME_VERSIONS" \
             "$BRIDGE"
 
@@ -458,15 +506,15 @@ jobs:
             exit 1
           fi
 
-          while IFS='|' read -r jar_name loader mc version_number; do
+          while IFS='|' read -r jar_name loader mc version_number || [[ -n "${jar_name:-}" ]]; do
             [[ -z "${jar_name:-}" ]] && continue
             jar="release/${jar_name}"
             if [[ ! -f "$jar" ]]; then
               echo "::error::Voice jar missing: $jar"
               exit 1
             fi
-            game_versions=$(jq -n --arg mc "$mc" '[$mc]')
-            loaders_json=$(jq -n --arg l "$loader" '[$l]')
+            game_versions=$(jq -cn --arg mc "$mc" '[$mc]')
+            loaders_json=$(jq -cn --arg l "$loader" '[$l]')
             if [[ "$loader" == "fabric" ]]; then
               deps="$FABRIC_VOICE_DEPS"
             else

@@ -40,6 +40,10 @@ jobs:
             ./packages/rpc-csharp \
             ./packages/rpc-cpp
 
+      - name: Stub lockfile file: deps (mobile not checked out)
+        shell: bash
+        run: bash .github/scripts/ensure-pnpm-file-deps.sh
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -199,6 +203,10 @@ jobs:
         run: |
           git submodule update --init --jobs 8 \
             ./packages/rpc
+
+      - name: Stub lockfile file: deps (mobile not checked out)
+        shell: bash
+        run: bash .github/scripts/ensure-pnpm-file-deps.sh
 
       - name: Setup Node
         uses: actions/setup-node@v4

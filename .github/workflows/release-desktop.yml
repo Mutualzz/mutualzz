@@ -63,6 +63,10 @@ jobs:
             ./packages/i18n \
             ./tooling/eslint-config
 
+      - name: Stub lockfile file: deps (mobile not checked out)
+        shell: bash
+        run: bash .github/scripts/ensure-pnpm-file-deps.sh
+
       - name: Get pnpm store directory
         id: pnpm-cache
         shell: bash
@@ -292,6 +296,10 @@ jobs:
             ./packages/bitfield \
             ./packages/i18n \
             ./tooling/eslint-config
+
+      - name: Stub lockfile file: deps (mobile not checked out)
+        shell: bash
+        run: bash .github/scripts/ensure-pnpm-file-deps.sh
 
       - name: Cache Turbo
         uses: actions/cache@v4
