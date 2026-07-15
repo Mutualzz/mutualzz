@@ -63,7 +63,7 @@ jobs:
             ./packages/i18n \
             ./tooling/eslint-config
 
-      - name: Stub lockfile file: deps (mobile not checked out)
+      - name: Stub lockfile file deps (mobile not checked out)
         shell: bash
         run: bash .github/scripts/ensure-pnpm-file-deps.sh
 
@@ -297,7 +297,7 @@ jobs:
             ./packages/i18n \
             ./tooling/eslint-config
 
-      - name: Stub lockfile file: deps (mobile not checked out)
+      - name: Stub lockfile file deps (mobile not checked out)
         shell: bash
         run: bash .github/scripts/ensure-pnpm-file-deps.sh
 
