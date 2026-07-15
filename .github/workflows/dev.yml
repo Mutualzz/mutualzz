@@ -430,7 +430,7 @@ jobs:
           fi
 
           if ! grep -q "MutualzzVoiceLiveActivity" "$PODFILE_LOCK"; then
-            echo "::error::MutualzzVoiceLiveActivity is not in Podfile.lock. Autolinking did not pick up modules/voice-live-activity — Live Activity JS will see 'Native module not linked'."
+            echo "::error::MutualzzVoiceLiveActivity is not in Podfile.lock. Expo skips pods whose podspec iOS version is higher than the app deployment target (SDK 56 is 16.4). Check autolinking warnings above for 'was not linked'."
             exit 1
           fi
 
