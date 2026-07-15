@@ -533,9 +533,6 @@ importers:
       expo-video:
         specifier: ~56.1.4
         version: 56.1.4(expo@56.0.15)(react-native@0.85.3)(react@19.2.3)
-      expo-widgets:
-        specifier: ~56.0.22
-        version: 56.0.22(@babel/core@7.29.7)(@types/react-dom@19.2.3)(@types/react@19.2.17)(expo@56.0.15)(react-dom@19.2.3)(react-native-worklets@0.8.3)(react-native@0.85.3)(react@19.2.3)
       html-entities:
         specifier: 2.5.3
         version: 2.5.3
@@ -608,6 +605,9 @@ importers:
       react-native-worklets:
         specifier: 0.8.3
         version: 0.8.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(react-native@0.85.3)(react@19.2.3)
+      voice-live-activity:
+        specifier: file:./modules/voice-live-activity
+        version: file:apps/mobile/modules/voice-live-activity
     devDependencies:
       '@bacons/apple-targets':
         specifier: ^4.0.7
@@ -11985,6 +11985,9 @@ packages:
   vlq@1.0.1:
     resolution: {integrity: sha512-gQpnTgkubC6hQgdIcRdYGDSDc+SaujOdyesZQMv6JlfQee/9Mp0Qhnys6WxDWvQnL5WZdT7o2Ul187aSt0Rq+w==}
 
+  voice-live-activity@file:apps/mobile/modules/voice-live-activity:
+    resolution: {directory: apps/mobile/modules/voice-live-activity, type: directory}
+
   void-elements@3.1.0:
     resolution: {integrity: sha512-Dhxzh5HZuiHQhbvTW9AMetFfBHDMYpo23Uo9btPXgdYP+3T5S+p+jgNy7spra+veYhBP2dCSgxR/i2Y02h5/6w==}
     engines: {node: '>=0.10.0'}
@@ -19420,6 +19423,7 @@ snapshots:
       - '@types/react-dom'
       - react-dom
       - react-native-worklets
+    optional: true
 
   expo@56.0.15(@babel/core@7.29.7)(@expo/dom-webview@56.0.5)(@expo/metro-runtime@56.0.16)(bufferutil@4.1.0)(expo-router@56.2.14)(expo-widgets@56.0.22)(react-dom@19.2.3)(react-native-webview@13.16.1)(react-native-worklets@0.8.3)(react-native@0.85.3)(react@19.2.3)(supports-color@5.5.0)(typescript@6.0.3):
     dependencies:
@@ -24324,6 +24328,8 @@ snapshots:
       yaml: 2.9.0
 
   vlq@1.0.1: {}
+
+  voice-live-activity@file:apps/mobile/modules/voice-live-activity: {}
 
   void-elements@3.1.0: {}
 

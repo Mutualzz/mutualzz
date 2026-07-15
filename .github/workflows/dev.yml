@@ -356,6 +356,10 @@ jobs:
             echo "::error::Missing targets/notification-service/expo-target.config.js. The notification service extension must be present in apps/mobile before prebuild."
             exit 1
           fi
+          if [[ ! -f targets/voice-live-activity/expo-target.config.js ]]; then
+            echo "::error::Missing targets/voice-live-activity/expo-target.config.js. The voice Live Activity widget target must be present in apps/mobile before prebuild."
+            exit 1
+          fi
 
           pnpm exec expo prebuild --platform ios --no-install
 
