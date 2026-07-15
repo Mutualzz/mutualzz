@@ -343,11 +343,28 @@ jobs:
         run: |
           set -euo pipefail
 
-          if [[ -z "${MODRINTH_TOKEN:-}" ]]; then
+          trim() {
+            local s="$1"
+            s="${s#"${s%%[![:space:]]*}"}"
+            s="${s%"${s##*[![:space:]]}"}"
+            s="${s#\"}"
+            s="${s%\"}"
+            s="${s#\'}"
+            s="${s%\'}"
+            printf '%s' "$s"
+          }
+
+          MODRINTH_TOKEN="$(trim "${MODRINTH_TOKEN:-}")"
+          MODRINTH_TOKEN="${MODRINTH_TOKEN#Bearer }"
+          MODRINTH_TOKEN="${MODRINTH_TOKEN#bearer }"
+          MODRINTH_BRIDGE_PROJECT="$(trim "${MODRINTH_BRIDGE_PROJECT:-}")"
+          MODRINTH_VOICE_PROJECT="$(trim "${MODRINTH_VOICE_PROJECT:-}")"
+
+          if [[ -z "${MODRINTH_TOKEN}" ]]; then
             echo "::error::MODRINTH_TOKEN secret is not set"
             exit 1
           fi
-          if [[ -z "${MODRINTH_BRIDGE_PROJECT:-}" || -z "${MODRINTH_VOICE_PROJECT:-}" ]]; then
+          if [[ -z "${MODRINTH_BRIDGE_PROJECT}" || -z "${MODRINTH_VOICE_PROJECT}" ]]; then
             echo "::error::Set MODRINTH_BRIDGE_PROJECT and MODRINTH_VOICE_PROJECT (slug or project ID)"
             exit 1
           fi
@@ -355,6 +372,9 @@ jobs:
             echo "::error::VERSION/MC_VERSION missing (meta step failed)"
             exit 1
           fi
+
+          AUTH_HEADER="Authorization: ${MODRINTH_TOKEN}"
+          UA_HEADER="User-Agent: mutualzz-ci/minecraft-release (github.com/Mutualzz/Mutualzz)"
 
           BRIDGE=$(ls release/mutualzz-bridge-*.jar | head -n1)
           CHANGELOG="Official Mutualzz Minecraft v${VERSION} - see GitHub Release minecraft-v${VERSION}."
@@ -373,33 +393,15 @@ jobs:
             fi
           }
 
-          assert_project_exists() {
-            local project_id="$1"
-            local http_code
-            http_code=$(curl -sS -o /tmp/modrinth-project.json -w "%{http_code}" \
-              -H "Authorization: ${MODRINTH_TOKEN}" \
-              -H "User-Agent: mutualzz-ci/minecraft-release" \
-              "https://api.modrinth.com/v2/project/${project_id}")
-            if [[ "$http_code" -eq 404 ]]; then
-              echo "::error::Modrinth project not found for '${project_id}' (HTTP 404). Check MODRINTH_*_PROJECT slug/ID and that MODRINTH_TOKEN can access it."
-              cat /tmp/modrinth-project.json || true
-              exit 1
-            fi
-            if [[ "$http_code" -lt 200 || "$http_code" -ge 300 ]]; then
-              echo "::error::Failed to resolve Modrinth project '${project_id}' (HTTP ${http_code})"
-              cat /tmp/modrinth-project.json || true
-              exit 1
-            fi
-          }
-
           modrinth_version_exists() {
             local project_id="$1"
             local version_number="$2"
-            local http_code
+            local http_code encoded
+            encoded=$(jq -rn --arg v "$project_id" '$v|@uri')
             http_code=$(curl -sS -o /tmp/modrinth-versions.json -w "%{http_code}" \
-              -H "Authorization: ${MODRINTH_TOKEN}" \
-              -H "User-Agent: mutualzz-ci/minecraft-release" \
-              "https://api.modrinth.com/v2/project/${project_id}/version")
+              -H "$AUTH_HEADER" \
+              -H "$UA_HEADER" \
+              "https://api.modrinth.com/v2/project/${encoded}/version")
             if [[ "$http_code" -lt 200 || "$http_code" -ge 300 ]]; then
               echo "::warning::Could not list Modrinth versions for ${project_id} (HTTP ${http_code}); will attempt upload"
               return 1
@@ -460,8 +462,8 @@ jobs:
             echo "Uploading $(basename "$jar") -> project $project_id ($name / $version_number)"
             HTTP_CODE=$(curl -sS -o /tmp/modrinth-response.json -w "%{http_code}" \
               -X POST "https://api.modrinth.com/v2/version" \
-              -H "Authorization: ${MODRINTH_TOKEN}" \
-              -H "User-Agent: mutualzz-ci/minecraft-release" \
+              -H "$AUTH_HEADER" \
+              -H "$UA_HEADER" \
               -F "data=@${meta_file};type=application/json" \
               -F "${part}=@${jar};type=application/java-archive")
             rm -f "$meta_file"
@@ -474,9 +476,6 @@ jobs:
               exit 1
             fi
           }
-
-          assert_project_exists "$MODRINTH_BRIDGE_PROJECT"
-          assert_project_exists "$MODRINTH_VOICE_PROJECT"
 
           FABRIC_VOICE_DEPS='[{"project_id":"P7dR8mSH","dependency_type":"required"},{"project_id":"rcLriA4v","dependency_type":"required"}]'
           EMPTY_DEPS='[]'
