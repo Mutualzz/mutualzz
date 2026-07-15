@@ -418,6 +418,30 @@ jobs:
         working-directory: apps/mobile/ios
         run: pod install
 
+      - name: Verify VoiceLiveActivity native module is linked
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          PODFILE_LOCK="apps/mobile/ios/Podfile.lock"
+          if [[ ! -f "$PODFILE_LOCK" ]]; then
+            echo "::error::Missing $PODFILE_LOCK after pod install."
+            exit 1
+          fi
+
+          if ! grep -q "MutualzzVoiceLiveActivity" "$PODFILE_LOCK"; then
+            echo "::error::MutualzzVoiceLiveActivity is not in Podfile.lock. Autolinking did not pick up modules/voice-live-activity — Live Activity JS will see 'Native module not linked'."
+            exit 1
+          fi
+
+          PROVIDER=$(find apps/mobile/ios -name "ExpoModulesProvider.swift" | head -n1 || true)
+          if [[ -n "$PROVIDER" ]] && ! grep -q "VoiceLiveActivityModule" "$PROVIDER"; then
+            echo "::error::ExpoModulesProvider.swift does not register VoiceLiveActivityModule ($PROVIDER)."
+            exit 1
+          fi
+
+          echo "MutualzzVoiceLiveActivity is present in Podfile.lock."
+
       - name: Resolve iOS extension targets
         shell: bash
         run: |
