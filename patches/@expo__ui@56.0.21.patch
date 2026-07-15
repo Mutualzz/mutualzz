@@ -1,0 +1,20 @@
+diff --git a/src/community/bottom-sheet/BottomSheet.ios.tsx b/src/community/bottom-sheet/BottomSheet.ios.tsx
+index d9de442f1efd51749ff9a0e661e6979e7915fef1..639faac19ecf9bb3625e25497036951f84e45673 100644
+--- a/src/community/bottom-sheet/BottomSheet.ios.tsx
++++ b/src/community/bottom-sheet/BottomSheet.ios.tsx
+@@ -18,6 +18,7 @@ import {
+   presentationDragIndicator,
+   presentationSizing,
+ } from '../../swift-ui/modifiers/presentationModifiers';
++import { ignoreSafeArea } from '../../swift-ui/modifiers';
+ 
+ export { useBottomSheet } from './context';
+ 
+@@ -218,6 +219,7 @@ export function BottomSheet(props: BottomSheetProps) {
+           ]),
+       presentationDragIndicator(handleComponent === null ? 'hidden' : 'visible'),
+       interactiveDismissDisabled(!enablePanDownToClose),
++      ignoreSafeArea({ edges: 'bottom' }),
+       ...(bg ? [presentationBackground(bg)] : []),
+     ];
+   }, [

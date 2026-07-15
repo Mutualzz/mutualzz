@@ -52,11 +52,37 @@ jobs:
           chmod +x ./gradlew
           ./gradlew jar --no-daemon
 
-      - name: Build Mutualzz Voice
+      - name: Resolve voice matrix build targets
+        id: matrix
+        working-directory: apps/mc-voice
+        shell: bash
+        run: |
+          set -euo pipefail
+          MATRIX="scripts/matrix-targets.json"
+          if [[ -f "$MATRIX" ]]; then
+            echo "Reading ready cells from $MATRIX"
+            jq -c '[.[] | select(.status == "ready" and .gradle_project != null)]' "$MATRIX" > /tmp/voice-ready.json
+            cat /tmp/voice-ready.json
+            LOADERS=$(jq -r '[.[].loader] | unique | join(",")' /tmp/voice-ready.json)
+            echo "loaders=$LOADERS" >> "$GITHUB_OUTPUT"
+            for need in fabric neoforge; do
+              if ! jq -e --arg l "$need" 'any(.[]; .loader == $l)' /tmp/voice-ready.json >/dev/null; then
+                echo "::error::matrix-targets.json must include a ready $need cell"
+                exit 1
+              fi
+            done
+          else
+            echo "::warning::scripts/matrix-targets.json not found; building fabric+neoforge+forge via buildAll"
+            echo '[{"mc":"","loader":"fabric"},{"mc":"","loader":"neoforge"},{"mc":"","loader":"forge"}]' > /tmp/voice-ready.json
+            echo "loaders=fabric,neoforge,forge" >> "$GITHUB_OUTPUT"
+          fi
+          cp /tmp/voice-ready.json "$GITHUB_WORKSPACE/voice-ready.json"
+
+      - name: Build Mutualzz Voice (all loaders)
         working-directory: apps/mc-voice
         run: |
           chmod +x ./gradlew
-          ./gradlew jar --no-daemon
+          ./gradlew buildAll --no-daemon
 
       - name: Collect jars
         id: collect
@@ -66,21 +92,134 @@ jobs:
           mkdir -p release
 
           BRIDGE=$(ls apps/mc-bridge/build/libs/mutualzz-bridge-*.jar 2>/dev/null | grep -v sources | grep -v javadoc | head -n1)
-          VOICE=$(ls apps/mc-voice/build/libs/mutualzz-voice-*.jar 2>/dev/null | grep -v sources | grep -v javadoc | head -n1)
-
           if [[ -z "${BRIDGE:-}" || ! -f "$BRIDGE" ]]; then
             echo "::error::Bridge jar not found under apps/mc-bridge/build/libs/"
             ls -lah apps/mc-bridge/build/libs/ || true
             exit 1
           fi
-          if [[ -z "${VOICE:-}" || ! -f "$VOICE" ]]; then
-            echo "::error::Voice jar not found under apps/mc-voice/build/libs/"
-            ls -lah apps/mc-voice/build/libs/ || true
+          cp "$BRIDGE" "./release/$(basename "$BRIDGE")"
+
+          VERSION=$(grep -E '^\s*version\s*=' apps/mc-bridge/build.gradle.kts | head -n1 | sed -E 's/.*"([^"]+)".*/\1/')
+          MOD_VERSION=$(grep -E '^mod_version=' apps/mc-voice/gradle.properties | cut -d= -f2 | tr -d '[:space:]')
+          CURRENT_MC=$(grep -E '^minecraft_version=' apps/mc-voice/gradle.properties | cut -d= -f2 | tr -d '[:space:]')
+          FORGE_MC=$(grep -E '^forge_minecraft_version=' apps/mc-voice/gradle.properties | cut -d= -f2 | tr -d '[:space:]' || true)
+          MATRIX_JSON="${GITHUB_WORKSPACE}/voice-ready.json"
+
+          infer_loader() {
+            local base="$1"
+            if [[ "$base" == *"-neoforge-"* || "$base" == *"-neoforge."* ]]; then
+              echo "neoforge"
+            elif [[ "$base" == *"-forge-"* || "$base" == *"-forge."* ]]; then
+              echo "forge"
+            else
+              echo "fabric"
+            fi
+          }
+
+          lookup_mc() {
+            local loader="$1"
+            local mc=""
+            if [[ -f "$MATRIX_JSON" ]]; then
+              mc=$(jq -r --arg l "$loader" '
+                [.[] | select(.loader == $l and .status == "ready")] | .[0].mc // empty
+              ' "$MATRIX_JSON")
+            fi
+            if [[ -z "$mc" || "$mc" == "null" ]]; then
+              case "$loader" in
+                forge) mc="${FORGE_MC:-$CURRENT_MC}" ;;
+                *) mc="$CURRENT_MC" ;;
+              esac
+            fi
+            echo "$mc"
+          }
+
+          shopt -s nullglob globstar
+          VOICE_JARS=(apps/mc-voice/**/build/libs/mutualzz-voice*.jar)
+          shopt -u nullglob globstar
+
+          declare -A OUT_SOURCES=()
+          declare -A OUT_META=()
+
+          score_jar_path() {
+            local p="$1"
+            if [[ "$p" == apps/mc-voice/*/build/libs/* ]]; then
+              echo 2
+            elif [[ "$p" == apps/mc-voice/build/libs/* ]]; then
+              echo 0
+            else
+              echo 1
+            fi
+          }
+
+          for jar in "${VOICE_JARS[@]}"; do
+            base=$(basename "$jar")
+            case "$base" in
+              *-sources.jar|*-javadoc.jar|*-dev.jar|*dev.jar) continue ;;
+            esac
+
+            loader=$(infer_loader "$base")
+            mc=$(lookup_mc "$loader")
+            if [[ "$mc" == "$CURRENT_MC" ]]; then
+              out="mutualzz-voice-${MOD_VERSION}+${loader}.jar"
+              version_number="${VERSION}+${loader}"
+            else
+              out="mutualzz-voice-${MOD_VERSION}+mc${mc}-${loader}.jar"
+              version_number="${VERSION}+mc${mc}+${loader}"
+            fi
+
+            if [[ -n "${OUT_SOURCES[$out]:-}" ]]; then
+              prev="${OUT_SOURCES[$out]}"
+              prev_score=$(score_jar_path "$prev")
+              cur_score=$(score_jar_path "$jar")
+              if [[ "$cur_score" -le "$prev_score" ]]; then
+                echo "Skipping lower-priority jar $jar (already have $prev -> $out)"
+                continue
+              fi
+              echo "Replacing $prev with higher-priority $jar for $out"
+            fi
+
+            OUT_SOURCES[$out]="$jar"
+            OUT_META[$out]="${loader}|${mc}|${version_number}"
+          done
+
+          FOUND=0
+          FOUND_LOADERS=""
+          MANIFEST=""
+          for out in "${!OUT_SOURCES[@]}"; do
+            jar="${OUT_SOURCES[$out]}"
+            meta="${OUT_META[$out]}"
+            loader="${meta%%|*}"
+            rest="${meta#*|}"
+            mc="${rest%%|*}"
+            version_number="${rest#*|}"
+            cp "$jar" "./release/${out}"
+            FOUND=$((FOUND + 1))
+            FOUND_LOADERS="${FOUND_LOADERS}${loader},"
+            MANIFEST="${MANIFEST}${out}|${loader}|${mc}|${version_number}"$'\n'
+            echo "Collected $(basename "$jar") -> release/${out} (${loader}, MC ${mc}, version_number ${version_number})"
+          done
+
+          if [[ "$FOUND" -lt 1 ]]; then
+            echo "::error::No voice jars found under apps/mc-voice/**/build/libs/"
+            find apps/mc-voice -path '*/build/libs/*' -name 'mutualzz-voice*.jar' 2>/dev/null || true
             exit 1
           fi
 
-          cp "$BRIDGE" "./release/$(basename "$BRIDGE")"
-          cp "$VOICE" "./release/$(basename "$VOICE")"
+          for need in fabric neoforge; do
+            if [[ ",${FOUND_LOADERS}" != *",${need},"* ]]; then
+              echo "::error::Required voice loader jar missing: ${need}"
+              exit 1
+            fi
+          done
+          if [[ -f "$MATRIX_JSON" ]] && jq -e 'any(.[]; .loader == "forge" and .status == "ready")' "$MATRIX_JSON" >/dev/null; then
+            if [[ ",${FOUND_LOADERS}" != *",forge,"* ]]; then
+              echo "::error::matrix lists ready forge but forge jar was not collected"
+              exit 1
+            fi
+          fi
+
+          printf '%s' "$MANIFEST" > release/voice-manifest.txt
+          echo "voice_count=$FOUND" >> "$GITHUB_OUTPUT"
           ls -lah release/
 
       - name: Read Minecraft version
@@ -144,7 +283,7 @@ jobs:
               echo "$delim"
             } >> "$GITHUB_OUTPUT"
           else
-            echo "body=Official Mutualzz Bridge (Paper) + Mutualzz Voice (Fabric) jars." >> "$GITHUB_OUTPUT"
+            echo "body=Official Mutualzz Bridge (Paper/Spigot 1.18.2+) + Mutualzz Voice (Fabric / NeoForge / Forge) jars." >> "$GITHUB_OUTPUT"
           fi
 
       - name: Create GitHub release
@@ -214,12 +353,11 @@ jobs:
           fi
 
           BRIDGE=$(ls release/mutualzz-bridge-*.jar | head -n1)
-          VOICE=$(ls release/mutualzz-voice-*.jar | head -n1)
           CHANGELOG="Official Mutualzz Minecraft v${VERSION} — see GitHub Release minecraft-v${VERSION}."
 
-          # Returns 0 if version_number already exists on the project.
           modrinth_version_exists() {
             local project_id="$1"
+            local version_number="$2"
             local http_code
             http_code=$(curl -sS -o /tmp/modrinth-versions.json -w "%{http_code}" \
               -H "Authorization: ${MODRINTH_TOKEN}" \
@@ -228,21 +366,23 @@ jobs:
               echo "::warning::Could not list Modrinth versions for ${project_id} (HTTP ${http_code}); will attempt upload"
               return 1
             fi
-            jq -e --arg v "$VERSION" 'any(.[]; .version_number == $v)' \
+            jq -e --arg v "$version_number" 'any(.[]; .version_number == $v)' \
               /tmp/modrinth-versions.json >/dev/null
           }
 
           upload_version() {
             local project_id="$1"
             local name="$2"
-            local loaders_json="$3"
-            local deps_json="$4"
-            local jar="$5"
+            local version_number="$3"
+            local loaders_json="$4"
+            local deps_json="$5"
+            local game_versions_json="$6"
+            local jar="$7"
             local part="file"
             local meta_file
 
-            if modrinth_version_exists "$project_id"; then
-              echo "Skipping Modrinth upload for ${project_id}: version ${VERSION} already exists"
+            if modrinth_version_exists "$project_id" "$version_number"; then
+              echo "Skipping Modrinth upload for ${project_id}: version_number ${version_number} already exists"
               return 0
             fi
 
@@ -250,18 +390,18 @@ jobs:
             jq -n \
               --arg project_id "$project_id" \
               --arg name "$name" \
-              --arg version_number "$VERSION" \
+              --arg version_number "$version_number" \
               --arg changelog "$CHANGELOG" \
-              --arg mc "$MC_VERSION" \
               --argjson loaders "$loaders_json" \
               --argjson dependencies "$deps_json" \
+              --argjson game_versions "$game_versions_json" \
               --arg part "$part" \
               '{
                 name: $name,
                 version_number: $version_number,
                 changelog: $changelog,
                 dependencies: $dependencies,
-                game_versions: [$mc],
+                game_versions: $game_versions,
                 version_type: "release",
                 loaders: $loaders,
                 featured: true,
@@ -271,7 +411,7 @@ jobs:
                 primary_file: $part
               }' > "$meta_file"
 
-            echo "Uploading $(basename "$jar") -> project $project_id ($name)"
+            echo "Uploading $(basename "$jar") -> project $project_id ($name / $version_number)"
             HTTP_CODE=$(curl -sS -o /tmp/modrinth-response.json -w "%{http_code}" \
               -X POST "https://api.modrinth.com/v2/version" \
               -H "Authorization: ${MODRINTH_TOKEN}" \
@@ -288,24 +428,59 @@ jobs:
             fi
           }
 
-          VOICE_DEPS='[
+          FABRIC_VOICE_DEPS='[
             {"project_id":"P7dR8mSH","dependency_type":"required"},
             {"project_id":"rcLriA4v","dependency_type":"required"}
           ]'
+          EMPTY_DEPS='[]'
+
+          BRIDGE_GAME_VERSIONS='[
+            "1.18.2","1.19","1.19.1","1.19.2","1.19.3","1.19.4",
+            "1.20","1.20.1","1.20.2","1.20.3","1.20.4","1.20.5","1.20.6",
+            "1.21","1.21.1","1.21.2","1.21.3","1.21.4","1.21.5","1.21.6","1.21.7","1.21.8",
+            "1.21.9","1.21.10","1.21.11"
+          ]'
+          BRIDGE_GAME_VERSIONS=$(jq -c --arg mc "$MC_VERSION" --argjson base "$BRIDGE_GAME_VERSIONS" '
+            if ($base | index($mc)) then $base else ($base + [$mc]) end
+          ')
 
           upload_version \
             "$MODRINTH_BRIDGE_PROJECT" \
             "Mutualzz Bridge ${VERSION}" \
-            '["paper"]' \
+            "$VERSION" \
+            '["paper","spigot","bukkit"]' \
             '[]' \
+            "$BRIDGE_GAME_VERSIONS" \
             "$BRIDGE"
 
-          upload_version \
-            "$MODRINTH_VOICE_PROJECT" \
-            "Mutualzz Voice ${VERSION}" \
-            '["fabric"]' \
-            "$VOICE_DEPS" \
-            "$VOICE"
+          if [[ ! -f release/voice-manifest.txt ]]; then
+            echo "::error::release/voice-manifest.txt missing; rebuild artifacts"
+            exit 1
+          fi
+
+          while IFS='|' read -r jar_name loader mc version_number; do
+            [[ -z "${jar_name:-}" ]] && continue
+            jar="release/${jar_name}"
+            if [[ ! -f "$jar" ]]; then
+              echo "::error::Voice jar missing: $jar"
+              exit 1
+            fi
+            game_versions=$(jq -n --arg mc "$mc" '[$mc]')
+            loaders_json=$(jq -n --arg l "$loader" '[$l]')
+            if [[ "$loader" == "fabric" ]]; then
+              deps="$FABRIC_VOICE_DEPS"
+            else
+              deps="$EMPTY_DEPS"
+            fi
+            upload_version \
+              "$MODRINTH_VOICE_PROJECT" \
+              "Mutualzz Voice ${VERSION} (${loader} / ${mc})" \
+              "$version_number" \
+              "$loaders_json" \
+              "$deps" \
+              "$game_versions" \
+              "$jar"
+          done < release/voice-manifest.txt
 
           echo "Modrinth publish complete"
 
@@ -361,16 +536,13 @@ jobs:
           fi
 
           BRIDGE=$(ls release/mutualzz-bridge-*.jar | head -n1)
-          VOICE=$(ls release/mutualzz-voice-*.jar | head -n1)
-          # Avoid fancy dashes in metadata; CF has been flaky parsing unicode in form fields.
           CHANGELOG="Official Mutualzz Minecraft v${VERSION} - see GitHub Release minecraft-v${VERSION}. Files go through CurseForge moderation before they appear publicly."
 
-          # Returns 0 if a file for this version is already on the project.
-          # Matches our displayName ("Mutualzz Bridge 1.0.1") and/or jar basename.
           curseforge_version_exists() {
             local project_id="$1"
             local display_name="$2"
             local jar_basename="$3"
+            local version_token="$4"
             local http_code files_json
 
             http_code=$(curl -sS -o /tmp/cf-files.json -w "%{http_code}" \
@@ -378,7 +550,6 @@ jobs:
               "https://minecraft.curseforge.com/api/projects/${project_id}/files")
 
             if [[ "$http_code" -lt 200 || "$http_code" -ge 300 ]]; then
-              # Fall back to CurseForge Core API (x-api-key).
               http_code=$(curl -sS -o /tmp/cf-files.json -w "%{http_code}" \
                 -H "x-api-key: ${CURSEFORGE_TOKEN}" \
                 "https://api.curseforge.com/v1/mods/${project_id}/files?pageSize=50")
@@ -393,28 +564,27 @@ jobs:
             echo "$files_json" | jq -e \
               --arg dn "$display_name" \
               --arg fn "$jar_basename" \
-              --arg v "$VERSION" \
+              --arg v "$version_token" \
               'any(.[];
                 (.displayName == $dn)
                 or (.fileName == $fn)
-                or ((.fileName // "") | test("-" + $v + "(\\.|$)")))' \
+                or ((.fileName // "") | test($v)))' \
               >/dev/null
           }
 
-          # Prefer gameVersionNames (official docs explicitly show e.g. "26.1.2") over numeric IDs,
-          # which can collide across Minecraft/Bukkit namespaces and trigger opaque 500s.
           upload_file() {
             local project_id="$1"
             local display_name="$2"
             local jar="$3"
             local names_json="$4"
             local relations_json="${5:-null}"
+            local version_token="${6:-$VERSION}"
             local meta_file metadata_json http_code
             local jar_basename
             jar_basename=$(basename "$jar")
 
-            if curseforge_version_exists "$project_id" "$display_name" "$jar_basename"; then
-              echo "Skipping CurseForge upload for ${project_id}: version ${VERSION} already exists (${display_name} / ${jar_basename})"
+            if curseforge_version_exists "$project_id" "$display_name" "$jar_basename" "$version_token"; then
+              echo "Skipping CurseForge upload for ${project_id}: already exists (${display_name} / ${jar_basename})"
               return 0
             fi
 
@@ -467,11 +637,55 @@ jobs:
             fi
           }
 
-          BRIDGE_NAMES=$(jq -n --arg mc "$MC_VERSION" '["Server", $mc, "Java 25"]')
-          VOICE_NAMES=$(jq -n --arg mc "$MC_VERSION" '["Client", "Server", $mc, "Fabric", "Java 25"]')
-          VOICE_RELATIONS='{"projects":[{"slug":"fabric-api","type":"requiredDependency"},{"slug":"amecs","type":"requiredDependency"}]}'
+          java_label_for_mc() {
+            local mc="$1"
+            case "$mc" in
+              1.18.*|1.19.*|1.20.*) echo "Java 17" ;;
+              1.21.*) echo "Java 21" ;;
+              *) echo "Java 25" ;;
+            esac
+          }
 
-          upload_file "$CURSEFORGE_BRIDGE_PROJECT_ID" "Mutualzz Bridge ${VERSION}" "$BRIDGE" "$BRIDGE_NAMES"
-          upload_file "$CURSEFORGE_VOICE_PROJECT_ID" "Mutualzz Voice ${VERSION}" "$VOICE" "$VOICE_NAMES" "$VOICE_RELATIONS"
+          loader_cf_name() {
+            case "$1" in
+              fabric) echo "Fabric" ;;
+              neoforge) echo "NeoForge" ;;
+              forge) echo "Forge" ;;
+              *) echo "$1" ;;
+            esac
+          }
+
+          BRIDGE_NAMES=$(jq -n --arg mc "$MC_VERSION" '
+            ["Server", "1.18.2", "1.19.4", "1.20.1", "1.20.4", "1.21", "1.21.1", "1.21.4", $mc, "Java 17"]
+            | unique
+          ')
+
+          upload_file "$CURSEFORGE_BRIDGE_PROJECT_ID" "Mutualzz Bridge ${VERSION}" "$BRIDGE" "$BRIDGE_NAMES" "null" "$VERSION"
+
+          if [[ ! -f release/voice-manifest.txt ]]; then
+            echo "::error::release/voice-manifest.txt missing; rebuild artifacts"
+            exit 1
+          fi
+
+          FABRIC_RELATIONS='{"projects":[{"slug":"fabric-api","type":"requiredDependency"},{"slug":"amecs","type":"requiredDependency"}]}'
+
+          while IFS='|' read -r jar_name loader mc version_number; do
+            [[ -z "${jar_name:-}" ]] && continue
+            jar="release/${jar_name}"
+            if [[ ! -f "$jar" ]]; then
+              echo "::error::Voice jar missing: $jar"
+              exit 1
+            fi
+            cf_loader=$(loader_cf_name "$loader")
+            java_label=$(java_label_for_mc "$mc")
+            names=$(jq -n --arg mc "$mc" --arg loader "$cf_loader" --arg java "$java_label" \
+              '["Client", "Server", $mc, $loader, $java]')
+            display="Mutualzz Voice ${VERSION} (${cf_loader} / ${mc})"
+            if [[ "$loader" == "fabric" ]]; then
+              upload_file "$CURSEFORGE_VOICE_PROJECT_ID" "$display" "$jar" "$names" "$FABRIC_RELATIONS" "$version_number"
+            else
+              upload_file "$CURSEFORGE_VOICE_PROJECT_ID" "$display" "$jar" "$names" "null" "$version_number"
+            fi
+          done < release/voice-manifest.txt
 
           echo "CurseForge upload complete (pending moderation)"

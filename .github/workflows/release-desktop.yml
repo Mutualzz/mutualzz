@@ -179,6 +179,18 @@ jobs:
           cp target/${{ matrix.target }}/release/updater.exe \
              ${{ matrix.artifact }}.exe
 
+      - name: Write updater version
+        working-directory: packages/updater
+        shell: bash
+        run: |
+          UPDATER_VER=$(sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -1)
+          if [[ -z "$UPDATER_VER" ]]; then
+            echo "Failed to read updater version from Cargo.toml" >&2
+            exit 1
+          fi
+          echo "$UPDATER_VER" > updater-version.txt
+          echo "Updater version: $UPDATER_VER"
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -186,6 +198,7 @@ jobs:
           path: |
             packages/updater/${{ matrix.artifact }}
             packages/updater/${{ matrix.artifact }}.exe
+            packages/updater/updater-version.txt
           if-no-files-found: warn
           retention-days: 1
 
@@ -336,9 +349,12 @@ jobs:
           mkdir -p apps/app/resources
           ls -lah updater-bins/
 
-          UPDATER_VER=$(sed -n 's/^version = "\(.*\)"/\1/p' packages/updater/Cargo.toml | head -1)
-          echo "$UPDATER_VER" > apps/app/resources/updater-version.txt
-          echo "Updater version: $UPDATER_VER"
+          if [[ ! -f updater-bins/updater-version.txt ]]; then
+            echo "updater-version.txt missing from updater artifacts" >&2
+            exit 1
+          fi
+          cp updater-bins/updater-version.txt apps/app/resources/updater-version.txt
+          echo "Updater version: $(tr -d '[:space:]' < apps/app/resources/updater-version.txt)"
 
           if [[ "${{ matrix.platform }}" == "macos-latest" ]]; then
             lipo -create \

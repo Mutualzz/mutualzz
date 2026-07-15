@@ -1,21 +1,30 @@
 #!/usr/bin/env ruby
 # Patch generated Xcode targets with explicit manual signing values.
+#
+# usage:
+#   patch-ios-signing.rb <project.xcodeproj> <team_id> <code_sign_identity> \
+#     <target>=<profile> [<target>=<profile> ...]
 
 require "xcodeproj"
 
-if ARGV.length != 7
-  warn "usage: patch-ios-signing.rb <project.xcodeproj> <team_id> <main_profile> <extension_profile> <code_sign_identity> <main_target> <extension_target>"
+if ARGV.length < 4
+  warn "usage: patch-ios-signing.rb <project.xcodeproj> <team_id> <code_sign_identity> <target>=<profile> [<target>=<profile> ...]"
   exit 2
 end
 
-xcodeproj_path, team_id, main_profile, extension_profile, code_sign_identity, main_target, extension_target = ARGV
+xcodeproj_path, team_id, code_sign_identity, *target_profile_args = ARGV
+
+target_profiles = {}
+target_profile_args.each do |arg|
+  target_name, profile = arg.split("=", 2)
+  if target_name.to_s.empty? || profile.to_s.empty?
+    warn "::error::Invalid target/profile mapping '#{arg}'. Expected <target>=<profile>."
+    exit 1
+  end
+  target_profiles[target_name] = profile
+end
 
 project = Xcodeproj::Project.open(xcodeproj_path)
-
-target_profiles = {
-  main_target => main_profile,
-  extension_target => extension_profile,
-}
 
 patched_counts = Hash[target_profiles.keys.map { |name| [name, 0] }]
 
