@@ -699,6 +699,17 @@ jobs:
           fi
           ls -lah release/Mutualzz.aab
 
+      - name: Require Play Console Foreground Service declaration
+        shell: bash
+        run: |
+          cat <<'EOF'
+          Google Play rejects AAB commits until Foreground Service use is declared once in Play Console:
+            Policy -> App content -> Foreground service permissions
+          Declare microphone FGS (voice channel notification via Notifee).
+          If the form is missing: upload this AAB once manually via Internal testing, then fill the form.
+          After that, CI uploads succeed.
+          EOF
+
       - name: Upload AAB to Google Play (closed testing — Release)
         uses: r0adkll/upload-google-play@v1
         with:
