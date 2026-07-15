@@ -72,3 +72,5 @@ minimumReleaseAgeExclude:
   - expo-image-picker@56.0.20
   - expo-notifications@56.0.20
   - expo-router@56.2.14
+patchedDependencies:
+  '@expo/ui@56.0.21': patches/@expo__ui@56.0.21.patch
