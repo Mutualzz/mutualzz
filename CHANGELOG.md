@@ -1,5 +1,14 @@
 # Changelog
 
+## Minecraft Bridge v1.2.0
+
+- Docs: Player install guide notes Mutualzz Voice **Alt** keybinds (Azrael)
+
+## Minecraft Voice v1.4.0
+
+- Controls: Default modifier changed from **Ctrl** to **Alt** (Alt+Shift on Fabric; Shift stand-in on NeoForge/Forge) (Azrael)
+- Docs: Updated controls table and troubleshooting for Alt keybinds (Azrael)
+
 ## App v6.25.0
 
 - Calls: Added DM voice/video calling with ringing, accept/decline, and call notices (Azrael)
