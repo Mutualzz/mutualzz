@@ -641,7 +641,11 @@ jobs:
       - name: Read mobile version
         id: version
         run: |
-          VERSION=$(node -p "require('./apps/mobile/package.json').version")
+          VERSION=$(node -p "require('./apps/mobile/app.json').expo.version")
+          if [ -z "$VERSION" ] || [ "$VERSION" = "undefined" ]; then
+            echo "Missing expo.version in apps/mobile/app.json" >&2
+            exit 1
+          fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Read changelog
