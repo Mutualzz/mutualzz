@@ -19,7 +19,7 @@ overrides:
   yauzl: ^3.3.1
 
 patchedDependencies:
-  '@expo/ui@56.0.21': e0781a31374cf13bda8fe3f8602249c266ef2283ad4f05e29edc0e5732b5dd8b
+  '@expo/ui@56.0.21': 72fd19eb3012b94ccc36c51e7a5e6b279f1b56afd2c4fe7c9bca031aed601439
 
 importers:
 
@@ -403,7 +403,7 @@ importers:
         version: 56.0.16(@expo/log-box@56.0.14)(expo@56.0.15)(react-dom@19.2.3)(react-native@0.85.3)(react@19.2.3)
       '@expo/ui':
         specifier: ~56.0.21
-        version: 56.0.21(patch_hash=e0781a31374cf13bda8fe3f8602249c266ef2283ad4f05e29edc0e5732b5dd8b)(@babel/core@7.29.7)(@types/react-dom@19.2.3)(@types/react@19.2.17)(expo@56.0.15)(react-dom@19.2.3)(react-native-worklets@0.8.3)(react-native@0.85.3)(react@19.2.3)
+        version: 56.0.21(patch_hash=72fd19eb3012b94ccc36c51e7a5e6b279f1b56afd2c4fe7c9bca031aed601439)(@babel/core@7.29.7)(@types/react-dom@19.2.3)(@types/react@19.2.17)(expo@56.0.15)(react-dom@19.2.3)(react-native-worklets@0.8.3)(react-native@0.85.3)(react@19.2.3)
       '@expo/vector-icons':
         specifier: ^15.1.1
         version: 15.1.1(expo-font@56.0.7)(react-native@0.85.3)(react@19.2.3)
@@ -798,9 +798,6 @@ importers:
       mediasoup-client:
         specifier: ^3.20.0
         version: 3.21.0
-      morgan:
-        specifier: ^1.10.1
-        version: 1.11.0
       ms:
         specifier: ^2.1.3
         version: 2.1.3
@@ -877,9 +874,6 @@ importers:
       '@types/jsonwebtoken':
         specifier: ^9.0.10
         version: 9.0.10
-      '@types/morgan':
-        specifier: ^1.9.10
-        version: 1.9.10
       '@types/ms':
         specifier: ^2.1.0
         version: 2.1.0
@@ -1111,7 +1105,7 @@ importers:
         version: 11.14.0(@types/react@19.2.17)(react@19.2.3)
       '@expo/ui':
         specifier: ~56.0.21
-        version: 56.0.21(patch_hash=e0781a31374cf13bda8fe3f8602249c266ef2283ad4f05e29edc0e5732b5dd8b)(@babel/core@7.29.7)(@types/react-dom@19.2.3)(@types/react@19.2.17)(expo@56.0.15)(react-dom@19.2.3)(react-native-worklets@0.8.3)(react-native@0.85.3)(react@19.2.3)
+        version: 56.0.21(patch_hash=72fd19eb3012b94ccc36c51e7a5e6b279f1b56afd2c4fe7c9bca031aed601439)(@babel/core@7.29.7)(@types/react-dom@19.2.3)(@types/react@19.2.17)(expo@56.0.15)(react-dom@19.2.3)(react-native-worklets@0.8.3)(react-native@0.85.3)(react@19.2.3)
       '@mutualzz/ui-core':
         specifier: workspace:*
         version: link:../ui-core
@@ -5427,9 +5421,6 @@ packages:
   '@types/mdurl@2.0.0':
     resolution: {integrity: sha512-RGdgjQUZba5p6QEFAVx2OGb8rQDL/cPRG7GiedRzMcJ1tYnUANBncjbSB1NRGwbvjcPeikRABz2nshyPk1bhWg==}
 
-  '@types/morgan@1.9.10':
-    resolution: {integrity: sha512-sS4A1zheMvsADRVfT0lYbJ4S9lmsey8Zo2F7cnbYjWHP67Q0AwMYuuzLlkIM2N8gAbb9cubhIVFwcIN2XyYCkA==}
-
   '@types/ms@2.1.0':
     resolution: {integrity: sha512-GsCCIZDE/p3i96vtEqx+7dBUGXrc7zeSK3wwPHIaRThS+9OhWIXRqzs4d6k1SVU8g91DrNRWxWUGhp5KXQb2VA==}
 
@@ -6105,10 +6096,6 @@ packages:
     resolution: {integrity: sha512-31/02mVB4yuQU6adKk5SlY6m+mxDwUq5KZkyYgnLrrKl7TEm1+3PyDtDBz2kOv/wxZz41GHsvV1A/u6RmiyBvw==}
     engines: {node: '>=6.0.0'}
     hasBin: true
-
-  basic-auth@2.0.1:
-    resolution: {integrity: sha512-NF+epuEdnUYVlGuhaxbbq+dvJttwLnGY+YixlXlME5KpQ5W3CnXA5cVTneY3SPbPDRkcjMbifrwmFYcClgOZeg==}
-    engines: {node: '>= 0.8'}
 
   bcrypt@6.0.0:
     resolution: {integrity: sha512-cU8v/EGSrnH+HnxV2z0J7/blxH8gq7Xh2JFT6Aroax7UohdmiJJlxApMxtKfuI7z68NvvVcmR78k2LbT6efhRg==}
@@ -9633,10 +9620,6 @@ packages:
 
   module-details-from-path@1.0.4:
     resolution: {integrity: sha512-EGWKgxALGMgzvxYF1UyGTy0HXX/2vHLkw6+NvDKW2jypWbHpjQuj4UMcqQWXHERJhVGKikolT06G3bcKe4fi7w==}
-
-  morgan@1.11.0:
-    resolution: {integrity: sha512-zSkVu3t18r39pw4ixfBKvfZi3y2UOqr7d4WYwcj3m8nXpEQK4rPO6GLzs/CExoRgmX3y9EjmmcXqv6jq0SK46g==}
-    engines: {node: '>= 0.8.0'}
 
   motion-dom@12.40.0:
     resolution: {integrity: sha512-HxU3ZaBwNPVQUBQf1xxgq+7JrPNZvjLVxgbpEZL7RrWJnsxOf0/OM+yrHG9ogLQ31Do/r57Oz2gQWPK+6q62mg==}
@@ -14404,7 +14387,7 @@ snapshots:
 
   '@expo/sudo-prompt@9.3.2': {}
 
-  '@expo/ui@56.0.21(patch_hash=e0781a31374cf13bda8fe3f8602249c266ef2283ad4f05e29edc0e5732b5dd8b)(@babel/core@7.29.7)(@types/react-dom@19.2.3)(@types/react@19.2.17)(expo@56.0.15)(react-dom@19.2.3)(react-native-worklets@0.8.3)(react-native@0.85.3)(react@19.2.3)':
+  '@expo/ui@56.0.21(patch_hash=72fd19eb3012b94ccc36c51e7a5e6b279f1b56afd2c4fe7c9bca031aed601439)(@babel/core@7.29.7)(@types/react-dom@19.2.3)(@types/react@19.2.17)(expo@56.0.15)(react-dom@19.2.3)(react-native-worklets@0.8.3)(react-native@0.85.3)(react@19.2.3)':
     dependencies:
       expo: 56.0.15(@babel/core@7.29.7)(@expo/dom-webview@56.0.5)(@expo/metro-runtime@56.0.16)(bufferutil@4.1.0)(expo-router@56.2.14)(expo-widgets@56.0.22)(react-dom@19.2.3)(react-native-webview@13.16.1)(react-native-worklets@0.8.3)(react-native@0.85.3)(react@19.2.3)(supports-color@5.5.0)(typescript@6.0.3)
       react: 19.2.3
@@ -16666,10 +16649,6 @@ snapshots:
 
   '@types/mdurl@2.0.0': {}
 
-  '@types/morgan@1.9.10':
-    dependencies:
-      '@types/node': 25.9.3
-
   '@types/ms@2.1.0': {}
 
   '@types/multer@2.1.0':
@@ -17511,10 +17490,6 @@ snapshots:
   base64-js@1.5.1: {}
 
   baseline-browser-mapping@2.10.38: {}
-
-  basic-auth@2.0.1:
-    dependencies:
-      safe-buffer: 5.1.2
 
   bcrypt@6.0.0:
     dependencies:
@@ -19392,7 +19367,7 @@ snapshots:
       '@expo/log-box': 56.0.14(@expo/dom-webview@56.0.5)(expo@56.0.15)(react-native@0.85.3)(react@19.2.3)
       '@expo/metro-runtime': 56.0.16(@expo/log-box@56.0.14)(expo@56.0.15)(react-dom@19.2.3)(react-native@0.85.3)(react@19.2.3)
       '@expo/schema-utils': 56.0.2
-      '@expo/ui': 56.0.21(patch_hash=e0781a31374cf13bda8fe3f8602249c266ef2283ad4f05e29edc0e5732b5dd8b)(@babel/core@7.29.7)(@types/react-dom@19.2.3)(@types/react@19.2.17)(expo@56.0.15)(react-dom@19.2.3)(react-native-worklets@0.8.3)(react-native@0.85.3)(react@19.2.3)
+      '@expo/ui': 56.0.21(patch_hash=72fd19eb3012b94ccc36c51e7a5e6b279f1b56afd2c4fe7c9bca031aed601439)(@babel/core@7.29.7)(@types/react-dom@19.2.3)(@types/react@19.2.17)(expo@56.0.15)(react-dom@19.2.3)(react-native-worklets@0.8.3)(react-native@0.85.3)(react@19.2.3)
       '@radix-ui/react-slot': 1.3.0(@types/react@19.2.17)(react@19.2.3)
       '@radix-ui/react-tabs': 1.1.15(@types/react-dom@19.2.3)(@types/react@19.2.17)(react-dom@19.2.3)(react@19.2.3)
       '@react-native-masked-view/masked-view': 0.3.2(react-native@0.85.3)(react@19.2.3)
@@ -19502,7 +19477,7 @@ snapshots:
   expo-widgets@56.0.22(@babel/core@7.29.7)(@types/react-dom@19.2.3)(@types/react@19.2.17)(expo@56.0.15)(react-dom@19.2.3)(react-native-worklets@0.8.3)(react-native@0.85.3)(react@19.2.3):
     dependencies:
       '@expo/plist': 0.7.0
-      '@expo/ui': 56.0.21(patch_hash=e0781a31374cf13bda8fe3f8602249c266ef2283ad4f05e29edc0e5732b5dd8b)(@babel/core@7.29.7)(@types/react-dom@19.2.3)(@types/react@19.2.17)(expo@56.0.15)(react-dom@19.2.3)(react-native-worklets@0.8.3)(react-native@0.85.3)(react@19.2.3)
+      '@expo/ui': 56.0.21(patch_hash=72fd19eb3012b94ccc36c51e7a5e6b279f1b56afd2c4fe7c9bca031aed601439)(@babel/core@7.29.7)(@types/react-dom@19.2.3)(@types/react@19.2.17)(expo@56.0.15)(react-dom@19.2.3)(react-native-worklets@0.8.3)(react-native@0.85.3)(react@19.2.3)
       expo: 56.0.15(@babel/core@7.29.7)(@expo/dom-webview@56.0.5)(@expo/metro-runtime@56.0.16)(bufferutil@4.1.0)(expo-router@56.2.14)(expo-widgets@56.0.22)(react-dom@19.2.3)(react-native-webview@13.16.1)(react-native-worklets@0.8.3)(react-native@0.85.3)(react@19.2.3)(supports-color@5.5.0)(typescript@6.0.3)
       react: 19.2.3
       react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)(supports-color@5.5.0)
@@ -21799,16 +21774,6 @@ snapshots:
   mobx@6.16.1: {}
 
   module-details-from-path@1.0.4: {}
-
-  morgan@1.11.0:
-    dependencies:
-      basic-auth: 2.0.1
-      debug: 2.6.9
-      depd: 2.0.0
-      on-finished: 2.4.1
-      on-headers: 1.1.0
-    transitivePeerDependencies:
-      - supports-color
 
   motion-dom@12.40.0:
     dependencies:
