@@ -64,3 +64,9 @@
 [submodule "packages/updater"]
 	path = packages/updater
 	url = https://github.com/Mutualzz/updater
+[submodule "packages/client"]
+	path = packages/client
+	url = https://github.com/Mutualzz/client.git
+[submodule "packages/themes"]
+	path = packages/themes
+	url = https://github.com/Mutualzz/themes.git

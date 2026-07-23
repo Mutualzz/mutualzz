@@ -68,9 +68,9 @@ minimumReleaseAgeExclude:
   - expo-modules-core@56.0.20
   - expo-modules-jsi@56.0.12
   - expo@56.0.15
-  - '@expo/ui@56.0.21'
+  - '@expo/ui@56.0.22'
   - expo-image-picker@56.0.20
   - expo-notifications@56.0.20
   - expo-router@56.2.14
 patchedDependencies:
-  '@expo/ui@56.0.21': patches/@expo__ui@56.0.21.patch
+  '@expo/ui@56.0.22': patches/@expo__ui@56.0.22.patch
