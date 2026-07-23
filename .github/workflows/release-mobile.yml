@@ -229,6 +229,8 @@ jobs:
             ./packages/ui-native \
             ./packages/validators \
             ./packages/bitfield \
+            ./packages/client \
+            ./packages/themes \
             ./packages/i18n \
             ./tooling/eslint-config
 
@@ -279,7 +281,7 @@ jobs:
         run: pnpm i --filter @mutualzz/mobile...
 
       - name: Build workspace packages
-        run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/ui-core" --filter="./packages/ui-native" --filter="./packages/validators" --filter="./packages/bitfield" --filter="./packages/i18n"
+        run: pnpm turbo run build --filter="./packages/types" --filter="./packages/logger" --filter="./packages/ui-core" --filter="./packages/ui-native" --filter="./packages/validators" --filter="./packages/bitfield" --filter="./packages/client" --filter="./packages/themes" --filter="./packages/i18n"
 
       - name: Write .env.production
         working-directory: apps/mobile

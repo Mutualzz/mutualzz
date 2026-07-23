@@ -1,5 +1,81 @@
 # Changelog
 
+## App v6.26.0
+
+- Settings: Added Active Sessions page with per-session revoke and log-out-everywhere-else (Azrael)
+- Settings: Added Messages, Privacy & Safety, Desktop, and Keybinds pages with extended preferences (Azrael)
+- Settings: Added startup mode, UI density, layout/accessibility, and composer options in Appearance (Azrael)
+- Notifications: Added per-space and per-channel mute levels and durations via context menus (Azrael)
+- Navigation: Moved hub mode switcher to title bar; redesigned sidebar rail (Azrael)
+- Navigation: Bridge chat unread indicators on space sidebar icons (Azrael)
+- Chat: Added drag-and-drop file attachments in channels and DMs (Azrael)
+- Chat: Added attachment spoiler support when sending files (Azrael)
+- Chat: Added compact/default message layout and chat font scale preferences (Azrael)
+- Feed: Added threaded post comments with sort, reply threads, and load more (Azrael)
+- Profiles: Added profile unavailable state for restricted or missing profiles (Azrael)
+- Keybinds: Added global shortcuts for member list toggle and opening settings (Azrael)
+
+## Mobile v3.13.0
+
+- Settings: Added Sessions, Messages, and Privacy & Safety screens (Azrael)
+- Settings: Added startup mode, UI density, and accessibility options (Azrael)
+- Notifications: Added per-space mute levels and durations via space menu (Azrael)
+- Navigation: Replaced floating mode switcher with hub tabs (DMs / Spaces / Feed) (Azrael)
+- Navigation: Bridge chat unread indicators on space sidebar icons (Azrael)
+- Chat: Added attachment spoiler support (Azrael)
+- Chat: Added compact/default message layout and chat font scale preferences (Azrael)
+- Feed: Added threaded post comments with sort, reply threads, and load more (Azrael)
+- Feed: Simplified snap feed view (removed SnapFeedList) (Azrael)
+- Profiles: Added profile unavailable state (Azrael)
+
+## REST v6.7.0
+
+- Sessions: Added GET/DELETE /@me/sessions APIs for listing and revoking sessions (Azrael)
+- Settings: Added extendedSettings JSONB column and validation for user preferences (Azrael)
+- Notifications: Added space notification settings and channel read-state notification levels (Azrael)
+- Privacy: Enforced whoCanDm and profileVisibility server-side (Azrael)
+- Privacy: Added viewerCanDm on user objects (Azrael)
+- Messages: Added attachment spoiler support on upload (Azrael)
+- Auth: Password change now revokes all sessions (Azrael)
+- Push: Push notifications respect per-channel/space mute and mention-only settings (Azrael)
+
+## Gateway v6.3.0
+
+- Events: Added READ_STATE_UPDATE and SPACE_NOTIFICATION_SETTINGS_UPDATE dispatches (Azrael)
+- Ready: Includes spaceNotificationSettings in ready payload (Azrael)
+- SubscribeUser: Restricted to friends, shared space members, or DM participants (Azrael)
+- LazyRequest: Verifies channel view permission before lazy-loading members (Azrael)
+
+## Client v0.1.0
+
+- Shared navigation, sessions, settings, permissions, message layout, and store base classes (Azrael)
+
+## Themes v0.1.0
+
+- Extracted shared theme definitions and builders for cross-platform rendering (Azrael)
+
+## Types v4.5.0
+
+- Settings: Added UserExtendedSettings with defaults and merge helpers (Azrael)
+- Navigation: Added ModeKey and modeKeyFromPath (Azrael)
+- Sessions: Added APIMeSession type (Azrael)
+- Notifications: Added NotificationLevel enum and read-state fields (Azrael)
+- Messages: Added spoiler flag on APIAttachment (Azrael)
+- Privacy: Added viewerCanDm on APIUser (Azrael)
+
+## Validators v4.5.0
+
+- Settings: Added validateExtendedSettingsUpdate (Azrael)
+- Notifications: Added space and channel notification settings schemas (Azrael)
+- Messages: Added attachmentSpoilers on message create (Azrael)
+- Auth: Stricter registration and password reset validation (Azrael)
+
+## i18n v4.5.0
+
+- Settings: Added strings for sessions, messages, privacy, desktop, keybinds, and accessibility (Azrael)
+- Chat: Added notification context menu and spoiler strings (Azrael)
+- Feed: Added threaded comment strings (Azrael)
+
 ## Minecraft Bridge v1.2.0
 
 - Docs: Player install guide notes Mutualzz Voice **Alt** keybinds (Azrael)
