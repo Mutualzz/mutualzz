@@ -1,5 +1,26 @@
 # Changelog
 
+## App v6.26.1
+
+- Notifications: Space mute mutes until turned back on, with optional duration submenu (Azrael)
+- Notifications: Fixed transparent channel notification settings submenu (Azrael)
+- Notifications: Individually muted channels use reduced opacity instead of a bell icon (Azrael)
+
+## Mobile v3.13.1
+
+- Spaces: Redesigned space menu as Discord-style scrollable sheet with quick actions and nested notification/settings screens (Azrael)
+- Spaces: Added space reorder mode in the sidebar (Azrael)
+- Notifications: Space mute with forever default and duration picker; sidebar quick menu opens notification settings (Azrael)
+- Notifications: Individually muted channels use reduced opacity instead of a bell icon (Azrael)
+- Profiles: Replaced profile composer with Message and Call buttons; profile options menu uses action menu (Azrael)
+- Users: Shared user action menu logic across profile sheet and DM flows (Azrael)
+
+## i18n v4.5.1
+
+- Spaces: Added Discord-style space sheet strings (Azrael)
+- Chat: Added call button, notification frequency labels, and mute-for-duration strings (Azrael)
+- Sidebar: Added reorder and more-options strings (Azrael)
+
 ## App v6.26.0
 
 - Settings: Added Active Sessions page with per-session revoke and log-out-everywhere-else (Azrael)
