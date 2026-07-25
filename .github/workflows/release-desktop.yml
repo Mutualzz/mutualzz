@@ -378,7 +378,7 @@ jobs:
 
           if [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
             cp updater-bins/updater-windows-x64.exe \
-               apps/app/resources/updater.exe
+               apps/app/resources/Update.exe
           fi
 
           if [[ "${{ matrix.platform }}" == "ubuntu-22.04" ]]; then
@@ -416,7 +416,8 @@ jobs:
         working-directory: apps/app
         run: |
           ulimit -n 65536
-          pnpm exec electron-builder --mac --publish never
+          pnpm exec electron-builder --mac --dir --universal --publish never
+          pnpm exec node scripts/assemble-release.mjs mac
         env:
           ELECTRON_CACHE: ${{ github.workspace }}/.cache/electron
           ELECTRON_BUILDER_CACHE: ${{ github.workspace }}/.cache/electron-builder
@@ -444,7 +445,9 @@ jobs:
         env:
           ELECTRON_CACHE: ${{ github.workspace }}/.cache/electron
           ELECTRON_BUILDER_CACHE: ${{ github.workspace }}/.cache/electron-builder
-        run: pnpm exec electron-builder --win --publish never
+        run: |
+          pnpm exec electron-builder --win --dir --publish never
+          pnpm exec node scripts/assemble-release.mjs win
 
       - name: Build app package (Linux)
         if: matrix.platform == 'ubuntu-22.04'
@@ -452,103 +455,19 @@ jobs:
         env:
           ELECTRON_CACHE: ${{ github.workspace }}/.cache/electron
           ELECTRON_BUILDER_CACHE: ${{ github.workspace }}/.cache/electron-builder
-        run: pnpm exec electron-builder --linux --publish never
+        run: |
+          pnpm exec electron-builder --linux --dir --publish never
+          pnpm exec electron-builder --linux AppImage deb rpm pacman --publish never
+          pnpm exec node scripts/assemble-release.mjs linux
 
       - name: Collect artifacts
         shell: bash
         run: |
           mkdir -p release
-          shopt -s nullglob
-
-          first_match() {
-            local f
-            for f in "$@"; do
-              if [[ -f "$f" ]]; then
-                printf '%s\n' "$f"
-                return 0
-              fi
-            done
-            return 0
-          }
-
-          if [[ "${{ matrix.platform }}" == "windows-latest" ]]; then
-            EXE=$(first_match ./apps/app/dist/*.exe)
-            if [[ -n "$EXE" ]]; then
-              cp "$EXE" ./release/MutualzzSetup.exe
-            fi
-
-            ASAR="./apps/app/dist/win-unpacked/resources/app.asar"
-            if [[ -f "$ASAR" ]]; then
-              cp "$ASAR" ./release/Mutualzz-win.asar
-            fi
-
-            if [[ -f apps/app/resources/updater.exe ]]; then
-              cp apps/app/resources/updater.exe ./release/updater-win.exe
-            fi
-            if [[ -f apps/app/resources/updater-version.txt ]]; then
-              cp apps/app/resources/updater-version.txt ./release/updater-version.txt
-            fi
-
-            pnpm exec node -p "require('electron/package.json').version" > ./release/electron-version.txt
+          if [[ -d apps/app/release ]]; then
+            cp -a apps/app/release/. release/
           fi
-
-          if [[ "${{ matrix.platform }}" == "macos-latest" ]]; then
-            DMG=$(first_match ./apps/app/dist/*.dmg)
-            if [[ -n "$DMG" ]]; then
-              cp "$DMG" ./release/Mutualzz.dmg
-            fi
-
-            ASAR=$(find ./apps/app/dist -path '*/Contents/Resources/app.asar' -print -quit 2>/dev/null || true)
-            if [[ -f "$ASAR" ]]; then
-              cp "$ASAR" ./release/Mutualzz-mac.asar
-            fi
-
-            if [[ -f apps/app/resources/updater ]]; then
-              cp apps/app/resources/updater ./release/updater-mac
-            fi
-            if [[ -f apps/app/resources/updater-version.txt ]]; then
-              cp apps/app/resources/updater-version.txt ./release/updater-version.txt
-            fi
-
-            pnpm exec node -p "require('electron/package.json').version" > ./release/electron-version.txt
-          fi
-
-          if [[ "${{ matrix.platform }}" == "ubuntu-22.04" ]]; then
-            DEB=$(first_match ./apps/app/dist/*.deb)
-            APPIMAGE=$(first_match ./apps/app/dist/*.AppImage)
-            RPM=$(first_match ./apps/app/dist/*.rpm)
-            PACMAN=$(first_match ./apps/app/dist/*.pacman ./apps/app/dist/*.pkg.tar.*)
-
-            if [[ -n "$DEB" ]]; then
-              cp "$DEB" ./release/Mutualzz.deb
-            fi
-            if [[ -n "$APPIMAGE" ]]; then
-              cp "$APPIMAGE" ./release/Mutualzz.AppImage
-            fi
-            if [[ -n "$RPM" ]]; then
-              cp "$RPM" ./release/Mutualzz.rpm
-            fi
-            if [[ -n "$PACMAN" ]]; then
-              cp "$PACMAN" ./release/Mutualzz.pacman
-            fi
-
-            ASAR="./apps/app/dist/linux-unpacked/resources/app.asar"
-            if [[ ! -f "$ASAR" ]]; then
-              ASAR=$(find ./apps/app/dist -path '*/resources/app.asar' -print -quit 2>/dev/null || true)
-            fi
-            if [[ -f "$ASAR" ]]; then
-              cp "$ASAR" ./release/Mutualzz-linux.asar
-            fi
-
-            if [[ -f apps/app/resources/updater ]]; then
-              cp apps/app/resources/updater ./release/updater-linux
-            fi
-            if [[ -f apps/app/resources/updater-version.txt ]]; then
-              cp apps/app/resources/updater-version.txt ./release/updater-version.txt
-            fi
-
-            pnpm exec node -p "require('electron/package.json').version" > ./release/electron-version.txt
-          fi
+          ls -lah release/
 
       - name: Cleanup keychain
         if: matrix.platform == 'macos-latest' && always()
@@ -621,6 +540,7 @@ jobs:
         shell: bash
         run: |
           sha256() { sha256sum "$1" 2>/dev/null | awk '{print $1}'; }
+          VERSION="${{ steps.version.outputs.version }}"
 
           echo "win=$(sha256 release/MutualzzSetup.exe)"       >> "$GITHUB_OUTPUT"
           echo "osx=$(sha256 release/Mutualzz.dmg)"            >> "$GITHUB_OUTPUT"
@@ -628,12 +548,12 @@ jobs:
           echo "appimage=$(sha256 release/Mutualzz.AppImage)"  >> "$GITHUB_OUTPUT"
           echo "rpm=$(sha256 release/Mutualzz.rpm)"            >> "$GITHUB_OUTPUT"
           echo "pacman=$(sha256 release/Mutualzz.pacman)"      >> "$GITHUB_OUTPUT"
+          echo "pkg_win=$(sha256 release/Mutualzz-win-x64-${VERSION}.zip)" >> "$GITHUB_OUTPUT"
+          echo "pkg_mac=$(sha256 release/Mutualzz-mac-universal-${VERSION}.zip)" >> "$GITHUB_OUTPUT"
+          echo "pkg_linux=$(sha256 release/Mutualzz-linux-x64-${VERSION}.zip)" >> "$GITHUB_OUTPUT"
           echo "asar_win=$(sha256 release/Mutualzz-win.asar)"  >> "$GITHUB_OUTPUT"
           echo "asar_mac=$(sha256 release/Mutualzz-mac.asar)"  >> "$GITHUB_OUTPUT"
           echo "asar_linux=$(sha256 release/Mutualzz-linux.asar)" >> "$GITHUB_OUTPUT"
-          echo "updater_win=$(sha256 release/updater-win.exe)" >> "$GITHUB_OUTPUT"
-          echo "updater_mac=$(sha256 release/updater-mac)"     >> "$GITHUB_OUTPUT"
-          echo "updater_linux=$(sha256 release/updater-linux)" >> "$GITHUB_OUTPUT"
 
       - name: Install Wrangler
         run: npm install -g wrangler
@@ -641,16 +561,20 @@ jobs:
       - name: Generate latest.json
         shell: bash
         run: |
+          VERSION="${{ steps.version.outputs.version }}"
           cat <<EOF > latest.json
           {
-            "version": "${{ steps.version.outputs.version }}",
+            "version": "${VERSION}",
             "win": {
               "x64": {
                 "url": "https://proxy.mutualzz.com/releases/latest/MutualzzSetup.exe",
                 "sha256": "${{ steps.checksums.outputs.win }}",
+                "setupUrl": "https://proxy.mutualzz.com/releases/latest/MutualzzSetup.exe",
+                "setupSha256": "${{ steps.checksums.outputs.win }}",
+                "packageUrl": "https://proxy.mutualzz.com/releases/latest/Mutualzz-win-x64-${VERSION}.zip",
+                "packageSha256": "${{ steps.checksums.outputs.pkg_win }}",
                 "electronVersion": "${{ steps.electron_version.outputs.version }}",
                 "updaterVersion": "${{ steps.updater_version.outputs.version }}",
-                "updaterSha256": "${{ steps.checksums.outputs.updater_win }}",
                 "asar": {
                   "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz-win.asar",
                   "sha256": "${{ steps.checksums.outputs.asar_win }}"
@@ -661,9 +585,12 @@ jobs:
               "universal": {
                 "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz.dmg",
                 "sha256": "${{ steps.checksums.outputs.osx }}",
+                "setupUrl": "https://proxy.mutualzz.com/releases/latest/Mutualzz.dmg",
+                "setupSha256": "${{ steps.checksums.outputs.osx }}",
+                "packageUrl": "https://proxy.mutualzz.com/releases/latest/Mutualzz-mac-universal-${VERSION}.zip",
+                "packageSha256": "${{ steps.checksums.outputs.pkg_mac }}",
                 "electronVersion": "${{ steps.electron_version.outputs.version }}",
                 "updaterVersion": "${{ steps.updater_version.outputs.version }}",
-                "updaterSha256": "${{ steps.checksums.outputs.updater_mac }}",
                 "asar": {
                   "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz-mac.asar",
                   "sha256": "${{ steps.checksums.outputs.asar_mac }}"
@@ -674,9 +601,10 @@ jobs:
               "debian": {
                 "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz.deb",
                 "sha256": "${{ steps.checksums.outputs.deb }}",
+                "packageUrl": "https://proxy.mutualzz.com/releases/latest/Mutualzz-linux-x64-${VERSION}.zip",
+                "packageSha256": "${{ steps.checksums.outputs.pkg_linux }}",
                 "electronVersion": "${{ steps.electron_version.outputs.version }}",
                 "updaterVersion": "${{ steps.updater_version.outputs.version }}",
-                "updaterSha256": "${{ steps.checksums.outputs.updater_linux }}",
                 "asar": {
                   "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz-linux.asar",
                   "sha256": "${{ steps.checksums.outputs.asar_linux }}"
@@ -685,9 +613,10 @@ jobs:
               "appimage": {
                 "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz.AppImage",
                 "sha256": "${{ steps.checksums.outputs.appimage }}",
+                "packageUrl": "https://proxy.mutualzz.com/releases/latest/Mutualzz-linux-x64-${VERSION}.zip",
+                "packageSha256": "${{ steps.checksums.outputs.pkg_linux }}",
                 "electronVersion": "${{ steps.electron_version.outputs.version }}",
                 "updaterVersion": "${{ steps.updater_version.outputs.version }}",
-                "updaterSha256": "${{ steps.checksums.outputs.updater_linux }}",
                 "asar": {
                   "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz-linux.asar",
                   "sha256": "${{ steps.checksums.outputs.asar_linux }}"
@@ -696,9 +625,10 @@ jobs:
               "rpm": {
                 "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz.rpm",
                 "sha256": "${{ steps.checksums.outputs.rpm }}",
+                "packageUrl": "https://proxy.mutualzz.com/releases/latest/Mutualzz-linux-x64-${VERSION}.zip",
+                "packageSha256": "${{ steps.checksums.outputs.pkg_linux }}",
                 "electronVersion": "${{ steps.electron_version.outputs.version }}",
                 "updaterVersion": "${{ steps.updater_version.outputs.version }}",
-                "updaterSha256": "${{ steps.checksums.outputs.updater_linux }}",
                 "asar": {
                   "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz-linux.asar",
                   "sha256": "${{ steps.checksums.outputs.asar_linux }}"
@@ -707,9 +637,10 @@ jobs:
               "pacman": {
                 "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz.pacman",
                 "sha256": "${{ steps.checksums.outputs.pacman }}",
+                "packageUrl": "https://proxy.mutualzz.com/releases/latest/Mutualzz-linux-x64-${VERSION}.zip",
+                "packageSha256": "${{ steps.checksums.outputs.pkg_linux }}",
                 "electronVersion": "${{ steps.electron_version.outputs.version }}",
                 "updaterVersion": "${{ steps.updater_version.outputs.version }}",
-                "updaterSha256": "${{ steps.checksums.outputs.updater_linux }}",
                 "asar": {
                   "url": "https://proxy.mutualzz.com/releases/latest/Mutualzz-linux.asar",
                   "sha256": "${{ steps.checksums.outputs.asar_linux }}"
@@ -742,6 +673,9 @@ jobs:
           upload "release/Mutualzz.AppImage"  "mutualzz/releases/latest/Mutualzz.AppImage"
           upload "release/Mutualzz.rpm"       "mutualzz/releases/latest/Mutualzz.rpm"
           upload "release/Mutualzz.pacman"    "mutualzz/releases/latest/Mutualzz.pacman"
+          upload "release/Mutualzz-win-x64-${{ steps.version.outputs.version }}.zip" "mutualzz/releases/latest/Mutualzz-win-x64-${{ steps.version.outputs.version }}.zip"
+          upload "release/Mutualzz-mac-universal-${{ steps.version.outputs.version }}.zip" "mutualzz/releases/latest/Mutualzz-mac-universal-${{ steps.version.outputs.version }}.zip"
+          upload "release/Mutualzz-linux-x64-${{ steps.version.outputs.version }}.zip" "mutualzz/releases/latest/Mutualzz-linux-x64-${{ steps.version.outputs.version }}.zip"
           upload "release/Mutualzz-win.asar"  "mutualzz/releases/latest/Mutualzz-win.asar"
           upload "release/Mutualzz-mac.asar"  "mutualzz/releases/latest/Mutualzz-mac.asar"
           upload "release/Mutualzz-linux.asar" "mutualzz/releases/latest/Mutualzz-linux.asar"
@@ -814,6 +748,9 @@ jobs:
             release/Mutualzz.AppImage
             release/Mutualzz.rpm
             release/Mutualzz.pacman
+            release/Mutualzz-win-x64-${{ steps.version.outputs.version }}.zip
+            release/Mutualzz-mac-universal-${{ steps.version.outputs.version }}.zip
+            release/Mutualzz-linux-x64-${{ steps.version.outputs.version }}.zip
             release/Mutualzz-win.asar
             release/Mutualzz-mac.asar
             release/Mutualzz-linux.asar
