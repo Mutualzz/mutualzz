@@ -558,6 +558,9 @@ jobs:
       - name: Install Wrangler
         run: npm install -g wrangler
 
+      - name: Install R2 upload dependencies
+        run: npm install --no-save @aws-sdk/client-s3 @aws-sdk/lib-storage
+
       - name: Generate latest.json
         shell: bash
         run: |
@@ -656,32 +659,9 @@ jobs:
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
-        run: |
-          upload() {
-            local src="$1" dest="$2"
-            if [[ -f "$src" ]]; then
-              echo "Uploading $src -> $dest"
-              wrangler r2 object put "$dest" --file "$src" --remote
-            else
-              echo "Skipping $dest (file not found)"
-            fi
-          }
-
-          upload "release/MutualzzSetup.exe"  "mutualzz/releases/latest/MutualzzSetup.exe"
-          upload "release/Mutualzz.dmg"       "mutualzz/releases/latest/Mutualzz.dmg"
-          upload "release/Mutualzz.deb"       "mutualzz/releases/latest/Mutualzz.deb"
-          upload "release/Mutualzz.AppImage"  "mutualzz/releases/latest/Mutualzz.AppImage"
-          upload "release/Mutualzz.rpm"       "mutualzz/releases/latest/Mutualzz.rpm"
-          upload "release/Mutualzz.pacman"    "mutualzz/releases/latest/Mutualzz.pacman"
-          upload "release/Mutualzz-win-x64-${{ steps.version.outputs.version }}.zip" "mutualzz/releases/latest/Mutualzz-win-x64-${{ steps.version.outputs.version }}.zip"
-          upload "release/Mutualzz-mac-universal-${{ steps.version.outputs.version }}.zip" "mutualzz/releases/latest/Mutualzz-mac-universal-${{ steps.version.outputs.version }}.zip"
-          upload "release/Mutualzz-linux-x64-${{ steps.version.outputs.version }}.zip" "mutualzz/releases/latest/Mutualzz-linux-x64-${{ steps.version.outputs.version }}.zip"
-          upload "release/Mutualzz-win.asar"  "mutualzz/releases/latest/Mutualzz-win.asar"
-          upload "release/Mutualzz-mac.asar"  "mutualzz/releases/latest/Mutualzz-mac.asar"
-          upload "release/Mutualzz-linux.asar" "mutualzz/releases/latest/Mutualzz-linux.asar"
-
-          # latest.json goes up last -- only live once all binaries are in place
-          upload "latest.json"                "mutualzz/releases/latest/latest.json"
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+        run: node apps/app/scripts/upload-r2.mjs release latest.json
 
   github-release:
     name: Create GitHub Release
