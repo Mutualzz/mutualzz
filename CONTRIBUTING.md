@@ -4,7 +4,7 @@ Thanks for wanting to help. Contributions are welcome across the Mutualzz
 monorepo and its submodules.
 
 Redistributing unofficial builds, packages, or hosting a competing Mutualzz
-service is still not allowed — see [`LICENSE`](./LICENSE).
+service is still not allowed — see [`LICENSE`](https://github.com/Mutualzz/mutualzz/blob/master/LICENSE).
 
 ## Credit
 
@@ -23,7 +23,7 @@ PR and we’ll fix it.
 This monorepo uses git submodules. Most apps and packages live in their own
 repos (for example `apps/app`, `apps/server`, `packages/ui-web`). Prefer
 opening the pull request on the submodule repo that owns the files you
-changed. Minecraft Bridge / Voice also have their own [`CONTRIBUTING.md`](./apps/mc-bridge/CONTRIBUTING.md).
+changed. Minecraft Bridge / Voice also have their own [`CONTRIBUTING.md`](https://github.com/Mutualzz/mc-bridge/blob/master/CONTRIBUTING.md).
 
 ## How to contribute
 

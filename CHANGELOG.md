@@ -1,5 +1,32 @@
 # Changelog
 
+## App v6.27.0
+
+- Updater: Replaced the in-app updater with a Rust bootstrapper on Windows, macOS, and Linux (Azrael)
+- Updater: Downloads verified platform packages with resume support and SHA-256 checks (Azrael)
+- Updater: Supports lightweight asar-only updates from latest.json (Azrael)
+- Updater: Title bar shows restart-to-update flow with download progress and ETA (Azrael)
+- Settings: Fixed custom status editor and registered games list refresh (Azrael)
+- Settings: Fixed launch-on-startup toggle on Windows (Azrael)
+- Settings: Improved quick reaction emoji slot editing (Azrael)
+- OAuth: Fixed Spotify and third-party connection callback routing (Azrael)
+- Release: Added assemble-release pipeline for installers, zip packages, and asar bundles (Azrael)
+- Release: Fixed large artifact uploads to R2 via multipart upload (Azrael)
+- Release: Fixed Windows and macOS packaging in CI (Azrael)
+
+## Mobile v3.14.0
+
+- Deep links: Added `mutualzz://` URL scheme alongside the app scheme (Azrael)
+- Settings: Fixed custom status persistence (Azrael)
+- Chat: Improved DM message preview formatting (Azrael)
+- Settings: Fixed quick reaction emoji slot editing (Azrael)
+
+## i18n v4.6.0
+
+- Updater: Added restart-to-update and restarting strings (Azrael)
+- Settings: Expanded locale coverage for new settings strings (Azrael)
+- Chat: Expanded locale coverage for new chat strings (Azrael)
+
 ## App v6.26.1
 
 - Notifications: Space mute mutes until turned back on, with optional duration submenu (Azrael)

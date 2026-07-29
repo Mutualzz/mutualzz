@@ -6,13 +6,13 @@ Social app for everyone — desktop, mobile, voice, and Minecraft bridge.
 
 Source is available for transparency and **community contributions**. Contributors get credit (git authorship, PR attribution, changelogs when practical).
 
-- [`LICENSE`](./LICENSE) — use official Mutualzz products; no redistribution of builds / competing hosted services without permission
-- [`CONTRIBUTING.md`](./CONTRIBUTING.md) — how to fork, open PRs, and how credit works
+- [`LICENSE`](https://github.com/Mutualzz/mutualzz/blob/master/LICENSE) — use official Mutualzz products; no redistribution of builds / competing hosted services without permission
+- [`CONTRIBUTING.md`](https://github.com/Mutualzz/mutualzz/blob/master/CONTRIBUTING.md) — how to fork, open PRs, and how credit works
 
 Minecraft-specific projects:
 
-- [Mutualzz Bridge (Paper plugin)](./apps/mc-bridge)
-- [Mutualzz Voice (Fabric mod)](./apps/mc-voice)
+- [Mutualzz Bridge (Paper plugin)](https://github.com/Mutualzz/mc-bridge)
+- [Mutualzz Voice (Fabric mod)](https://github.com/Mutualzz/mc-voice)
 
 ## Monorepo layout
 
