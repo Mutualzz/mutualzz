@@ -411,6 +411,12 @@ jobs:
           security unlock-keychain -p "build-keychain-password" build.keychain
           rm /tmp/certificate.p12
 
+          - name: Verify macOS signing identity
+          if: matrix.platform == 'macos-latest'
+          run: |
+            security unlock-keychain -p "build-keychain-password" build.keychain
+            security find-identity -v -p codesigning build.keychain
+
       - name: Build app package (macOS)
         if: matrix.platform == 'macos-latest'
         working-directory: apps/app
@@ -425,8 +431,8 @@ jobs:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
           APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
-          CSC_LINK: ${{ secrets.APPLE_CERTIFICATE }}
-          CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          CSC_KEYCHAIN: build.keychain
+          CSC_IDENTITY_AUTO_DISCOVERY: "true"
 
       - name: Download VC++ Redistributable
         if: matrix.platform == 'windows-latest'
