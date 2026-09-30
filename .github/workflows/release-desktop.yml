@@ -437,9 +437,20 @@ jobs:
 
       - name: Verify macOS signing identity
         if: matrix.platform == 'macos-latest'
+        shell: bash
         run: |
-          security unlock-keychain -p "build-keychain-password" build.keychain
-          security find-identity -v -p codesigning build.keychain
+          set -euo pipefail
+
+          KEYCHAIN_PATH="$RUNNER_TEMP/build.keychain-db"
+
+          security unlock-keychain \
+            -p "build-keychain-password" \
+            "$KEYCHAIN_PATH"
+
+          security find-identity \
+            -v \
+            -p codesigning \
+            "$KEYCHAIN_PATH"
 
       - name: Build app package (macOS)
         if: matrix.platform == 'macos-latest'
