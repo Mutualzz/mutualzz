@@ -393,37 +393,57 @@ jobs:
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
         run: |
-          echo "$APPLE_CERTIFICATE" | base64 --decode > /tmp/certificate.p12
-          security create-keychain -p "build-keychain-password" build.keychain
-          security default-keychain -s build.keychain
-          security unlock-keychain -p "build-keychain-password" build.keychain
-          security set-keychain-settings -t 21600 build.keychain
-          security import /tmp/certificate.p12 \
-            -k build.keychain \
+          set -euo pipefail
+
+          KEYCHAIN_PATH="$RUNNER_TEMP/build.keychain-db"
+
+          printf '%s' "$APPLE_CERTIFICATE" \
+            | base64 --decode \
+            > "$RUNNER_TEMP/certificate.p12"
+
+          security create-keychain \
+            -p "build-keychain-password" \
+            "$KEYCHAIN_PATH"
+
+          security unlock-keychain \
+            -p "build-keychain-password" \
+            "$KEYCHAIN_PATH"
+
+          security set-keychain-settings \
+            -t 21600 \
+            "$KEYCHAIN_PATH"
+
+          security import "$RUNNER_TEMP/certificate.p12" \
+            -k "$KEYCHAIN_PATH" \
             -P "$APPLE_CERTIFICATE_PASSWORD" \
             -T /usr/bin/codesign \
             -T /usr/bin/security
+
           security set-key-partition-list \
             -S apple-tool:,apple:,codesign: \
-            -s -k "build-keychain-password" \
-            build.keychain
-          security list-keychains -d user -s build.keychain $(security list-keychains -d user | tr -d '"')
-          security unlock-keychain -p "build-keychain-password" build.keychain
-          rm /tmp/certificate.p12
+            -s \
+            -k "build-keychain-password" \
+            "$KEYCHAIN_PATH"
 
-          - name: Verify macOS signing identity
-          if: matrix.platform == 'macos-latest'
-          run: |
-            security unlock-keychain -p "build-keychain-password" build.keychain
-            security find-identity -v -p codesigning build.keychain
+          security list-keychains -d user -s \
+            "$KEYCHAIN_PATH" \
+            "$HOME/Library/Keychains/login.keychain-db"
+
+          security default-keychain -s "$KEYCHAIN_PATH"
+
+          security find-identity -v -p codesigning "$KEYCHAIN_PATH"
+
+          rm -f "$RUNNER_TEMP/certificate.p12"
+
+      - name: Verify macOS signing identity
+        if: matrix.platform == 'macos-latest'
+        run: |
+          security unlock-keychain -p "build-keychain-password" build.keychain
+          security find-identity -v -p codesigning build.keychain
 
       - name: Build app package (macOS)
         if: matrix.platform == 'macos-latest'
         working-directory: apps/app
-        run: |
-          ulimit -n 65536
-          pnpm exec electron-builder --mac --dir --universal --publish never
-          pnpm exec node scripts/assemble-release.mjs mac
         env:
           ELECTRON_CACHE: ${{ github.workspace }}/.cache/electron
           ELECTRON_BUILDER_CACHE: ${{ github.workspace }}/.cache/electron-builder
@@ -431,8 +451,12 @@ jobs:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
           APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
-          CSC_KEYCHAIN: build.keychain
+          CSC_KEYCHAIN: ${{ runner.temp }}/build.keychain-db
           CSC_IDENTITY_AUTO_DISCOVERY: "true"
+        run: |
+          ulimit -n 65536
+          pnpm exec electron-builder --mac --dir --universal --publish never
+          pnpm exec node scripts/assemble-release.mjs mac
 
       - name: Download VC++ Redistributable
         if: matrix.platform == 'windows-latest'
@@ -477,7 +501,8 @@ jobs:
 
       - name: Cleanup keychain
         if: matrix.platform == 'macos-latest' && always()
-        run: security delete-keychain build.keychain || true
+        run: |
+          security delete-keychain "$RUNNER_TEMP/build.keychain-db" || true
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
