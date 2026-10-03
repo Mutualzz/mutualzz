@@ -66,6 +66,4 @@ Desktop also updates Cloudflare R2 + `latest.json` (desktop updater only). Mobil
 
 Play uploads the signed AAB to the closed testing track **`Release`** after the GitHub mobile release. Promote to production in Play Console when ready. iOS continues to use the existing App Store Connect `altool` upload in the iOS build job.
 
-Play uploads the signed AAB to the closed testing track **`Release`** after the GitHub mobile release. Promote to production in Play Console when ready. iOS continues to use the existing App Store Connect `altool` upload in the iOS build job.
-
 Website download routes can point at these releases when ready.
