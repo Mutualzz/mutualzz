@@ -1,72 +1,69 @@
 [submodule "packages/types"]
 	path = packages/types
-	url = https://github.com/Mutualzz/types.git
+	url = https://git.mutualzz.com/mutualzz/types.git
 [submodule "packages/logger"]
 	path = packages/logger
-	url = https://github.com/Mutualzz/logger.git
+	url = https://git.mutualzz.com/mutualzz/logger.git
 [submodule "tooling/eslint-config"]
 	path = tooling/eslint-config
-	url = https://github.com/Mutualzz/eslint-config.git
+	url = https://git.mutualzz.com/mutualzz/eslint-config.git
 [submodule "apps/app"]
 	path = apps/app
-	url = https://github.com/Mutualzz/app.git
+	url = https://git.mutualzz.com/mutualzz/app.git
 [submodule "packages/validators"]
 	path = packages/validators
-	url = https://github.com/Mutualzz/validators.git
+	url = https://git.mutualzz.com/mutualzz/validators.git
 [submodule "apps/server"]
 	path = apps/server
-	url = https://github.com/Mutualzz/server.git
+	url = https://git.mutualzz.com/mutualzz/server.git
 [submodule "apps/mobile"]
 	path = apps/mobile
-	url = https://github.com/Mutualzz/mobile.git
+	url = https://git.mutualzz.com/mutualzz/mobile.git
 [submodule "packages/ui-core"]
 	path = packages/ui-core
-	url = https://github.com/mutualzz/ui-core.git
+	url = https://git.mutualzz.com/mutualzz/ui-core.git
 [submodule "packages/ui-web"]
 	path = packages/ui-web
-	url = https://github.com/mutualzz/ui-web.git
+	url = https://git.mutualzz.com/mutualzz/ui-web.git
 [submodule "packages/ui-native"]
 	path = packages/ui-native
-	url = https://github.com/mutualzz/ui-native.git
-[submodule "packages/color"]
-	path = packages/color
-	url = https://github.com/mutualzz/color.git
+	url = https://git.mutualzz.com/mutualzz/ui-native.git
 [submodule "packages/color-picker"]
 	path = packages/color-picker
-	url = https://github.com/Mutualzz/color-picker.git
+	url = https://git.mutualzz.com/mutualzz/color-picker.git
 [submodule "packages/contexify"]
 	path = packages/contexify
-	url = https://github.com/Mutualzz/contexify.git
+	url = https://git.mutualzz.com/mutualzz/contexify.git
 [submodule "packages/bitfield"]
 	path = packages/bitfield
-	url = https://github.com/Mutualzz/bitfield.git
+	url = https://git.mutualzz.com/mutualzz/bitfield.git
 [submodule "apps/voice"]
 	path = apps/voice
-	url = https://github.com/Mutualzz/voice.git
+	url = https://git.mutualzz.com/mutualzz/voice.git
 [submodule "packages/i18n"]
 	path = packages/i18n
-	url = https://github.com/Mutualzz/i18n
+	url = https://git.mutualzz.com/mutualzz/i18n
 [submodule "apps/mc-bridge"]
 	path = apps/mc-bridge
-	url = https://github.com/Mutualzz/mc-bridge
+	url = https://git.mutualzz.com/mutualzz/mc-bridge
 [submodule "apps/mc-voice"]
 	path = apps/mc-voice
-	url = https://github.com/Mutualzz/mc-voice.git
+	url = https://git.mutualzz.com/mutualzz/mc-voice.git
 [submodule "packages/rpc"]
 	path = packages/rpc
-	url = https://github.com/Mutualzz/rpc
+	url = https://git.mutualzz.com/mutualzz/rpc
 [submodule "packages/rpc-csharp"]
 	path = packages/rpc-csharp
-	url = https://github.com/Mutualzz/rpc-csharp
+	url = https://git.mutualzz.com/mutualzz/rpc-csharp
 [submodule "packages/rpc-cpp"]
 	path = packages/rpc-cpp
-	url = https://github.com/Mutualzz/rpc-cpp
+	url = https://git.mutualzz.com/mutualzz/rpc-cpp
 [submodule "packages/updater"]
 	path = packages/updater
-	url = https://github.com/Mutualzz/updater
+	url = https://git.mutualzz.com/mutualzz/updater
 [submodule "packages/client"]
 	path = packages/client
-	url = https://github.com/Mutualzz/client.git
+	url = https://git.mutualzz.com/mutualzz/client.git
 [submodule "packages/themes"]
 	path = packages/themes
-	url = https://github.com/Mutualzz/themes.git
+	url = https://git.mutualzz.com/mutualzz/themes.git
