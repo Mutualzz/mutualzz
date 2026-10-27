@@ -1,3 +1,13 @@
+<div align="center">
+
+# Mutualzz development moved to [git.mutualzz.com](https://git.mutualzz.com/mutualzz/mutualzz)
+
+**GitHub is a read-only mirror. Issues and pull requests opened on GitHub are not monitored.**
+
+Sign in with your GitHub account. No new password needed.
+
+</div>
+
 # Mutualzz
 
 Social app for everyone — desktop, mobile, voice, and Minecraft bridge.
@@ -16,16 +26,16 @@ Minecraft-specific projects:
 
 ## Monorepo layout
 
-| Path | Description |
-|---|---|
-| `apps/app` | Desktop / web client |
-| `apps/mobile` | Mobile app |
-| `apps/server` | API / gateway |
-| `apps/voice` | Voice SFU service |
-| `apps/mc-bridge` | Paper bridge plugin |
-| `apps/mc-voice` | Fabric in-game voice mod |
-| `packages/*` | Shared libraries |
-| `tooling/*` | Shared tooling |
+| Path             | Description              |
+| ---------------- | ------------------------ |
+| `apps/app`       | Desktop / web client     |
+| `apps/mobile`    | Mobile app               |
+| `apps/server`    | API / gateway            |
+| `apps/voice`     | Voice SFU service        |
+| `apps/mc-bridge` | Paper bridge plugin      |
+| `apps/mc-voice`  | Fabric in-game voice mod |
+| `packages/*`     | Shared libraries         |
+| `tooling/*`      | Shared tooling           |
 
 Most `apps/*` and `packages/*` directories are **git submodules** with their own remotes.
 
@@ -33,35 +43,35 @@ Most `apps/*` and `packages/*` directories are **git submodules** with their own
 
 Ship from `master` via **Actions → Run workflow** (dispatch only; non-`master` runs fail immediately). CI publishes **separate GitHub Releases**:
 
-| Product | Workflow | Tag | Title | Assets |
-|---|---|---|---|---|
-| Desktop | `release-desktop` | `desktop-v…` | Mutualzz Desktop v… | Windows / macOS / Linux installers + asar |
-| Mobile | `release-mobile` | `mobile-v…` | Mutualzz Mobile v… | APK / AAB / IPA |
-| Minecraft | `release-minecraft` | `minecraft-v…` | Mutualzz Minecraft v… | Bridge + Voice jars |
-| RPC | `release-rpc` | `rpc-v…` | Mutualzz RPC v… | npm / NuGet / C++ tarball |
+| Product   | Workflow            | Tag            | Title                 | Assets                                    |
+| --------- | ------------------- | -------------- | --------------------- | ----------------------------------------- |
+| Desktop   | `release-desktop`   | `desktop-v…`   | Mutualzz Desktop v…   | Windows / macOS / Linux installers + asar |
+| Mobile    | `release-mobile`    | `mobile-v…`    | Mutualzz Mobile v…    | APK / AAB / IPA                           |
+| Minecraft | `release-minecraft` | `minecraft-v…` | Mutualzz Minecraft v… | Bridge + Voice jars                       |
+| RPC       | `release-rpc`       | `rpc-v…`       | Mutualzz RPC v…       | npm / NuGet / C++ tarball                 |
 
 Desktop also updates Cloudflare R2 + `latest.json` (desktop updater only). Mobile ships GitHub assets for download / sideload. Minecraft also uploads both jars to **Modrinth** and **CurseForge** after the GitHub release (CurseForge files still wait on CF moderation).
 
 **Minecraft Modrinth secrets** (repo Settings → Secrets):
 
-| Secret | Purpose |
-|---|---|
-| `MODRINTH_TOKEN` | Modrinth PAT with version create permission |
-| `MODRINTH_BRIDGE_PROJECT` | Bridge project slug or ID |
-| `MODRINTH_VOICE_PROJECT` | Voice project slug or ID |
+| Secret                    | Purpose                                     |
+| ------------------------- | ------------------------------------------- |
+| `MODRINTH_TOKEN`          | Modrinth PAT with version create permission |
+| `MODRINTH_BRIDGE_PROJECT` | Bridge project slug or ID                   |
+| `MODRINTH_VOICE_PROJECT`  | Voice project slug or ID                    |
 
 **Minecraft CurseForge secrets:**
 
-| Secret | Purpose |
-|---|---|
-| `CURSEFORGE_TOKEN` | [API token](https://www.curseforge.com/account/api-tokens) |
-| `CURSEFORGE_BRIDGE_PROJECT_ID` | Numeric project ID (sidebar on project page) |
-| `CURSEFORGE_VOICE_PROJECT_ID` | Numeric project ID |
+| Secret                         | Purpose                                                    |
+| ------------------------------ | ---------------------------------------------------------- |
+| `CURSEFORGE_TOKEN`             | [API token](https://www.curseforge.com/account/api-tokens) |
+| `CURSEFORGE_BRIDGE_PROJECT_ID` | Numeric project ID (sidebar on project page)               |
+| `CURSEFORGE_VOICE_PROJECT_ID`  | Numeric project ID                                         |
 
 **Mobile Google Play secrets:**
 
-| Secret | Purpose |
-|---|---|
+| Secret                             | Purpose                                                                 |
+| ---------------------------------- | ----------------------------------------------------------------------- |
 | `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` | Full service-account JSON (Play Console invite + Android Publisher API) |
 
 Play uploads the signed AAB to the closed testing track **`Release`** after the GitHub mobile release. Promote to production in Play Console when ready. iOS continues to use the existing App Store Connect `altool` upload in the iOS build job.
