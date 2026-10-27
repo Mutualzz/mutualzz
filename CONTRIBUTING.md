@@ -4,18 +4,18 @@ Thanks for wanting to help. Contributions are welcome across the Mutualzz
 monorepo and its submodules.
 
 Redistributing unofficial builds, packages, or hosting a competing Mutualzz
-service is still not allowed — see [`LICENSE`](https://git.mutualzz.com/mutualzz/mutualzz/blob/master/LICENSE).
+service is still not allowed — see [`LICENSE`](https://git.mutualzz.com/mutualzz/mutualzz/src/branch/master/LICENSE).
 
 ## Credit
 
 We want contributors to get credit for their work.
 
 - Your **git author name/email** stays on commits that land
-- Merged **pull requests** keep your GitHub attribution
+- Merged **pull requests** keep your attribution
 - Notable changes are called out in **changelogs / release notes** when we can
 - You’re welcome to list Mutualzz contributions on your portfolio or resume
 
-If we miss crediting something meaningful, open an issue or mention it on the
+If we miss crediting something meaningful, [open an issue](https://git.mutualzz.com/mutualzz/mutualzz/issues) or mention it on the
 PR and we’ll fix it.
 
 ## Repositories
@@ -23,15 +23,19 @@ PR and we’ll fix it.
 This monorepo uses git submodules. Most apps and packages live in their own
 repos (for example `apps/app`, `apps/server`, `packages/ui-web`). Prefer
 opening the pull request on the submodule repo that owns the files you
-changed. Minecraft Bridge / Voice also have their own [`CONTRIBUTING.md`](https://github.com/Mutualzz/mc-bridge/blob/master/CONTRIBUTING.md).
+changed — all of them are at [git.mutualzz.com/mutualzz](https://git.mutualzz.com/mutualzz).
+Minecraft Bridge / Voice also have their own [`CONTRIBUTING.md`](https://git.mutualzz.com/mutualzz/mc-bridge/src/branch/master/CONTRIBUTING.md).
 
 ## How to contribute
 
-1. Fork the relevant repository (or the monorepo if the change spans tooling
+1. Sign in to [git.mutualzz.com](https://git.mutualzz.com) with your GitHub account.
+2. Fork the relevant repository (or the monorepo if the change spans tooling
    only at the root).
-2. Create a focused branch.
-3. Make your change and test what you can locally.
-4. Open a pull request describing **what** changed and **why**.
+3. Create a focused branch.
+4. Make your change and test what you can locally.
+5. Open a pull request describing **what** changed and **why**.
+
+GitHub is a read-only mirror — pull requests opened there are not monitored.
 
 ## Contribution license
 
