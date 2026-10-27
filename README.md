@@ -1,6 +1,6 @@
 <div align="center">
 
-# Mutualzz development moved to [git.mutualzz.com](https://git.mutualzz.com/mutualzz/mutualzz)
+# Mutualzz is developed at [git.mutualzz.com](https://git.mutualzz.com/mutualzz/mutualzz)
 
 **GitHub is a read-only mirror. Issues and pull requests opened on GitHub are not monitored.**
 
@@ -16,13 +16,13 @@ Social app for everyone — desktop, mobile, voice, and Minecraft bridge.
 
 Source is available for transparency and **community contributions**. Contributors get credit (git authorship, PR attribution, changelogs when practical).
 
-- [`LICENSE`](https://git.mutualzz.com/mutualzz/mutualzz/blob/master/LICENSE) — use official Mutualzz products; no redistribution of builds / competing hosted services without permission
-- [`CONTRIBUTING.md`](https://git.mutualzz.com/mutualzz/mutualzz/blob/master/CONTRIBUTING.md) — how to fork, open PRs, and how credit works
+- [`LICENSE`](https://git.mutualzz.com/mutualzz/mutualzz/src/branch/master/LICENSE) — use official Mutualzz products; no redistribution of builds / competing hosted services without permission
+- [`CONTRIBUTING.md`](https://git.mutualzz.com/mutualzz/mutualzz/src/branch/master/CONTRIBUTING.md) — how to fork, open PRs, and how credit works
 
 Minecraft-specific projects:
 
-- [Mutualzz Bridge (Paper plugin)](https://github.com/Mutualzz/mc-bridge)
-- [Mutualzz Voice (Fabric mod)](https://github.com/Mutualzz/mc-voice)
+- [Mutualzz Bridge (Paper plugin)](https://git.mutualzz.com/mutualzz/mc-bridge)
+- [Mutualzz Voice (Fabric mod)](https://git.mutualzz.com/mutualzz/mc-voice)
 
 ## Monorepo layout
 
@@ -41,39 +41,4 @@ Most `apps/*` and `packages/*` directories are **git submodules** with their own
 
 ## Releases
 
-Ship from `master` via **Actions → Run workflow** (dispatch only; non-`master` runs fail immediately). CI publishes **separate GitHub Releases**:
-
-| Product   | Workflow            | Tag            | Title                 | Assets                                    |
-| --------- | ------------------- | -------------- | --------------------- | ----------------------------------------- |
-| Desktop   | `release-desktop`   | `desktop-v…`   | Mutualzz Desktop v…   | Windows / macOS / Linux installers + asar |
-| Mobile    | `release-mobile`    | `mobile-v…`    | Mutualzz Mobile v…    | APK / AAB / IPA                           |
-| Minecraft | `release-minecraft` | `minecraft-v…` | Mutualzz Minecraft v… | Bridge + Voice jars                       |
-| RPC       | `release-rpc`       | `rpc-v…`       | Mutualzz RPC v…       | npm / NuGet / C++ tarball                 |
-
-Desktop also updates Cloudflare R2 + `latest.json` (desktop updater only). Mobile ships GitHub assets for download / sideload. Minecraft also uploads both jars to **Modrinth** and **CurseForge** after the GitHub release (CurseForge files still wait on CF moderation).
-
-**Minecraft Modrinth secrets** (repo Settings → Secrets):
-
-| Secret                    | Purpose                                     |
-| ------------------------- | ------------------------------------------- |
-| `MODRINTH_TOKEN`          | Modrinth PAT with version create permission |
-| `MODRINTH_BRIDGE_PROJECT` | Bridge project slug or ID                   |
-| `MODRINTH_VOICE_PROJECT`  | Voice project slug or ID                    |
-
-**Minecraft CurseForge secrets:**
-
-| Secret                         | Purpose                                                    |
-| ------------------------------ | ---------------------------------------------------------- |
-| `CURSEFORGE_TOKEN`             | [API token](https://www.curseforge.com/account/api-tokens) |
-| `CURSEFORGE_BRIDGE_PROJECT_ID` | Numeric project ID (sidebar on project page)               |
-| `CURSEFORGE_VOICE_PROJECT_ID`  | Numeric project ID                                         |
-
-**Mobile Google Play secrets:**
-
-| Secret                             | Purpose                                                                 |
-| ---------------------------------- | ----------------------------------------------------------------------- |
-| `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` | Full service-account JSON (Play Console invite + Android Publisher API) |
-
-Play uploads the signed AAB to the closed testing track **`Release`** after the GitHub mobile release. Promote to production in Play Console when ready. iOS continues to use the existing App Store Connect `altool` upload in the iOS build job.
-
-Website download routes can point at these releases when ready.
+Releases are published at [git.mutualzz.com](https://git.mutualzz.com/mutualzz/mutualzz/releases). Maintainers: see [`RELEASING.md`](https://git.mutualzz.com/mutualzz/mutualzz/src/branch/master/RELEASING.md).
