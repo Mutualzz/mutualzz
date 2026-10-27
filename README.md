@@ -41,4 +41,4 @@ Most `apps/*` and `packages/*` directories are **git submodules** with their own
 
 ## Releases
 
-Releases are published at [git.mutualzz.com](https://git.mutualzz.com/mutualzz/mutualzz/releases). Maintainers: see [`RELEASING.md`](https://git.mutualzz.com/mutualzz/mutualzz/src/branch/master/RELEASING.md).
+Releases are published at [git.mutualzz.com](https://git.mutualzz.com/mutualzz/mutualzz/releases).
