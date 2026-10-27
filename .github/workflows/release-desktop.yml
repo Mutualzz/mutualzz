@@ -707,12 +707,12 @@ jobs:
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
         run: node apps/app/scripts/upload-r2.mjs release latest.json
 
-  github-release:
-    name: Create GitHub Release
+  official-release:
+    name: Create Official Release
     needs: publish-r2
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
 
     steps:
       - uses: actions/checkout@v4
@@ -727,56 +727,17 @@ jobs:
       - name: Init app submodule (for version)
         run: git submodule update --init ./apps/app
 
-      - name: Download desktop artifacts
-        uses: actions/download-artifact@v4
-        with:
-          pattern: release-*
-          path: release/
-          merge-multiple: true
-
-      - name: Read app version
-        id: version
+      - name: Create official release
+        env:
+          OFFICIAL_TOKEN: ${{ secrets.OFFICIAL_RELEASE_TOKEN }}
         run: |
           VERSION=$(node -p "require('./apps/app/package.json').version")
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-
-      - name: Read changelog
-        id: changelog
-        shell: bash
-        run: |
-          if [ -f CHANGELOG.md ]; then
-            delim="CHANGELOG_$(date +%s)_$RANDOM"
-            {
-              echo "body<<$delim"
-              head -c 65000 CHANGELOG.md
-              echo
-              echo "$delim"
-            } >> "$GITHUB_OUTPUT"
-          else
-            echo "body=" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Create GitHub release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: desktop-v${{ steps.version.outputs.version }}
-          name: Mutualzz Desktop v${{ steps.version.outputs.version }}
-          body: ${{ steps.changelog.outputs.body }}
-          draft: false
-          prerelease: false
-          overwrite_files: true
-          files: |
-            release/MutualzzSetup.exe
-            release/Mutualzz.dmg
-            release/Mutualzz.deb
-            release/Mutualzz.AppImage
-            release/Mutualzz.rpm
-            release/Mutualzz.pacman
-            release/Mutualzz-win-x64-${{ steps.version.outputs.version }}.zip
-            release/Mutualzz-mac-universal-${{ steps.version.outputs.version }}.zip
-            release/Mutualzz-linux-x64-${{ steps.version.outputs.version }}.zip
-            release/Mutualzz-win.asar
-            release/Mutualzz-mac.asar
-            release/Mutualzz-linux.asar
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          R2="https://proxy.mutualzz.com/releases/latest"
+          {
+            if [ -f CHANGELOG.md ]; then head -c 60000 CHANGELOG.md; printf '\n\n'; fi
+            echo "## Downloads"
+            echo "- **Windows:** [Installer]($R2/MutualzzSetup.exe) · [Portable zip]($R2/Mutualzz-win-x64-$VERSION.zip)"
+            echo "- **macOS:** [DMG]($R2/Mutualzz.dmg) · [Zip]($R2/Mutualzz-mac-universal-$VERSION.zip)"
+            echo "- **Linux:** [AppImage]($R2/Mutualzz.AppImage) · [deb]($R2/Mutualzz.deb) · [rpm]($R2/Mutualzz.rpm) · [pacman]($R2/Mutualzz.pacman)"
+          } > notes.md
+          bash .github/scripts/official-release.sh "desktop-v$VERSION" "Mutualzz Desktop v$VERSION" notes.md

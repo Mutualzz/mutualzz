@@ -613,12 +613,12 @@ jobs:
           if-no-files-found: warn
           retention-days: 1
 
-  github-release:
-    name: Create GitHub Release
+  official-release:
+    name: Create Official Release
     needs: [build-mobile]
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
 
     steps:
       - uses: actions/checkout@v4
@@ -640,51 +640,22 @@ jobs:
           path: release/
           merge-multiple: true
 
-      - name: Read mobile version
-        id: version
+      - name: Create official release
+        env:
+          OFFICIAL_TOKEN: ${{ secrets.OFFICIAL_RELEASE_TOKEN }}
         run: |
           VERSION=$(node -p "require('./apps/mobile/app.json').expo.version")
           if [ -z "$VERSION" ] || [ "$VERSION" = "undefined" ]; then
             echo "Missing expo.version in apps/mobile/app.json" >&2
             exit 1
           fi
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-
-      - name: Read changelog
-        id: changelog
-        shell: bash
-        run: |
-          if [ -f CHANGELOG.md ]; then
-            delim="CHANGELOG_$(date +%s)_$RANDOM"
-            {
-              echo "body<<$delim"
-              head -c 65000 CHANGELOG.md
-              echo
-              echo "$delim"
-            } >> "$GITHUB_OUTPUT"
-          else
-            echo "body=" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Create GitHub release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: mobile-v${{ steps.version.outputs.version }}
-          name: Mutualzz Mobile v${{ steps.version.outputs.version }}
-          body: ${{ steps.changelog.outputs.body }}
-          draft: false
-          prerelease: false
-          overwrite_files: true
-          files: |
-            release/Mutualzz.apk
-            release/Mutualzz.aab
-            release/Mutualzz.ipa
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          if [ -f CHANGELOG.md ]; then head -c 65000 CHANGELOG.md > notes.md; else : > notes.md; fi
+          bash .github/scripts/official-release.sh "mobile-v$VERSION" "Mutualzz Mobile v$VERSION" notes.md \
+            release/Mutualzz.apk release/Mutualzz.aab release/Mutualzz.ipa
 
   publish-google-play:
     name: Publish to Google Play
-    needs: [build-mobile, github-release]
+    needs: [build-mobile, official-release]
     runs-on: ubuntu-latest
 
     steps:

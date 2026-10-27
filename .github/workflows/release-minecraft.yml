@@ -242,12 +242,12 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-  github-release:
-    name: Create GitHub Release
+  official-release:
+    name: Create Official Release
     needs: [build-minecraft]
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
 
     steps:
       - uses: actions/checkout@v4
@@ -263,47 +263,22 @@ jobs:
           name: release-minecraft
           path: release/
 
-      - name: Read Minecraft version
-        id: version
-        shell: bash
+      - name: Create official release
+        env:
+          OFFICIAL_TOKEN: ${{ secrets.OFFICIAL_RELEASE_TOKEN }}
         run: |
           VERSION=$(grep -E '^\s*version\s*=' apps/mc-bridge/build.gradle.kts | head -n1 | sed -E 's/.*"([^"]+)".*/\1/')
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-
-      - name: Read changelog
-        id: changelog
-        shell: bash
-        run: |
           if [ -f CHANGELOG.md ]; then
-            delim="CHANGELOG_$(date +%s)_$RANDOM"
-            {
-              echo "body<<$delim"
-              head -c 65000 CHANGELOG.md
-              echo
-              echo "$delim"
-            } >> "$GITHUB_OUTPUT"
+            head -c 65000 CHANGELOG.md > notes.md
           else
-            echo "body=Official Mutualzz Bridge (Paper/Spigot 1.18.2+) + Mutualzz Voice (Fabric / NeoForge / Forge) jars." >> "$GITHUB_OUTPUT"
+            echo "Official Mutualzz Bridge (Paper/Spigot 1.18.2+) + Mutualzz Voice (Fabric / NeoForge / Forge) jars." > notes.md
           fi
-
-      - name: Create GitHub release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: minecraft-v${{ steps.version.outputs.version }}
-          name: Mutualzz Minecraft v${{ steps.version.outputs.version }}
-          body: ${{ steps.changelog.outputs.body }}
-          draft: false
-          prerelease: false
-          overwrite_files: true
-          files: |
-            release/mutualzz-bridge-*.jar
-            release/mutualzz-voice-*.jar
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          bash .github/scripts/official-release.sh "minecraft-v$VERSION" "Mutualzz Minecraft v$VERSION" notes.md \
+            release/mutualzz-bridge-*.jar release/mutualzz-voice-*.jar
 
   publish-modrinth:
     name: Publish to Modrinth
-    needs: [build-minecraft, github-release]
+    needs: [build-minecraft, official-release]
     runs-on: ubuntu-latest
 
     steps:
@@ -533,7 +508,7 @@ jobs:
 
   publish-curseforge:
     name: Publish to CurseForge
-    needs: [build-minecraft, github-release]
+    needs: [build-minecraft, official-release]
     runs-on: ubuntu-latest
 
     steps:

@@ -135,12 +135,12 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-  github-release:
-    name: Create GitHub Release
+  official-release:
+    name: Create Official Release
     needs: [build-rpc]
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
 
     steps:
       - uses: actions/checkout@v4
@@ -153,42 +153,37 @@ jobs:
           name: release-rpc
           path: .
 
-      - name: Create GitHub release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: rpc-v${{ needs.build-rpc.outputs.version }}
-          name: Mutualzz RPC v${{ needs.build-rpc.outputs.version }}
-          body: |
-            Mutualzz Rich Presence RPC clients (`@mutualzz/rpc`, `Mutualzz.Rpc`, C++).
-
-            ## Install
-
-            **Node**
-            ```bash
-            npm install @mutualzz/rpc@${{ needs.build-rpc.outputs.version }}
-            ```
-
-            **.NET**
-            ```bash
-            dotnet add package Mutualzz.Rpc --version ${{ needs.build-rpc.outputs.version }}
-            ```
-
-            **C++**
-            Download `mutualzz-rpc-cpp-${{ needs.build-rpc.outputs.version }}.tar.gz` or use the sources under `packages/rpc-cpp`.
-
-            Protocol: see `PROTOCOL.md` in the Node package / repo.
-          draft: false
-          prerelease: false
-          overwrite_files: true
-          files: |
-            release/Mutualzz.Rpc.*.nupkg
-            release/mutualzz-rpc-cpp-*.tar.gz
+      - name: Create official release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OFFICIAL_TOKEN: ${{ secrets.OFFICIAL_RELEASE_TOKEN }}
+          VERSION: ${{ needs.build-rpc.outputs.version }}
+        run: |
+          cat > notes.md <<EOF
+          Mutualzz Rich Presence RPC clients (\`@mutualzz/rpc\`, \`Mutualzz.Rpc\`, C++).
+
+          ## Install
+
+          **Node**
+          \`\`\`bash
+          npm install @mutualzz/rpc@$VERSION
+          \`\`\`
+
+          **.NET**
+          \`\`\`bash
+          dotnet add package Mutualzz.Rpc --version $VERSION
+          \`\`\`
+
+          **C++**
+          Download \`mutualzz-rpc-cpp-$VERSION.tar.gz\` or use the sources under \`packages/rpc-cpp\`.
+
+          Protocol: see \`PROTOCOL.md\` in the Node package / repo.
+          EOF
+          bash .github/scripts/official-release.sh "rpc-v$VERSION" "Mutualzz RPC v$VERSION" notes.md \
+            release/Mutualzz.Rpc.*.nupkg release/mutualzz-rpc-cpp-*.tar.gz
 
   publish-npm:
     name: Publish to npm
-    needs: [build-rpc, github-release]
+    needs: [build-rpc, official-release]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -232,7 +227,7 @@ jobs:
 
   publish-nuget:
     name: Publish to NuGet
-    needs: [build-rpc, github-release]
+    needs: [build-rpc, official-release]
     runs-on: ubuntu-latest
     permissions:
       contents: read
