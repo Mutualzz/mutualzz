@@ -16,8 +16,8 @@ Social app for everyone — desktop, mobile, voice, and Minecraft bridge.
 
 Source is available for transparency and **community contributions**. Contributors get credit (git authorship, PR attribution, changelogs when practical).
 
-- [`LICENSE`](https://github.com/Mutualzz/mutualzz/blob/master/LICENSE) — use official Mutualzz products; no redistribution of builds / competing hosted services without permission
-- [`CONTRIBUTING.md`](https://github.com/Mutualzz/mutualzz/blob/master/CONTRIBUTING.md) — how to fork, open PRs, and how credit works
+- [`LICENSE`](https://git.mutualzz.com/mutualzz/mutualzz/blob/master/LICENSE) — use official Mutualzz products; no redistribution of builds / competing hosted services without permission
+- [`CONTRIBUTING.md`](https://git.mutualzz.com/mutualzz/mutualzz/blob/master/CONTRIBUTING.md) — how to fork, open PRs, and how credit works
 
 Minecraft-specific projects:
 

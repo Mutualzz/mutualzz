@@ -4,7 +4,7 @@ Thanks for wanting to help. Contributions are welcome across the Mutualzz
 monorepo and its submodules.
 
 Redistributing unofficial builds, packages, or hosting a competing Mutualzz
-service is still not allowed — see [`LICENSE`](https://github.com/Mutualzz/mutualzz/blob/master/LICENSE).
+service is still not allowed — see [`LICENSE`](https://git.mutualzz.com/mutualzz/mutualzz/blob/master/LICENSE).
 
 ## Credit
 
