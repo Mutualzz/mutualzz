@@ -20,6 +20,7 @@ overrides:
 
 patchedDependencies:
   '@expo/ui@56.0.22': 72fd19eb3012b94ccc36c51e7a5e6b279f1b56afd2c4fe7c9bca031aed601439
+  expo-alternate-app-icons@8.0.0: cc8d70052161d3224de8f6c3a50ff6d6ce98873cf2a3e52f2aba522261698c58
 
 importers:
 
@@ -64,6 +65,9 @@ importers:
       simple-rnnoise-wasm:
         specifier: 1.1.0
         version: 1.1.0
+      skinview3d:
+        specifier: 3.4.2
+        version: 3.4.2
     devDependencies:
       '@dnd-kit/core':
         specifier: ^6.3.1
@@ -265,7 +269,7 @@ importers:
         version: 17.0.0
       eslint:
         specifier: ^10.8.0
-        version: 10.8.0(jiti@2.7.0)
+        version: 10.8.0(jiti@2.7.0)(supports-color@5.5.0)
       eslint-plugin-react:
         specifier: ^7.37.5
         version: 7.37.5(eslint@10.8.0)
@@ -484,7 +488,7 @@ importers:
         version: 56.0.16(@babel/core@7.29.7)(@expo/dom-webview@56.0.5)(@expo/metro-runtime@56.0.17)(bufferutil@4.1.0)(expo-router@56.2.15)(expo-widgets@56.0.22)(react-dom@19.2.3)(react-native-webview@13.16.1)(react-native-worklets@0.8.3)(react-native@0.85.3)(react@19.2.3)(supports-color@10.2.2)(typescript@6.0.3)
       expo-alternate-app-icons:
         specifier: ^8.0.0
-        version: 8.0.0(expo@56.0.16)(react-native@0.85.3)(react@19.2.3)
+        version: 8.0.0(patch_hash=cc8d70052161d3224de8f6c3a50ff6d6ce98873cf2a3e52f2aba522261698c58)(expo@56.0.16)(react-native@0.85.3)(react@19.2.3)
       expo-asset:
         specifier: ~56.0.20
         version: 56.0.20(expo@56.0.16)(react-native@0.85.3)(react@19.2.3)(typescript@6.0.3)
@@ -592,7 +596,7 @@ importers:
         version: 17.0.9(i18next@26.3.6)(react-dom@19.2.3)(react-native@0.85.3)(react@19.2.3)(typescript@6.0.3)
       react-native:
         specifier: 0.85.3
-        version: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)
+        version: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)(supports-color@10.2.2)
       react-native-gesture-handler:
         specifier: ~2.31.1
         version: 2.31.2(react-native@0.85.3)(react@19.2.3)
@@ -668,7 +672,7 @@ importers:
         version: 1.14.1
       '@discordjs/opus':
         specifier: ^0.10.0
-        version: 0.10.0(encoding@0.1.13)(supports-color@10.2.2)
+        version: 0.10.0(encoding@0.1.13)
       '@discordjs/voice':
         specifier: ^0.19.2
         version: 0.19.2(@discordjs/opus@0.10.0)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(bufferutil@4.1.0)
@@ -761,7 +765,7 @@ importers:
         version: 1.1.9
       discord-player-youtubei:
         specifier: ^2.0.0
-        version: 2.0.0(bufferutil@4.1.0)(canvas@3.2.3)(supports-color@10.2.2)
+        version: 2.0.0(bufferutil@4.1.0)(canvas@3.2.3)
       discord.js:
         specifier: ^14.26.4
         version: 14.26.4(bufferutil@4.1.0)
@@ -800,7 +804,7 @@ importers:
         version: 8.2.0
       https-proxy-agent:
         specifier: ^9.1.0
-        version: 9.1.0
+        version: 9.1.0(supports-color@5.5.0)
       imurmurhash:
         specifier: ^0.1.4
         version: 0.1.4
@@ -930,7 +934,7 @@ importers:
         version: 0.31.10
       eslint:
         specifier: ^10.8.0
-        version: 10.8.0(jiti@2.7.0)(supports-color@10.2.2)
+        version: 10.8.0(jiti@2.7.0)
       nodemon:
         specifier: ^3.1.14
         version: 3.1.14
@@ -960,7 +964,7 @@ importers:
         version: link:../../packages/validators
       ioredis:
         specifier: ^5.11.0
-        version: 5.11.1
+        version: 5.11.1(supports-color@10.2.2)
       mediasoup:
         specifier: ^3.20.0
         version: 3.20.8
@@ -3827,6 +3831,7 @@ packages:
   '@opentelemetry/sdk-trace-base@2.8.0':
     resolution: {integrity: sha512-mhU4jp+vW0mGbFRd+GeXHvmfA4aDqWjBjLC3pE5XMpLs0IE2ryYb019Ts2AQrOq67gaTF25D91+fgvEHDZEnuQ==}
     engines: {node: ^18.19.0 || >=20.6.0}
+    deprecated: Use @opentelemetry/sdk-trace package
     peerDependencies:
       '@opentelemetry/api': '>=1.3.0 <1.10.0'
 
@@ -5181,6 +5186,7 @@ packages:
   '@smithy/core@3.25.1':
     resolution: {integrity: sha512-zpDbpXBCBsxfLtG2GEUyfgvHvSFrw5CwDZSNzL0v52gx/c3oPlPbm+7W7num8xs6vyiUBn+bvYPHcQDOXZynCQ==}
     engines: {node: '>=18.0.0'}
+    deprecated: Deprecated due to a bug in custom logger data redaction. See https://github.com/aws/aws-sdk-js-v3/issues/8393.
 
   '@smithy/credential-provider-imds@4.4.1':
     resolution: {integrity: sha512-TSAF5NHgxEsllbErYWbK8aLnl5L601NGc5VYJlSPsKnf3YlkhdoBN+geGcaU00oiw2OK3QO5LA3QNXiiWhCidQ==}
@@ -5969,11 +5975,20 @@ packages:
   '@types/stack-utils@2.0.3':
     resolution: {integrity: sha512-9aEbYZ3TbYMznPdcdr3SmIrLXwC/AKZXQeCf9Pgao5CKb8CyHuEX5jzWPTkvregvhRJHcpRO6BFoGW9ycaOkYw==}
 
+  '@types/stats.js@0.17.4':
+    resolution: {integrity: sha512-jIBvWWShCvlBqBNIZt0KAshWpvSjhkwkEu4ZUcASoAvhmrgAUI2t1dXrjSL4xXVLB4FznPrIsX3nKXFl/Dt4vA==}
+
+  '@types/three@0.156.0':
+    resolution: {integrity: sha512-733bXDSRdlrxqOmQuOmfC1UBRuJ2pREPk8sWnx9MtIJEVDQMx8U0NQO5MVVaOrjzDPyLI+cFPim2X/ss9v0+LQ==}
+
   '@types/unist@3.0.3':
     resolution: {integrity: sha512-ko/gIFJRv177XgZsZcBwnqJN5x/Gien8qNOn0D5bQU/zAzVf9Zt3BlcUiLqhV9y4ARk0GbT3tnUiPNgnTXzc/Q==}
 
   '@types/verror@1.10.11':
     resolution: {integrity: sha512-RlDm9K7+o5stv0Co8i8ZRGxDbrTxhJtgjqjFyVh/tXQyl/rYtTKlnTvZ88oSTeYREWurwx20Js4kTuKCsFkUtg==}
+
+  '@types/webxr@0.5.24':
+    resolution: {integrity: sha512-h8fgEd/DpoS9CBrjEQXR+dIDraopAEfu4wYVNY2tEPwk60stPWhvZMf4Foo5FakuQ7HFZoa8WceaWFervK2Ovg==}
 
   '@types/ws@8.18.1':
     resolution: {integrity: sha512-ThVF6DCVhA8kUGy+aazFQ4kXQ7E1Ty7A3ypFOe0IcJV8O/M511G99AW24irKrW56Wt44yG9+ij8FaqoBGkuBXg==}
@@ -8396,6 +8411,9 @@ packages:
   fetch-nodeshim@0.4.10:
     resolution: {integrity: sha512-m6I8ALe4L4XpdETy7MJZWs6L1IVMbjs99bwbpIKphxX+0CTns4IKDWJY0LWfr4YsFjfg+z1TjzTMU8lKl8rG0w==}
 
+  fflate@0.6.11:
+    resolution: {integrity: sha512-3JyEFWGjFn7zHmoa9+zG1BmW7X2okcmAB+0Cnu9UFbVs/jCBnl2A8o065ZlXiw145K3eBM3uLuzrYXC0RK7eDg==}
+
   figures@6.1.0:
     resolution: {integrity: sha512-d+l3qxjSesT4V7v2fh+QnmFnUWv9lSpjarhShNTgBOfA0ttejbQUAlHLitbjkoRiDulW0OPoQPYIGhIC8ohejg==}
     engines: {node: '>=18'}
@@ -9927,6 +9945,9 @@ packages:
   meriyah@6.1.4:
     resolution: {integrity: sha512-Sz8FzjzI0kN13GK/6MVEsVzMZEPvOhnmmI1lU5+/1cGOiK3QUahntrNNtdVeihrO7t9JpoH75iMNXg6R6uWflQ==}
     engines: {node: '>=18.0.0'}
+
+  meshoptimizer@0.18.1:
+    resolution: {integrity: sha512-ZhoIoL7TNV4s5B6+rx5mC//fw8/POGyNxS/DZyCJeiZ12ScLfVwRE/GfsxwiTkMYYD5DmK2/JXnEVXqL4rF+Sw==}
 
   metro-babel-transformer@0.84.4:
     resolution: {integrity: sha512-rvCfz8snl9h20VcvpOHxZuHP1SlAkv4HXbzw7nyyVwu6Eqo5PRerbakQ9XmUCOsRy70spJ37O+G1TK8oMzo48g==}
@@ -11607,6 +11628,12 @@ packages:
   sisteransi@1.0.5:
     resolution: {integrity: sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==}
 
+  skinview-utils@0.7.1:
+    resolution: {integrity: sha512-4eLrMqR526ehlZbsd8SuZ/CHpS9GiH0xUMoV+PYlJVi95ZFz5HJu7Spt5XYa72DRS7wgt5qquvHZf0XZJgmu9Q==}
+
+  skinview3d@3.4.2:
+    resolution: {integrity: sha512-nwxTmT+OWCckDu5CsbjFnyOqthNjl9Fahjqzyy55qcl6jXHIjMrmvDj0b1VZFvT39UKYuO1gnzAQicQ1TH4hvg==}
+
   slash@3.0.0:
     resolution: {integrity: sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==}
     engines: {node: '>=8'}
@@ -11970,6 +11997,9 @@ packages:
 
   thenify@3.3.1:
     resolution: {integrity: sha512-RVZSIV5IG10Hk3enotrhvz0T9em6cyHBLkH/YAZuKqd8hRkKhSfCGIcP2KUY0EPxndzANBmNllzWPwak+bheSw==}
+
+  three@0.156.1:
+    resolution: {integrity: sha512-kP7H0FK9d/k6t/XvQ9FO6i+QrePoDcNhwl0I02+wmUJRNSLCUIDMcfObnzQvxb37/0Uc9TDT0T1HgsRRrO6SYQ==}
 
   throat@5.0.0:
     resolution: {integrity: sha512-fcwX4mndzpLQKBS1DVYhGAcYaYt7vsHNIvQV+WXMvnow5cgjPphq5CaayLaGsjRdSCKZFNGt7/GYAuXaNOiYCA==}
@@ -13079,7 +13109,7 @@ snapshots:
       '@babel/types': 7.29.7
       '@jridgewell/remapping': 2.3.5
       convert-source-map: 2.0.0
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.4.3(supports-color@10.2.2)
       gensync: 1.0.0-beta.2
       json5: 2.2.3
       semver: 6.3.1
@@ -13140,7 +13170,7 @@ snapshots:
       '@babel/core': 7.29.7
       '@babel/helper-compilation-targets': 7.29.7
       '@babel/helper-plugin-utils': 7.29.7
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.4.3(supports-color@10.2.2)
       lodash.debounce: 4.0.8
       resolve: 1.22.12
     transitivePeerDependencies:
@@ -13615,7 +13645,7 @@ snapshots:
       '@babel/parser': 7.29.7
       '@babel/template': 7.29.7
       '@babel/types': 7.29.7
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.4.3(supports-color@10.2.2)
     transitivePeerDependencies:
       - supports-color
 
@@ -13729,10 +13759,10 @@ snapshots:
     dependencies:
       discord-api-types: 0.38.49
 
-  '@discordjs/node-pre-gyp@0.4.5(encoding@0.1.13)(supports-color@10.2.2)':
+  '@discordjs/node-pre-gyp@0.4.5(encoding@0.1.13)':
     dependencies:
       detect-libc: 2.1.2
-      https-proxy-agent: 5.0.1(supports-color@10.2.2)
+      https-proxy-agent: 5.0.1
       make-dir: 3.1.0
       node-fetch: 2.7.0(encoding@0.1.13)
       nopt: 5.0.0
@@ -13744,9 +13774,9 @@ snapshots:
       - encoding
       - supports-color
 
-  '@discordjs/opus@0.10.0(encoding@0.1.13)(supports-color@10.2.2)':
+  '@discordjs/opus@0.10.0(encoding@0.1.13)':
     dependencies:
-      '@discordjs/node-pre-gyp': 0.4.5(encoding@0.1.13)(supports-color@10.2.2)
+      '@discordjs/node-pre-gyp': 0.4.5(encoding@0.1.13)
       node-addon-api: 8.8.0
     transitivePeerDependencies:
       - encoding
@@ -13872,7 +13902,7 @@ snapshots:
 
   '@electron/notarize@2.5.0':
     dependencies:
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.4.3(supports-color@10.2.2)
       fs-extra: 9.1.0
       promise-retry: 2.0.1
     transitivePeerDependencies:
@@ -13881,7 +13911,7 @@ snapshots:
   '@electron/osx-sign@1.3.1':
     dependencies:
       compare-version: 0.1.2
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.4.3(supports-color@10.2.2)
       fs-extra: 10.1.0
       isbinaryfile: 4.0.10
       minimist: 1.2.8
@@ -13893,7 +13923,7 @@ snapshots:
     dependencies:
       '@malept/cross-spawn-promise': 2.0.0
       chalk: 4.1.2
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.4.3(supports-color@10.2.2)
       detect-libc: 2.1.2
       fs-extra: 10.1.0
       got: 11.8.6
@@ -13913,7 +13943,7 @@ snapshots:
     dependencies:
       '@electron/asar': 3.4.1
       '@malept/cross-spawn-promise': 2.0.0
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.4.3(supports-color@10.2.2)
       dir-compare: 4.2.0
       fs-extra: 11.3.5
       minimatch: 9.0.9
@@ -14379,7 +14409,7 @@ snapshots:
 
   '@eslint-community/eslint-utils@4.9.1(eslint@10.8.0)':
     dependencies:
-      eslint: 10.8.0(jiti@2.7.0)(supports-color@10.2.2)
+      eslint: 10.8.0(jiti@2.7.0)(supports-color@5.5.0)
       eslint-visitor-keys: 3.4.3
 
   '@eslint-community/regexpp@4.12.2': {}
@@ -14387,15 +14417,15 @@ snapshots:
   '@eslint/config-array@0.23.5':
     dependencies:
       '@eslint/object-schema': 3.0.5
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.4.3(supports-color@10.2.2)
       minimatch: 10.2.5
     transitivePeerDependencies:
       - supports-color
 
-  '@eslint/config-array@0.23.5(supports-color@10.2.2)':
+  '@eslint/config-array@0.23.5(supports-color@5.5.0)':
     dependencies:
       '@eslint/object-schema': 3.0.5
-      debug: 4.4.3(supports-color@10.2.2)
+      debug: 4.4.3(supports-color@5.5.0)
       minimatch: 10.2.5
     transitivePeerDependencies:
       - supports-color
@@ -14423,7 +14453,7 @@ snapshots:
     dependencies:
       expensify-common: 2.0.189
       react: 19.2.3
-      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)
+      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)(supports-color@10.2.2)
       react-native-worklets: 0.8.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(react-native@0.85.3)(react@19.2.3)
 
   '@expo-google-fonts/inter@0.4.2': {}
@@ -14456,7 +14486,7 @@ snapshots:
       '@expo/spawn-async': 1.8.0
       '@expo/ws-tunnel': 2.0.0(ws@8.21.0)
       '@expo/xcpretty': 4.4.4
-      '@react-native/dev-middleware': 0.85.3(bufferutil@4.1.0)
+      '@react-native/dev-middleware': 0.85.3(bufferutil@4.1.0)(supports-color@10.2.2)
       accepts: 1.3.8
       agent-cli-detector: 0.1.2
       arg: 5.0.2
@@ -14495,7 +14525,7 @@ snapshots:
       zod: 3.25.76
     optionalDependencies:
       expo-router: 56.2.15(@babel/core@7.29.7)(@expo/log-box@56.0.14)(@expo/metro-runtime@56.0.17)(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3)(@types/react@19.2.17)(expo-constants@56.0.21)(expo-font@56.0.7)(expo-linking@56.0.15)(expo@56.0.16)(react-dom@19.2.3)(react-native-gesture-handler@2.31.2)(react-native-reanimated@4.3.1)(react-native-safe-area-context@5.7.0)(react-native-screens@4.25.2)(react-native-worklets@0.8.3)(react-native@0.85.3)(react@19.2.3)(supports-color@5.5.0)
-      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)
+      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)(supports-color@10.2.2)
     transitivePeerDependencies:
       - '@expo/dom-webview'
       - '@expo/metro-runtime'
@@ -14533,7 +14563,7 @@ snapshots:
       '@expo/spawn-async': 1.8.0
       '@expo/ws-tunnel': 2.0.0(ws@8.21.0)
       '@expo/xcpretty': 4.4.4
-      '@react-native/dev-middleware': 0.85.3(bufferutil@4.1.0)
+      '@react-native/dev-middleware': 0.85.3(bufferutil@4.1.0)(supports-color@10.2.2)
       accepts: 1.3.8
       agent-cli-detector: 0.1.2
       arg: 5.0.2
@@ -14543,7 +14573,7 @@ snapshots:
       ci-info: 3.9.0
       compression: 1.8.1
       connect: 3.7.0
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.4.3(supports-color@10.2.2)
       dnssd-advertise: 1.1.6
       expo: 56.0.16(@babel/core@7.29.7)(@expo/dom-webview@56.0.5)(@expo/metro-runtime@56.0.17)(bufferutil@4.1.0)(expo-router@56.2.15)(expo-widgets@56.0.22)(react-dom@19.2.3)(react-native-webview@13.16.1)(react-native-worklets@0.8.3)(react-native@0.85.3)(react@19.2.3)(typescript@6.0.3)
       expo-server: 56.0.5
@@ -14598,7 +14628,7 @@ snapshots:
       '@expo/require-utils': 56.1.5(typescript@6.0.3)
       '@expo/sdk-runtime-versions': 1.0.0
       chalk: 4.1.2
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.4.3(supports-color@10.2.2)
       getenv: 2.0.0
       glob: 13.0.6
       semver: 7.8.4
@@ -14650,7 +14680,7 @@ snapshots:
   '@expo/env@2.3.1':
     dependencies:
       chalk: 4.1.2
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.4.3(supports-color@10.2.2)
       getenv: 2.0.0
     transitivePeerDependencies:
       - supports-color
@@ -14658,7 +14688,7 @@ snapshots:
   '@expo/env@2.4.1':
     dependencies:
       chalk: 4.1.2
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.4.3(supports-color@10.2.2)
       getenv: 2.0.0
     transitivePeerDependencies:
       - supports-color
@@ -14671,7 +14701,7 @@ snapshots:
       '@expo/spawn-async': 1.8.0
       arg: 5.0.2
       chalk: 4.1.2
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.4.3(supports-color@10.2.2)
       getenv: 2.0.0
       glob: 13.0.6
       ignore: 5.3.2
@@ -14739,7 +14769,7 @@ snapshots:
       '@jridgewell/sourcemap-codec': 1.5.5
       browserslist: 4.28.2
       chalk: 4.1.2
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.4.3(supports-color@10.2.2)
       getenv: 2.0.0
       glob: 13.0.6
       hermes-parser: 0.33.3
@@ -14758,7 +14788,7 @@ snapshots:
 
   '@expo/metro-file-map@56.0.3':
     dependencies:
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.4.3(supports-color@10.2.2)
       fb-watchman: 2.0.2
       invariant: 2.2.4
       jest-worker: 29.7.0
@@ -14782,7 +14812,7 @@ snapshots:
 
   '@expo/metro@56.0.0(bufferutil@4.1.0)':
     dependencies:
-      metro: 0.84.4(bufferutil@4.1.0)
+      metro: 0.84.4(bufferutil@4.1.0)(supports-color@10.2.2)
       metro-babel-transformer: 0.84.4
       metro-cache: 0.84.4
       metro-cache-key: 0.84.4
@@ -14888,7 +14918,7 @@ snapshots:
       '@expo/image-utils': 0.10.3(typescript@6.0.3)
       '@expo/json-file': 10.2.0
       '@react-native/normalize-colors': 0.85.3
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.4.3(supports-color@10.2.2)
       expo-modules-autolinking: 56.0.20(typescript@6.0.3)
       resolve-from: 5.0.0
       semver: 7.8.4
@@ -14908,7 +14938,7 @@ snapshots:
 
   '@expo/router-server@56.0.16(@expo/metro-runtime@56.0.17)(expo-constants@56.0.21)(expo-font@56.0.7)(expo-router@56.2.15)(expo-server@56.0.5)(expo@56.0.16)(react-dom@19.2.3)(react@19.2.3)':
     dependencies:
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.4.3(supports-color@10.2.2)
       expo: 56.0.16(@babel/core@7.29.7)(@expo/dom-webview@56.0.5)(@expo/metro-runtime@56.0.17)(bufferutil@4.1.0)(expo-router@56.2.15)(expo-widgets@56.0.22)(react-dom@19.2.3)(react-native-webview@13.16.1)(react-native-worklets@0.8.3)(react-native@0.85.3)(react@19.2.3)(typescript@6.0.3)
       expo-constants: 56.0.21(expo@56.0.16)(react-native@0.85.3)
       expo-font: 56.0.7(expo@56.0.16)(react-native@0.85.3)(react@19.2.3)
@@ -14980,7 +15010,7 @@ snapshots:
     dependencies:
       expo-font: 56.0.7(expo@56.0.16)(react-native@0.85.3)(react@19.2.3)
       react: 19.2.3
-      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)
+      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)(supports-color@10.2.2)
 
   '@expo/ws-tunnel@2.0.0(ws@8.21.0)':
     dependencies:
@@ -15531,7 +15561,7 @@ snapshots:
 
   '@malept/flatpak-bundler@0.4.0':
     dependencies:
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.4.3(supports-color@10.2.2)
       fs-extra: 9.1.0
       lodash: 4.18.1
       tmp-promise: 3.0.3
@@ -15582,7 +15612,7 @@ snapshots:
 
   '@notifee/react-native@9.1.8(react-native@0.85.3)':
     dependencies:
-      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)
+      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)(supports-color@10.2.2)
 
   '@npmcli/fs@2.1.2':
     dependencies:
@@ -15604,15 +15634,6 @@ snapshots:
     dependencies:
       '@opentelemetry/api': 1.9.1
       '@opentelemetry/semantic-conventions': 1.41.1
-
-  '@opentelemetry/instrumentation@0.214.0(@opentelemetry/api@1.9.1)':
-    dependencies:
-      '@opentelemetry/api': 1.9.1
-      '@opentelemetry/api-logs': 0.214.0
-      import-in-the-middle: 3.1.0
-      require-in-the-middle: 8.0.1
-    transitivePeerDependencies:
-      - supports-color
 
   '@opentelemetry/instrumentation@0.214.0(@opentelemetry/api@1.9.1)(supports-color@10.2.2)':
     dependencies:
@@ -16098,13 +16119,13 @@ snapshots:
   '@react-native-async-storage/async-storage@2.2.0(react-native@0.85.3)':
     dependencies:
       merge-options: 3.0.4
-      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)
+      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)(supports-color@10.2.2)
 
   '@react-native-community/datetimepicker@9.1.0(expo@56.0.16)(react-native@0.85.3)(react@19.2.3)':
     dependencies:
       invariant: 2.2.4
       react: 19.2.3
-      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)
+      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)(supports-color@10.2.2)
     optionalDependencies:
       expo: 56.0.16(@babel/core@7.29.7)(@expo/dom-webview@56.0.5)(@expo/metro-runtime@56.0.17)(bufferutil@4.1.0)(expo-router@56.2.15)(expo-widgets@56.0.22)(react-dom@19.2.3)(react-native-webview@13.16.1)(react-native-worklets@0.8.3)(react-native@0.85.3)(react@19.2.3)(supports-color@10.2.2)(typescript@6.0.3)
 
@@ -16171,22 +16192,6 @@ snapshots:
       tinyglobby: 0.2.17
       yargs: 17.7.3
 
-  '@react-native/community-cli-plugin@0.85.3(@react-native/metro-config@0.85.3)(bufferutil@4.1.0)':
-    dependencies:
-      '@react-native/dev-middleware': 0.85.3(bufferutil@4.1.0)
-      debug: 4.4.3(supports-color@5.5.0)
-      invariant: 2.2.4
-      metro: 0.84.4(bufferutil@4.1.0)
-      metro-config: 0.84.4(bufferutil@4.1.0)
-      metro-core: 0.84.4
-      semver: 7.8.4
-    optionalDependencies:
-      '@react-native/metro-config': 0.85.3(@babel/core@7.29.7)(bufferutil@4.1.0)
-    transitivePeerDependencies:
-      - bufferutil
-      - supports-color
-      - utf-8-validate
-
   '@react-native/community-cli-plugin@0.85.3(@react-native/metro-config@0.85.3)(bufferutil@4.1.0)(supports-color@10.2.2)':
     dependencies:
       '@react-native/dev-middleware': 0.85.3(bufferutil@4.1.0)(supports-color@10.2.2)
@@ -16205,14 +16210,6 @@ snapshots:
 
   '@react-native/debugger-frontend@0.85.3': {}
 
-  '@react-native/debugger-shell@0.85.3':
-    dependencies:
-      cross-spawn: 7.0.6
-      debug: 4.4.3(supports-color@5.5.0)
-      fb-dotslash: 0.5.8
-    transitivePeerDependencies:
-      - supports-color
-
   '@react-native/debugger-shell@0.85.3(supports-color@10.2.2)':
     dependencies:
       cross-spawn: 7.0.6
@@ -16220,25 +16217,6 @@ snapshots:
       fb-dotslash: 0.5.8
     transitivePeerDependencies:
       - supports-color
-
-  '@react-native/dev-middleware@0.85.3(bufferutil@4.1.0)':
-    dependencies:
-      '@isaacs/ttlcache': 1.4.1
-      '@react-native/debugger-frontend': 0.85.3
-      '@react-native/debugger-shell': 0.85.3
-      chrome-launcher: 0.15.2
-      chromium-edge-launcher: 0.3.0
-      connect: 3.7.0
-      debug: 4.4.3(supports-color@5.5.0)
-      invariant: 2.2.4
-      nullthrows: 1.1.1
-      open: 7.4.2
-      serve-static: 1.16.3
-      ws: 7.5.11(bufferutil@4.1.0)
-    transitivePeerDependencies:
-      - bufferutil
-      - supports-color
-      - utf-8-validate
 
   '@react-native/dev-middleware@0.85.3(bufferutil@4.1.0)(supports-color@10.2.2)':
     dependencies:
@@ -16329,7 +16307,7 @@ snapshots:
       '@rn-primitives/utils': 1.5.2(react-native@0.85.3)(react@19.2.3)
       react: 19.2.3
     optionalDependencies:
-      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)
+      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)(supports-color@10.2.2)
     transitivePeerDependencies:
       - '@types/react'
       - '@types/react-dom'
@@ -16340,14 +16318,14 @@ snapshots:
       '@rn-primitives/types': 1.5.2(react-native@0.85.3)(react@19.2.3)
       react: 19.2.3
     optionalDependencies:
-      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)
+      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)(supports-color@10.2.2)
 
   '@rn-primitives/portal@1.5.2(@types/react@19.2.17)(immer@9.0.21)(react-native@0.85.3)(react@19.2.3)(use-sync-external-store@1.6.0)':
     dependencies:
       react: 19.2.3
       zustand: 5.0.14(@types/react@19.2.17)(immer@9.0.21)(react@19.2.3)(use-sync-external-store@1.6.0)
     optionalDependencies:
-      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)
+      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)(supports-color@10.2.2)
     transitivePeerDependencies:
       - '@types/react'
       - immer
@@ -16357,19 +16335,19 @@ snapshots:
     dependencies:
       react: 19.2.3
     optionalDependencies:
-      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)
+      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)(supports-color@10.2.2)
 
   '@rn-primitives/types@1.5.2(react-native@0.85.3)(react@19.2.3)':
     dependencies:
       react: 19.2.3
     optionalDependencies:
-      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)
+      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)(supports-color@10.2.2)
 
   '@rn-primitives/utils@1.5.2(react-native@0.85.3)(react@19.2.3)':
     dependencies:
       react: 19.2.3
     optionalDependencies:
-      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)
+      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)(supports-color@10.2.2)
 
   '@roamhq/wrtc-darwin-arm64@0.9.1':
     optional: true
@@ -16708,22 +16686,6 @@ snapshots:
       detect-libc: 2.1.2
       node-abi: 3.92.0
 
-  '@sentry/node@10.58.0':
-    dependencies:
-      '@opentelemetry/api': 1.9.1
-      '@opentelemetry/core': 2.8.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/instrumentation': 0.214.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/sdk-trace-base': 2.8.0(@opentelemetry/api@1.9.1)
-      '@opentelemetry/semantic-conventions': 1.41.1
-      '@sentry/core': 10.58.0
-      '@sentry/node-core': 10.58.0(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.8.0)(@opentelemetry/instrumentation@0.214.0)(@opentelemetry/sdk-trace-base@2.8.0)(@opentelemetry/semantic-conventions@1.41.1)
-      '@sentry/opentelemetry': 10.58.0(@opentelemetry/api@1.9.1)(@opentelemetry/core@2.8.0)(@opentelemetry/sdk-trace-base@2.8.0)(@opentelemetry/semantic-conventions@1.41.1)
-      '@sentry/server-utils': 10.58.0
-      import-in-the-middle: 3.1.0
-    transitivePeerDependencies:
-      - '@opentelemetry/exporter-trace-otlp-http'
-      - supports-color
-
   '@sentry/node@10.58.0(supports-color@10.2.2)':
     dependencies:
       '@opentelemetry/api': 1.9.1
@@ -16751,7 +16713,7 @@ snapshots:
   '@sentry/profiling-node@10.58.0':
     dependencies:
       '@sentry/core': 10.58.0
-      '@sentry/node': 10.58.0
+      '@sentry/node': 10.58.0(supports-color@10.2.2)
       '@sentry/node-cpu-profiler': 2.4.2
     transitivePeerDependencies:
       - '@opentelemetry/exporter-trace-otlp-http'
@@ -16805,7 +16767,7 @@ snapshots:
     dependencies:
       '@babel/runtime': 7.29.7
       react: 19.2.3
-      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)
+      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)(supports-color@10.2.2)
       tslib: 2.8.1
 
   '@shopify/react-native-skia@2.6.2(react-native-reanimated@4.3.1)(react-native@0.85.3)(react@19.2.3)':
@@ -17619,10 +17581,21 @@ snapshots:
 
   '@types/stack-utils@2.0.3': {}
 
+  '@types/stats.js@0.17.4': {}
+
+  '@types/three@0.156.0':
+    dependencies:
+      '@types/stats.js': 0.17.4
+      '@types/webxr': 0.5.24
+      fflate: 0.6.11
+      meshoptimizer: 0.18.1
+
   '@types/unist@3.0.3': {}
 
   '@types/verror@1.10.11':
     optional: true
+
+  '@types/webxr@0.5.24': {}
 
   '@types/ws@8.18.1':
     dependencies:
@@ -17671,7 +17644,7 @@ snapshots:
     dependencies:
       '@typescript-eslint/tsconfig-utils': 8.61.1(typescript@6.0.3)
       '@typescript-eslint/types': 8.61.1
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.4.3(supports-color@10.2.2)
       typescript: 6.0.3
     transitivePeerDependencies:
       - supports-color
@@ -17705,7 +17678,7 @@ snapshots:
       '@typescript-eslint/tsconfig-utils': 8.61.1(typescript@6.0.3)
       '@typescript-eslint/types': 8.61.1
       '@typescript-eslint/visitor-keys': 8.61.1
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.4.3(supports-color@10.2.2)
       minimatch: 10.2.5
       semver: 7.8.4
       tinyglobby: 0.2.17
@@ -17863,12 +17836,6 @@ snapshots:
 
   agent-base@6.0.2:
     dependencies:
-      debug: 4.4.3(supports-color@5.5.0)
-    transitivePeerDependencies:
-      - supports-color
-
-  agent-base@6.0.2(supports-color@10.2.2):
-    dependencies:
       debug: 4.4.3(supports-color@10.2.2)
     transitivePeerDependencies:
       - supports-color
@@ -17953,7 +17920,7 @@ snapshots:
       builder-util-runtime: 9.2.10
       chromium-pickle-js: 0.2.0
       config-file-ts: 0.2.8-rc1
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.4.3(supports-color@10.2.2)
       dmg-builder: 25.1.8(electron-builder-squirrel-windows@25.1.8)
       dotenv: 16.6.1
       dotenv-expand: 11.0.7
@@ -18339,7 +18306,7 @@ snapshots:
       babel-plugin-react-native-web: 0.21.2
       babel-plugin-syntax-hermes-parser: 0.33.3
       babel-plugin-transform-flow-enums: 0.0.2(@babel/core@7.29.7)
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.4.3(supports-color@10.2.2)
       react-refresh: 0.14.2
     optionalDependencies:
       '@babel/runtime': 7.29.7
@@ -18480,7 +18447,7 @@ snapshots:
     dependencies:
       bytes: 3.1.2
       content-type: 2.0.0
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.4.3(supports-color@10.2.2)
       http-errors: 2.0.1
       iconv-lite: 0.7.2
       on-finished: 2.4.1
@@ -18568,7 +18535,7 @@ snapshots:
 
   builder-util-runtime@9.2.10:
     dependencies:
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.4.3(supports-color@10.2.2)
       sax: 1.6.0
     transitivePeerDependencies:
       - supports-color
@@ -18582,7 +18549,7 @@ snapshots:
       builder-util-runtime: 9.2.10
       chalk: 4.1.2
       cross-spawn: 7.0.6
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.4.3(supports-color@10.2.2)
       fs-extra: 10.1.0
       http-proxy-agent: 7.0.2
       https-proxy-agent: 7.0.6
@@ -19274,10 +19241,10 @@ snapshots:
       node-html-parser: 7.1.0
       otpauth: 9.5.1
 
-  discord-player-youtubei@2.0.0(bufferutil@4.1.0)(canvas@3.2.3)(supports-color@10.2.2):
+  discord-player-youtubei@2.0.0(bufferutil@4.1.0)(canvas@3.2.3):
     dependencies:
       bgutils-js: 3.2.0
-      jsdom: 26.1.0(bufferutil@4.1.0)(canvas@3.2.3)(supports-color@10.2.2)
+      jsdom: 26.1.0(bufferutil@4.1.0)(canvas@3.2.3)
       tiny-typed-emitter: 2.1.0
       undici: 7.28.0
       youtubei.js: 16.0.1
@@ -19886,7 +19853,7 @@ snapshots:
     dependencies:
       '@babel/core': 7.29.7
       '@babel/parser': 7.29.7
-      eslint: 10.8.0(jiti@2.7.0)
+      eslint: 10.8.0(jiti@2.7.0)(supports-color@5.5.0)
       hermes-parser: 0.25.1
       zod: 4.4.3
       zod-validation-error: 4.0.2(zod@4.4.3)
@@ -19895,7 +19862,7 @@ snapshots:
 
   eslint-plugin-react-refresh@0.5.3(eslint@10.8.0):
     dependencies:
-      eslint: 10.8.0(jiti@2.7.0)
+      eslint: 10.8.0(jiti@2.7.0)(supports-color@5.5.0)
 
   eslint-plugin-react@7.37.5(eslint@10.8.0):
     dependencies:
@@ -19905,7 +19872,7 @@ snapshots:
       array.prototype.tosorted: 1.1.4
       doctrine: 2.1.0
       es-iterator-helpers: 1.3.3
-      eslint: 10.8.0(jiti@2.7.0)
+      eslint: 10.8.0(jiti@2.7.0)(supports-color@5.5.0)
       estraverse: 5.3.0
       hasown: 2.0.4
       jsx-ast-utils: 3.3.5
@@ -19967,7 +19934,7 @@ snapshots:
       '@types/estree': 1.0.9
       ajv: 6.15.0
       cross-spawn: 7.0.6
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.4.3(supports-color@10.2.2)
       escape-string-regexp: 4.0.0
       eslint-scope: 9.1.2
       eslint-visitor-keys: 5.0.1
@@ -19990,11 +19957,11 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint@10.8.0(jiti@2.7.0)(supports-color@10.2.2):
+  eslint@10.8.0(jiti@2.7.0)(supports-color@5.5.0):
     dependencies:
       '@eslint-community/eslint-utils': 4.9.1(eslint@10.8.0)
       '@eslint-community/regexpp': 4.12.2
-      '@eslint/config-array': 0.23.5(supports-color@10.2.2)
+      '@eslint/config-array': 0.23.5(supports-color@5.5.0)
       '@eslint/config-helpers': 0.7.0
       '@eslint/core': 1.2.1
       '@eslint/plugin-kit': 0.7.2
@@ -20004,7 +19971,7 @@ snapshots:
       '@types/estree': 1.0.9
       ajv: 6.15.0
       cross-spawn: 7.0.6
-      debug: 4.4.3(supports-color@10.2.2)
+      debug: 4.4.3(supports-color@5.5.0)
       escape-string-regexp: 4.0.0
       eslint-scope: 9.1.2
       eslint-visitor-keys: 5.0.1
@@ -20124,11 +20091,11 @@ snapshots:
       simply-deferred: https://codeload.github.com/Expensify/simply-deferred/tar.gz/77a08a95754660c7bd6e0b6979fdf84e8e831bf5
       ua-parser-js: 1.0.41
 
-  expo-alternate-app-icons@8.0.0(expo@56.0.16)(react-native@0.85.3)(react@19.2.3):
+  expo-alternate-app-icons@8.0.0(patch_hash=cc8d70052161d3224de8f6c3a50ff6d6ce98873cf2a3e52f2aba522261698c58)(expo@56.0.16)(react-native@0.85.3)(react@19.2.3):
     dependencies:
       expo: 56.0.16(@babel/core@7.29.7)(@expo/dom-webview@56.0.5)(@expo/metro-runtime@56.0.17)(bufferutil@4.1.0)(expo-router@56.2.15)(expo-widgets@56.0.22)(react-dom@19.2.3)(react-native-webview@13.16.1)(react-native-worklets@0.8.3)(react-native@0.85.3)(react@19.2.3)(supports-color@10.2.2)(typescript@6.0.3)
       react: 19.2.3
-      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)
+      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)(supports-color@10.2.2)
 
   expo-application@56.0.3(expo@56.0.16):
     dependencies:
@@ -20150,13 +20117,13 @@ snapshots:
       expo: 56.0.16(@babel/core@7.29.7)(@expo/dom-webview@56.0.5)(@expo/metro-runtime@56.0.17)(bufferutil@4.1.0)(expo-router@56.2.15)(expo-widgets@56.0.22)(react-dom@19.2.3)(react-native-webview@13.16.1)(react-native-worklets@0.8.3)(react-native@0.85.3)(react@19.2.3)(supports-color@10.2.2)(typescript@6.0.3)
       expo-asset: 56.0.20(expo@56.0.16)(react-native@0.85.3)(react@19.2.3)(typescript@6.0.3)
       react: 19.2.3
-      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)
+      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)(supports-color@10.2.2)
 
   expo-clipboard@56.0.4(expo@56.0.16)(react-native@0.85.3)(react@19.2.3):
     dependencies:
       expo: 56.0.16(@babel/core@7.29.7)(@expo/dom-webview@56.0.5)(@expo/metro-runtime@56.0.17)(bufferutil@4.1.0)(expo-router@56.2.15)(expo-widgets@56.0.22)(react-dom@19.2.3)(react-native-webview@13.16.1)(react-native-worklets@0.8.3)(react-native@0.85.3)(react@19.2.3)(supports-color@10.2.2)(typescript@6.0.3)
       react: 19.2.3
-      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)
+      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)(supports-color@10.2.2)
 
   expo-constants@56.0.21(expo@56.0.16)(react-native@0.85.3):
     dependencies:
@@ -20183,7 +20150,7 @@ snapshots:
       expo: 56.0.16(@babel/core@7.29.7)(@expo/dom-webview@56.0.5)(@expo/metro-runtime@56.0.17)(bufferutil@4.1.0)(expo-router@56.2.15)(expo-widgets@56.0.22)(react-dom@19.2.3)(react-native-webview@13.16.1)(react-native-worklets@0.8.3)(react-native@0.85.3)(react@19.2.3)(supports-color@10.2.2)(typescript@6.0.3)
       expo-dev-menu: 56.0.20(expo@56.0.16)(react-native@0.85.3)
       expo-manifests: 56.0.4(expo@56.0.16)
-      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)
+      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)(supports-color@10.2.2)
 
   expo-dev-menu-interface@56.0.1(expo@56.0.16):
     dependencies:
@@ -20193,7 +20160,7 @@ snapshots:
     dependencies:
       expo: 56.0.16(@babel/core@7.29.7)(@expo/dom-webview@56.0.5)(@expo/metro-runtime@56.0.17)(bufferutil@4.1.0)(expo-router@56.2.15)(expo-widgets@56.0.22)(react-dom@19.2.3)(react-native-webview@13.16.1)(react-native-worklets@0.8.3)(react-native@0.85.3)(react@19.2.3)(supports-color@10.2.2)(typescript@6.0.3)
       expo-dev-menu-interface: 56.0.1(expo@56.0.16)
-      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)
+      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)(supports-color@10.2.2)
 
   expo-device@56.0.4(expo@56.0.16):
     dependencies:
@@ -20235,7 +20202,7 @@ snapshots:
     dependencies:
       expo: 56.0.16(@babel/core@7.29.7)(@expo/dom-webview@56.0.5)(@expo/metro-runtime@56.0.17)(bufferutil@4.1.0)(expo-router@56.2.15)(expo-widgets@56.0.22)(react-dom@19.2.3)(react-native-webview@13.16.1)(react-native-worklets@0.8.3)(react-native@0.85.3)(react@19.2.3)(supports-color@10.2.2)(typescript@6.0.3)
       react: 19.2.3
-      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)
+      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)(supports-color@10.2.2)
       sf-symbols-typescript: 2.2.0
 
   expo-json-utils@56.0.0: {}
@@ -20303,7 +20270,7 @@ snapshots:
       debug: 4.4.3(supports-color@5.5.0)
       expo: 56.0.16(@babel/core@7.29.7)(@expo/dom-webview@56.0.5)(@expo/metro-runtime@56.0.17)(bufferutil@4.1.0)(expo-router@56.2.15)(expo-widgets@56.0.22)(react-dom@19.2.3)(react-native-webview@13.16.1)(react-native-worklets@0.8.3)(react-native@0.85.3)(react@19.2.3)(supports-color@10.2.2)(typescript@6.0.3)
       react: 19.2.3
-      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)
+      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)(supports-color@10.2.2)
     transitivePeerDependencies:
       - supports-color
 
@@ -20316,7 +20283,7 @@ snapshots:
       expo-application: 56.0.3(expo@56.0.16)
       expo-constants: 56.0.21(expo@56.0.16)(react-native@0.85.3)
       react: 19.2.3
-      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)
+      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)(supports-color@10.2.2)
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -20334,7 +20301,7 @@ snapshots:
       '@testing-library/user-event': 14.6.1(@testing-library/dom@10.4.1)
       client-only: 0.0.1
       color: 4.2.3
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.4.3(supports-color@10.2.2)
       escape-string-regexp: 4.0.0
       expo: 56.0.16(@babel/core@7.29.7)(@expo/dom-webview@56.0.5)(@expo/metro-runtime@56.0.17)(bufferutil@4.1.0)(expo-router@56.2.15)(expo-widgets@56.0.22)(react-dom@19.2.3)(react-native-webview@13.16.1)(react-native-worklets@0.8.3)(react-native@0.85.3)(react@19.2.3)(typescript@6.0.3)
       expo-constants: 56.0.21(expo@56.0.16)(react-native@0.85.3)
@@ -20400,7 +20367,7 @@ snapshots:
       react: 19.2.3
       react-fast-compare: 3.2.2
       react-is: 19.2.7
-      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)
+      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)(supports-color@10.2.2)
       react-native-drawer-layout: 4.2.5(react-native-gesture-handler@2.31.2)(react-native-reanimated@4.3.1)(react-native@0.85.3)(react@19.2.3)
       react-native-safe-area-context: 5.7.0(react-native@0.85.3)(react@19.2.3)
       react-native-screens: 4.25.2(react-native@0.85.3)(react@19.2.3)
@@ -20448,7 +20415,7 @@ snapshots:
     dependencies:
       expo: 56.0.16(@babel/core@7.29.7)(@expo/dom-webview@56.0.5)(@expo/metro-runtime@56.0.17)(bufferutil@4.1.0)(expo-router@56.2.15)(expo-widgets@56.0.22)(react-dom@19.2.3)(react-native-webview@13.16.1)(react-native-worklets@0.8.3)(react-native@0.85.3)(react@19.2.3)(supports-color@10.2.2)(typescript@6.0.3)
       react: 19.2.3
-      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)
+      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)(supports-color@10.2.2)
 
   expo-symbols@56.0.6(expo-font@56.0.7)(expo@56.0.16)(react-native@0.85.3)(react@19.2.3):
     dependencies:
@@ -20464,14 +20431,14 @@ snapshots:
       '@react-native/normalize-colors': 0.85.3
       debug: 4.4.3(supports-color@5.5.0)
       expo: 56.0.16(@babel/core@7.29.7)(@expo/dom-webview@56.0.5)(@expo/metro-runtime@56.0.17)(bufferutil@4.1.0)(expo-router@56.2.15)(expo-widgets@56.0.22)(react-dom@19.2.3)(react-native-webview@13.16.1)(react-native-worklets@0.8.3)(react-native@0.85.3)(react@19.2.3)(supports-color@10.2.2)(typescript@6.0.3)
-      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)
+      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)(supports-color@10.2.2)
     transitivePeerDependencies:
       - supports-color
 
   expo-task-manager@56.0.22(expo@56.0.16)(react-native@0.85.3):
     dependencies:
       expo: 56.0.16(@babel/core@7.29.7)(@expo/dom-webview@56.0.5)(@expo/metro-runtime@56.0.17)(bufferutil@4.1.0)(expo-router@56.2.15)(expo-widgets@56.0.22)(react-dom@19.2.3)(react-native-webview@13.16.1)(react-native-worklets@0.8.3)(react-native@0.85.3)(react@19.2.3)(supports-color@10.2.2)(typescript@6.0.3)
-      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)
+      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)(supports-color@10.2.2)
       unimodules-app-loader: 56.0.1
 
   expo-updates-interface@56.0.2(expo@56.0.16):
@@ -20482,7 +20449,7 @@ snapshots:
     dependencies:
       expo: 56.0.16(@babel/core@7.29.7)(@expo/dom-webview@56.0.5)(@expo/metro-runtime@56.0.17)(bufferutil@4.1.0)(expo-router@56.2.15)(expo-widgets@56.0.22)(react-dom@19.2.3)(react-native-webview@13.16.1)(react-native-worklets@0.8.3)(react-native@0.85.3)(react@19.2.3)(supports-color@10.2.2)(typescript@6.0.3)
       react: 19.2.3
-      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)
+      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)(supports-color@10.2.2)
 
   expo-widgets@56.0.22(@babel/core@7.29.7)(@types/react-dom@19.2.3)(@types/react@19.2.17)(expo@56.0.16)(react-dom@19.2.3)(react-native-worklets@0.8.3)(react-native@0.85.3)(react@19.2.3):
     dependencies:
@@ -20522,7 +20489,7 @@ snapshots:
       expo-modules-core: 56.0.21(react-native-worklets@0.8.3)(react-native@0.85.3)(react@19.2.3)
       pretty-format: 29.7.0
       react: 19.2.3
-      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)
+      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)(supports-color@10.2.2)
       react-refresh: 0.14.2
       whatwg-url-minimum: 0.1.2
     optionalDependencies:
@@ -20704,6 +20671,8 @@ snapshots:
       web-streams-polyfill: 3.3.3
 
   fetch-nodeshim@0.4.10: {}
+
+  fflate@0.6.11: {}
 
   figures@6.1.0:
     dependencies:
@@ -21203,18 +21172,11 @@ snapshots:
     dependencies:
       '@tootallnate/once': 2.0.1
       agent-base: 6.0.2
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.4.3(supports-color@10.2.2)
     transitivePeerDependencies:
       - supports-color
 
   http-proxy-agent@7.0.2:
-    dependencies:
-      agent-base: 7.1.4
-      debug: 4.4.3(supports-color@5.5.0)
-    transitivePeerDependencies:
-      - supports-color
-
-  http-proxy-agent@7.0.2(supports-color@10.2.2):
     dependencies:
       agent-base: 7.1.4
       debug: 4.4.3(supports-color@10.2.2)
@@ -21229,13 +21191,6 @@ snapshots:
   https-proxy-agent@5.0.1:
     dependencies:
       agent-base: 6.0.2
-      debug: 4.4.3(supports-color@5.5.0)
-    transitivePeerDependencies:
-      - supports-color
-
-  https-proxy-agent@5.0.1(supports-color@10.2.2):
-    dependencies:
-      agent-base: 6.0.2(supports-color@10.2.2)
       debug: 4.4.3(supports-color@10.2.2)
     transitivePeerDependencies:
       - supports-color
@@ -21243,18 +21198,11 @@ snapshots:
   https-proxy-agent@7.0.6:
     dependencies:
       agent-base: 7.1.4
-      debug: 4.4.3(supports-color@5.5.0)
-    transitivePeerDependencies:
-      - supports-color
-
-  https-proxy-agent@7.0.6(supports-color@10.2.2):
-    dependencies:
-      agent-base: 7.1.4
       debug: 4.4.3(supports-color@10.2.2)
     transitivePeerDependencies:
       - supports-color
 
-  https-proxy-agent@9.1.0:
+  https-proxy-agent@9.1.0(supports-color@5.5.0):
     dependencies:
       agent-base: 9.0.0
       debug: 4.4.3(supports-color@5.5.0)
@@ -21404,18 +21352,6 @@ snapshots:
   invariant@2.2.4:
     dependencies:
       loose-envify: 1.4.0
-
-  ioredis@5.11.1:
-    dependencies:
-      '@ioredis/commands': 1.10.0
-      cluster-key-slot: 1.1.1
-      debug: 4.4.3(supports-color@5.5.0)
-      denque: 2.1.0
-      redis-errors: 1.2.0
-      redis-parser: 3.0.0
-      standard-as-callback: 2.1.0
-    transitivePeerDependencies:
-      - supports-color
 
   ioredis@5.11.1(supports-color@10.2.2):
     dependencies:
@@ -21641,7 +21577,7 @@ snapshots:
   istanbul-lib-source-maps@5.0.6:
     dependencies:
       '@jridgewell/trace-mapping': 0.3.31
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.4.3(supports-color@10.2.2)
       istanbul-lib-coverage: 3.2.2
     transitivePeerDependencies:
       - supports-color
@@ -22032,14 +21968,14 @@ snapshots:
 
   jsc-safe-url@0.2.4: {}
 
-  jsdom@26.1.0(bufferutil@4.1.0)(canvas@3.2.3)(supports-color@10.2.2):
+  jsdom@26.1.0(bufferutil@4.1.0)(canvas@3.2.3):
     dependencies:
       cssstyle: 4.6.0
       data-urls: 5.0.0
       decimal.js: 10.6.0
       html-encoding-sniffer: 4.0.0
-      http-proxy-agent: 7.0.2(supports-color@10.2.2)
-      https-proxy-agent: 7.0.6(supports-color@10.2.2)
+      http-proxy-agent: 7.0.2
+      https-proxy-agent: 7.0.6
       is-potential-custom-element-name: 1.0.1
       nwsapi: 2.2.24
       parse5: 7.3.0
@@ -22495,6 +22431,8 @@ snapshots:
 
   meriyah@6.1.4: {}
 
+  meshoptimizer@0.18.1: {}
+
   metro-babel-transformer@0.84.4:
     dependencies:
       '@babel/core': 7.29.7
@@ -22523,7 +22461,7 @@ snapshots:
       connect: 3.7.0
       flow-enums-runtime: 0.0.6
       jest-validate: 29.7.0
-      metro: 0.84.4(bufferutil@4.1.0)
+      metro: 0.84.4(bufferutil@4.1.0)(supports-color@10.2.2)
       metro-cache: 0.84.4
       metro-core: 0.84.4
       metro-runtime: 0.84.4
@@ -22541,7 +22479,7 @@ snapshots:
 
   metro-file-map@0.84.4:
     dependencies:
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.4.3(supports-color@10.2.2)
       fb-watchman: 2.0.2
       flow-enums-runtime: 0.0.6
       graceful-fs: 4.2.11
@@ -22610,7 +22548,7 @@ snapshots:
       '@babel/parser': 7.29.7
       '@babel/types': 7.29.7
       flow-enums-runtime: 0.0.6
-      metro: 0.84.4(bufferutil@4.1.0)
+      metro: 0.84.4(bufferutil@4.1.0)(supports-color@10.2.2)
       metro-babel-transformer: 0.84.4
       metro-cache: 0.84.4
       metro-cache-key: 0.84.4
@@ -22618,52 +22556,6 @@ snapshots:
       metro-source-map: 0.84.4
       metro-transform-plugins: 0.84.4
       nullthrows: 1.1.1
-    transitivePeerDependencies:
-      - bufferutil
-      - supports-color
-      - utf-8-validate
-
-  metro@0.84.4(bufferutil@4.1.0):
-    dependencies:
-      '@babel/code-frame': 7.29.7
-      '@babel/core': 7.29.7
-      '@babel/generator': 7.29.7
-      '@babel/parser': 7.29.7
-      '@babel/template': 7.29.7
-      '@babel/traverse': 7.29.7
-      '@babel/types': 7.29.7
-      accepts: 2.0.0
-      ci-info: 2.0.0
-      connect: 3.7.0
-      debug: 4.4.3(supports-color@5.5.0)
-      error-stack-parser: 2.1.4
-      flow-enums-runtime: 0.0.6
-      graceful-fs: 4.2.11
-      hermes-parser: 0.35.0
-      image-size: 1.2.1
-      invariant: 2.2.4
-      jest-worker: 29.7.0
-      jsc-safe-url: 0.2.4
-      lodash.throttle: 4.1.1
-      metro-babel-transformer: 0.84.4
-      metro-cache: 0.84.4
-      metro-cache-key: 0.84.4
-      metro-config: 0.84.4(bufferutil@4.1.0)
-      metro-core: 0.84.4
-      metro-file-map: 0.84.4
-      metro-resolver: 0.84.4
-      metro-runtime: 0.84.4
-      metro-source-map: 0.84.4
-      metro-symbolicate: 0.84.4
-      metro-transform-plugins: 0.84.4
-      metro-transform-worker: 0.84.4(bufferutil@4.1.0)
-      mime-types: 3.0.2
-      nullthrows: 1.1.1
-      serialize-error: 2.1.0
-      source-map: 0.5.7
-      throat: 5.0.0
-      ws: 7.5.11(bufferutil@4.1.0)
-      yargs: 17.7.3
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -22850,7 +22742,7 @@ snapshots:
       use-sync-external-store: 1.6.0(react@19.2.3)
     optionalDependencies:
       react-dom: 19.2.3(react@19.2.3)
-      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)
+      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)(supports-color@10.2.2)
 
   mobx-react@9.2.2(mobx@6.16.1)(react-dom@19.2.3)(react-native@0.85.3)(react@19.2.3):
     dependencies:
@@ -22859,7 +22751,7 @@ snapshots:
       react: 19.2.3
     optionalDependencies:
       react-dom: 19.2.3(react@19.2.3)
-      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)
+      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)(supports-color@10.2.2)
 
   mobx@6.16.1: {}
 
@@ -23362,7 +23254,7 @@ snapshots:
   phosphor-react-native@3.0.6(react-native-svg@15.15.4)(react-native@0.85.3)(react@19.2.3):
     dependencies:
       react: 19.2.3
-      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)
+      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)(supports-color@10.2.2)
       react-native-svg: 15.15.4(react-native@0.85.3)(react@19.2.3)
 
   picocolors@1.1.1: {}
@@ -23488,7 +23380,7 @@ snapshots:
 
   prism-media@1.3.5(@discordjs/opus@0.10.0):
     optionalDependencies:
-      '@discordjs/opus': 0.10.0(encoding@0.1.13)(supports-color@10.2.2)
+      '@discordjs/opus': 0.10.0(encoding@0.1.13)
 
   proc-log@4.2.0: {}
 
@@ -23681,12 +23573,12 @@ snapshots:
   react-native-get-random-values@1.11.0(react-native@0.85.3):
     dependencies:
       fast-base64-decode: 1.0.0
-      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)
+      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)(supports-color@10.2.2)
 
   react-native-image-crop-picker@0.51.1(react-native@0.85.3)(react@19.2.3):
     dependencies:
       react: 19.2.3
-      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)
+      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)(supports-color@10.2.2)
 
   react-native-is-edge-to-edge@1.3.1(react-native@0.85.3)(react@19.2.3):
     dependencies:
@@ -23741,7 +23633,7 @@ snapshots:
       base64-js: 1.5.1
       debug: 4.3.4
       event-target-shim: 6.0.2
-      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)
+      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)(supports-color@10.2.2)
     transitivePeerDependencies:
       - supports-color
 
@@ -23771,51 +23663,6 @@ snapshots:
       semver: 7.8.4
     transitivePeerDependencies:
       - supports-color
-
-  react-native@0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3):
-    dependencies:
-      '@react-native/assets-registry': 0.85.3
-      '@react-native/codegen': 0.85.3(@babel/core@7.29.7)
-      '@react-native/community-cli-plugin': 0.85.3(@react-native/metro-config@0.85.3)(bufferutil@4.1.0)
-      '@react-native/gradle-plugin': 0.85.3
-      '@react-native/js-polyfills': 0.85.3
-      '@react-native/normalize-colors': 0.85.3
-      '@react-native/virtualized-lists': 0.85.3(@types/react@19.2.17)(react-native@0.85.3)(react@19.2.3)
-      abort-controller: 3.0.0
-      anser: 1.4.10
-      ansi-regex: 5.0.1
-      babel-plugin-syntax-hermes-parser: 0.33.3
-      base64-js: 1.5.1
-      commander: 12.1.0
-      flow-enums-runtime: 0.0.6
-      hermes-compiler: 250829098.0.10
-      invariant: 2.2.4
-      memoize-one: 5.2.1
-      metro-runtime: 0.84.4
-      metro-source-map: 0.84.4
-      nullthrows: 1.1.1
-      pretty-format: 29.7.0
-      promise: 8.3.0
-      react: 19.2.3
-      react-devtools-core: 6.1.5(bufferutil@4.1.0)
-      react-refresh: 0.14.2
-      regenerator-runtime: 0.13.11
-      scheduler: 0.27.0
-      semver: 7.8.4
-      stacktrace-parser: 0.1.11
-      tinyglobby: 0.2.17
-      whatwg-fetch: 3.6.20
-      ws: 7.5.11(bufferutil@4.1.0)
-      yargs: 17.7.3
-    optionalDependencies:
-      '@types/react': 19.2.17
-    transitivePeerDependencies:
-      - '@babel/core'
-      - '@react-native-community/cli'
-      - '@react-native/metro-config'
-      - bufferutil
-      - supports-color
-      - utf-8-validate
 
   react-native@0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)(supports-color@10.2.2):
     dependencies:
@@ -23917,7 +23764,7 @@ snapshots:
 
   read-binary-file-arch@1.0.6:
     dependencies:
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.4.3(supports-color@10.2.2)
     transitivePeerDependencies:
       - supports-color
 
@@ -24050,13 +23897,6 @@ snapshots:
       ipaddr.js: 2.4.0
 
   require-directory@2.1.1: {}
-
-  require-in-the-middle@8.0.1:
-    dependencies:
-      debug: 4.4.3(supports-color@5.5.0)
-      module-details-from-path: 1.0.4
-    transitivePeerDependencies:
-      - supports-color
 
   require-in-the-middle@8.0.1(supports-color@10.2.2):
     dependencies:
@@ -24341,6 +24181,22 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  send@1.2.1:
+    dependencies:
+      debug: 4.4.3(supports-color@10.2.2)
+      encodeurl: 2.0.0
+      escape-html: 1.0.3
+      etag: 1.8.1
+      fresh: 2.0.0
+      http-errors: 2.0.1
+      mime-types: 3.0.2
+      ms: 2.1.3
+      on-finished: 2.4.1
+      range-parser: 1.2.1
+      statuses: 2.0.2
+    transitivePeerDependencies:
+      - supports-color
+
   send@1.2.1(supports-color@5.5.0):
     dependencies:
       debug: 4.4.3(supports-color@5.5.0)
@@ -24381,7 +24237,7 @@ snapshots:
       encodeurl: 2.0.0
       escape-html: 1.0.3
       parseurl: 1.3.3
-      send: 1.2.1(supports-color@5.5.0)
+      send: 1.2.1
     transitivePeerDependencies:
       - supports-color
 
@@ -24527,6 +24383,14 @@ snapshots:
 
   sisteransi@1.0.5: {}
 
+  skinview-utils@0.7.1: {}
+
+  skinview3d@3.4.2:
+    dependencies:
+      '@types/three': 0.156.0
+      skinview-utils: 0.7.1
+      three: 0.156.1
+
   slash@3.0.0: {}
 
   slate-dom@0.124.1(slate@0.124.1):
@@ -24582,7 +24446,7 @@ snapshots:
   socks-proxy-agent@7.0.0:
     dependencies:
       agent-base: 6.0.2
-      debug: 4.4.3(supports-color@5.5.0)
+      debug: 4.4.3(supports-color@10.2.2)
       socks: 2.8.9
     transitivePeerDependencies:
       - supports-color
@@ -24956,6 +24820,8 @@ snapshots:
   thenify@3.3.1:
     dependencies:
       any-promise: 1.3.0
+
+  three@0.156.1: {}
 
   throat@5.0.0: {}
 
@@ -25503,7 +25369,7 @@ snapshots:
     dependencies:
       expo: 56.0.16(@babel/core@7.29.7)(@expo/dom-webview@56.0.5)(@expo/metro-runtime@56.0.17)(bufferutil@4.1.0)(expo-router@56.2.15)(expo-widgets@56.0.22)(react-dom@19.2.3)(react-native-webview@13.16.1)(react-native-worklets@0.8.3)(react-native@0.85.3)(react@19.2.3)(supports-color@10.2.2)(typescript@6.0.3)
       react: 19.2.3
-      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)
+      react-native: 0.85.3(@babel/core@7.29.7)(@react-native/metro-config@0.85.3)(@types/react@19.2.17)(bufferutil@4.1.0)(react@19.2.3)(supports-color@10.2.2)
 
   void-elements@3.1.0: {}
 
