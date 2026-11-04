@@ -74,3 +74,4 @@ minimumReleaseAgeExclude:
   - expo-router@56.2.14
 patchedDependencies:
   '@expo/ui@56.0.22': patches/@expo__ui@56.0.22.patch
+  expo-alternate-app-icons@8.0.0: patches/expo-alternate-app-icons@8.0.0.patch
