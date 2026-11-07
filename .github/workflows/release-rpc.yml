@@ -185,8 +185,6 @@ jobs:
     name: Publish to npm
     needs: [build-rpc, official-release]
     runs-on: ubuntu-latest
-    env:
-      pnpm_config_node_linker: isolated
     permissions:
       contents: read
       id-token: write
@@ -199,8 +197,7 @@ jobs:
       - name: Init RPC submodules
         run: |
           git submodule update --init --jobs 8 \
-            ./packages/rpc \
-            ./tooling/eslint-config
+            ./packages/rpc
 
       - name: Stub lockfile file deps (mobile not checked out)
         shell: bash
