@@ -50,6 +50,9 @@ importers:
 
   apps/app:
     dependencies:
+      '@coooookies/windows-smtc-monitor':
+        specifier: 1.0.12
+        version: 1.0.12
       canvas:
         specifier: ^3.2.3
         version: 3.2.3
@@ -2042,6 +2045,28 @@ packages:
     resolution: {integrity: sha512-1/RSRnMOWPqHmEJCGEhElzFvkXUiNkGYsbAIxJl/3+t9OW2l26Qsjo8Ei7v/OMJ7g0Ek6qnKkjCxYrrLSfJi2A==}
     peerDependencies:
       expo: ^56
+
+  '@coooookies/windows-smtc-monitor-win32-arm64-msvc@1.0.12':
+    resolution: {integrity: sha512-vokTNsUJ3UDWJGFboxIFzGjgyUY89cSySDrm0+Oat1ajBDfaJYCcBohN4K67NcjLfb1Auc06zKmmdlApH9ksjQ==}
+    engines: {node: '>=16.0.0'}
+    cpu: [arm64]
+    os: [win32]
+
+  '@coooookies/windows-smtc-monitor-win32-ia32-msvc@1.0.12':
+    resolution: {integrity: sha512-iX25W+blahFGTE66pirN36Eq5DMlSrOUPeHkcAd8hB3YWhpHOK9OHXOhuaCIHUNCrfrb2pWOZfjIgpAJs7jyIQ==}
+    engines: {node: '>=16.0.0'}
+    cpu: [ia32]
+    os: [win32]
+
+  '@coooookies/windows-smtc-monitor-win32-x64-msvc@1.0.12':
+    resolution: {integrity: sha512-Ktj3p8m/emw1GnptAFuOhoD680DPegLUrUaoOuHiT3obQTa5LCd+W93kSLn8N8C+DwrJsPBEIs0Kg7vUCWXDDw==}
+    engines: {node: '>=16.0.0'}
+    cpu: [x64]
+    os: [win32]
+
+  '@coooookies/windows-smtc-monitor@1.0.12':
+    resolution: {integrity: sha512-sIubsDCPsnFmR9T1anMgHBVfNxubXTt7mmv3X+ZJWPecwbWAGo41TI3iCzRChCpuLWpEMG3Zoo8n1m2/Hly+XQ==}
+    engines: {node: '>=16.0.0'}
 
   '@croct/json5-parser@0.2.2':
     resolution: {integrity: sha512-0NJMLrbeLbQ0eCVj3UoH/kG2QckUgOASfwmfDTjyW1xAYPyTNJXcWVT/dssJdTJd0pRchW+qF0VFWQHcxs1OVw==}
@@ -13690,6 +13715,21 @@ snapshots:
   '@config-plugins/react-native-webrtc@15.0.1(expo@56.0.16)':
     dependencies:
       expo: 56.0.16(@babel/core@7.29.7)(@expo/dom-webview@56.0.5)(@expo/metro-runtime@56.0.17)(bufferutil@4.1.0)(expo-router@56.2.15)(expo-widgets@56.0.22)(react-dom@19.2.3)(react-native-webview@13.16.1)(react-native-worklets@0.8.3)(react-native@0.85.3)(react@19.2.3)(supports-color@10.2.2)(typescript@6.0.3)
+
+  '@coooookies/windows-smtc-monitor-win32-arm64-msvc@1.0.12':
+    optional: true
+
+  '@coooookies/windows-smtc-monitor-win32-ia32-msvc@1.0.12':
+    optional: true
+
+  '@coooookies/windows-smtc-monitor-win32-x64-msvc@1.0.12':
+    optional: true
+
+  '@coooookies/windows-smtc-monitor@1.0.12':
+    optionalDependencies:
+      '@coooookies/windows-smtc-monitor-win32-arm64-msvc': 1.0.12
+      '@coooookies/windows-smtc-monitor-win32-ia32-msvc': 1.0.12
+      '@coooookies/windows-smtc-monitor-win32-x64-msvc': 1.0.12
 
   '@croct/json5-parser@0.2.2':
     dependencies:
