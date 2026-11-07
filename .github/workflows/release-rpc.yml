@@ -198,6 +198,7 @@ jobs:
         run: |
           git submodule update --init --jobs 8 \
             ./packages/rpc
+            ./tooling/eslint-config
 
       - name: Stub lockfile file deps (mobile not checked out)
         shell: bash
