@@ -1,7 +1,7 @@
 [build]
-base = "apps/app/src/renderer"
-command = "vite build"
-publish = "dist"
+base = "apps/app"
+command = "pnpm exec electron-vite build"
+publish = "out/renderer"
 
 [functions]
 directory = ".netlify/v1/functions"
